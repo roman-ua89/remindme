@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BlockType {
+  text
+  code
+  image
+  list
+}
+
+enum EntityVisibility {
+  included
+  excluded
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String   @unique
+  passwordHash    String   @map("password_hash")
+  displayName     String?  @map("display_name")
+  isActive        Boolean  @default(true) @map("is_active")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  userRoles            UserRole[]
+  passwordResetTokens  PasswordResetToken[]
+  categories           Category[]
+  mediaAssets          MediaAsset[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  userId String @map("user_id") @db.Uuid
+  roleId String @map("role_id") @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("password_reset_tokens")
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  position  Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topics Topic[]
+
+  @@index([userId, position])
+  @@map("categories")
+}
+
+model Topic {
+  id         String   @id @default(uuid()) @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  name       String
+  position   Int
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  entities Entity[]
+
+  @@index([categoryId, position])
+  @@map("topics")
+}
+
+model Entity {
+  id            String           @id @default(uuid()) @db.Uuid
+  topicId       String           @map("topic_id") @db.Uuid
+  title         String
+  position      Int
+  revisedCount  Int              @default(0) @map("revised_count")
+  skippedCount  Int              @default(0) @map("skipped_count")
+  visibility    EntityVisibility @default(included)
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  topic  Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  blocks EntityBlock[]
+
+  @@index([topicId, position])
+  @@index([topicId, visibility, revisedCount])
+  @@map("entities")
+}
+
+model EntityBlock {
+  id           String    @id @default(uuid()) @db.Uuid
+  entityId     String    @map("entity_id") @db.Uuid
+  blockType    BlockType @map("block_type")
+  position     Int
+  contentJson  Json?     @map("content_json")
+  mediaAssetId String?   @map("media_asset_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  entity     Entity          @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  mediaAsset MediaAsset?     @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  listRows   ListBlockRow[]
+
+  @@unique([entityId, position])
+  @@map("entity_blocks")
+}
+
+model ListBlockRow {
+  id         String @id @default(uuid()) @db.Uuid
+  blockId    String @map("block_id") @db.Uuid
+  position   Int
+  leftValue  String @map("left_value")
+  rightValue String @map("right_value")
+
+  block EntityBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
+
+  @@unique([blockId, position])
+  @@map("list_block_rows")
+}
+
+model MediaAsset {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  storageKey       String   @map("storage_key")
+  mimeType         String   @map("mime_type")
+  byteSize         BigInt   @map("byte_size")
+  originalFilename String?  @map("original_filename")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blocks EntityBlock[]
+
+  @@index([userId])
+  @@map("media_assets")
+}

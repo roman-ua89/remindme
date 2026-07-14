@@ -1,0 +1,20 @@
+{
+  "name": "@remindme/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./auth": "./src/auth.ts",
+    "./categories": "./src/categories.ts",
+    "./topics": "./src/topics.ts",
+    "./entities": "./src/entities.ts",
+    "./media": "./src/media.ts",
+    "./users": "./src/users.ts",
+    "./common/errors": "./src/common/errors.ts",
+    "./common/pagination": "./src/common/pagination.ts"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  }
+}
