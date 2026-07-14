@@ -1,0 +1,47 @@
+---
+description: Navigate from Button with useNavigate, not Link
+globs: frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Button Navigation
+
+Do not nest `<Link>` inside `<Button>` (e.g. `render={<Link to="..." />}`). This causes console warnings and invalid DOM nesting.
+
+Use `useNavigate()` from `@tanstack/react-router` and call `navigate()` from an `onClick` handler or a separate function.
+
+```tsx
+// ❌ BAD
+import { Link } from '@tanstack/react-router';
+
+<Button variant="outline" render={<Link to="/" />}>
+  Stop
+</Button>
+
+// ✅ GOOD — inline onClick
+import { useNavigate } from '@tanstack/react-router';
+
+const navigate = useNavigate();
+
+<Button
+  variant="outline"
+  onClick={() => navigate({ to: '/player', search: { categoryId } })}
+>
+  Play
+</Button>
+
+// ✅ GOOD — separate handler
+function navigateToTopic() {
+  navigate({
+    to: '/categories/$categoryId/topics/$topicId',
+    params: { categoryId, topicId },
+  });
+}
+
+<Button type="button" variant="outline" onClick={handleCancel}>
+  Cancel
+</Button>
+```
+
+- Use `<Link>` for plain text or icon links that are not rendered as `<Button>`.
+- Set `type="button"` when the button is inside a `<form>` and should not submit.

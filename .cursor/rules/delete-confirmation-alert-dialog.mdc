@@ -1,0 +1,69 @@
+---
+description: Confirm delete/remove actions with shadcn Alert Dialog
+globs: frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Delete/Remove Confirmation
+
+Any button or action that deletes or removes data must show a confirmation dialog using shadcn `AlertDialog` from `@/components/ui/alert-dialog`.
+
+Do not call delete/remove handlers directly from `onClick`. Do not use `window.confirm`, `confirm()`, or a plain `Dialog` for destructive confirmations.
+
+Install the component if missing:
+
+```bash
+npx shadcn@latest add alert-dialog
+```
+
+```tsx
+// ❌ BAD — no confirmation
+<Button variant="destructive" onClick={() => onDelete(id)}>
+  <Trash2Icon />
+</Button>
+
+// ❌ BAD — browser confirm
+const confirmed = window.confirm(`Remove "${title}"?`)
+if (confirmed) onRemove(id)
+
+// ✅ GOOD — AlertDialog wraps the trigger
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+
+<AlertDialog>
+  <AlertDialogTrigger
+    render={
+      <Button variant="destructive" size="icon-sm" aria-label="Delete topic" />
+    }
+  />
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete topic?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This will permanently delete "{topic.name}". This action cannot be undone.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction variant="destructive" onClick={() => onDelete(topic.id)}>
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+- Applies to all destructive actions: delete, remove, trash, clear, etc.
+- Use `variant="destructive"` on the trigger button and confirm action.
+- Describe what will be removed in `AlertDialogDescription`.
+- For reusable patterns, extract a small wrapper (e.g. `ConfirmDeleteDialog`) that composes `AlertDialog` primitives.

@@ -1,0 +1,22 @@
+---
+description: Run Prettier after creating or editing frontend source files
+globs: frontend/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Format with Prettier
+
+After creating or modifying any file in `frontend/src/`, run Prettier on the changed files before finishing the task.
+
+```bash
+# From the frontend directory — single file
+npx prettier --write src/features/player/components/PlayerPage.tsx
+
+# Multiple files in one command
+npx prettier --write src/features/player/components/PlayerPage.tsx src/routes/_app/player.tsx
+```
+
+- Run Prettier on every file you create or edit in this session, not only the final file.
+- Use paths relative to `frontend/` (as in the examples above).
+- Do not skip formatting because the diff is small — always format after component or module changes.
+- Project config lives in `frontend/.prettierrc` (4-space indent, single quotes, trailing commas).

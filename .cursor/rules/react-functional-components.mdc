@@ -1,0 +1,32 @@
+---
+description: Use functional components with arrow functions
+globs: **/*.{tsx,jsx}
+alwaysApply: false
+---
+
+# React Functional Components
+
+Always define React components as arrow functions. Do not use `function` declarations for components.
+
+```tsx
+// ❌ BAD
+function MyComponent({ title }: Props) {
+  return <div>{title}</div>;
+}
+
+export function MyComponent({ title }: Props) {
+  return <div>{title}</div>;
+}
+
+// ✅ GOOD
+const MyComponent = ({ title }: Props) => {
+  return <div>{title}</div>;
+};
+
+export const MyComponent = ({ title }: Props) => {
+  return <div>{title}</div>;
+};
+```
+
+- Use `const ComponentName = (...) => { ... }` for all components, including pages, layouts, and UI primitives.
+- Named `function` declarations are fine for non-component helpers (hooks internals, utilities, event handlers) inside a file.
