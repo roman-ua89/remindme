@@ -371,7 +371,7 @@ features/categories/
     HomePage.tsx
     CategoryList.tsx
     CategoryCard.tsx
-    AddCategoryPopover.tsx   # name + optional first topic — on Home
+    AddCategoryPopover.tsx   # category name only — on Home
     EmptyCategoryPrompt.tsx
     # PlayButton imported from features/player — embedded in CategoryCard
 ```

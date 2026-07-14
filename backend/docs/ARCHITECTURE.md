@@ -335,14 +335,10 @@ Services receive **plain data** (`AuthUser`, contract input types) — not Expre
 ```typescript
 // Pattern in *.service.ts
 export async function createCategory(user: AuthUser, input: CreateCategoryInput): Promise<Category> {
-  const category = await prisma.$transaction(async (tx) => {
-    const created = await tx.category.create({ data: { userId: user.id, name: input.name, … } })
-    if (input.firstTopicName) {
-      await tx.topic.create({ … })
-    }
-    return created
+  const category = await prisma.category.create({
+    data: { userId: user.id, name: input.name, position },
   })
-  return toCategoryDto(category, topicCount)
+  return toCategoryDto(category, 0)
 }
 ```
 
@@ -584,7 +580,6 @@ The **entities** module is the most complex: saving an entity can touch `entitie
 
 Used in:
 - `entities.service` — create/update entity with many blocks
-- `categories.service` — create category + optional first topic
 - `auth.service` — reset password + mark token used
 
 ---

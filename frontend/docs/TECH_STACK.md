@@ -394,7 +394,7 @@ All user input flows use **react-hook-form** for form state and **Zod** for vali
 ### Scope
 
 - Auth: login, register, forgot password
-- Create category (popover on Home — name + optional first topic)
+- Create category (popover on Home — name only; topics are created separately on Category detail)
 - Add topic (Category detail)
 - Entity constructor: Title + ordered constructor blocks (Text, Code, Image, List)
 
@@ -698,7 +698,6 @@ export const categorySchema = z.object({
 
 export const createCategorySchema = z.object({
   name: z.string().min(1).max(100),
-  firstTopicName: z.string().min(1).max(100).optional(),
 });
 
 export type Category = z.infer<typeof categorySchema>;
@@ -964,7 +963,7 @@ Grouped by [PRODUCT.md](PRODUCT.md) flows. Exact paths and DTOs are defined in `
 | Area | Endpoints (sketch) |
 |------|-------------------|
 | **Auth** | `POST /auth/register`, `/login`, `/logout`, `/forgot-password`, `/reset-password`; `GET /auth/me` |
-| **Categories** | `GET /categories`, `POST /categories` (name + optional first topic), `PATCH/DELETE /categories/:categoryId` |
+| **Categories** | `GET /categories`, `POST /categories` (name only), `PATCH/DELETE /categories/:categoryId` |
 | **Topics** | `GET/POST /categories/:categoryId/topics`; `GET/PATCH/DELETE /categories/:categoryId/topics/:topicId` |
 | **Entities** | `GET/POST /categories/:categoryId/topics/:topicId/entities`; `GET/PATCH/DELETE /categories/:categoryId/topics/:topicId/entities/:entityId` |
 | **Entity blocks** | Nested in entity create/update payload — atomic save of title + ordered blocks (max 20) |

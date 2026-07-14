@@ -8,7 +8,6 @@ export const categorySchema = z.object({
 
 export const createCategorySchema = z.object({
   name: z.string().trim().min(1).max(100),
-  firstTopicName: z.string().trim().min(1).max(100).optional(),
 })
 
 export const updateCategorySchema = z.object({
