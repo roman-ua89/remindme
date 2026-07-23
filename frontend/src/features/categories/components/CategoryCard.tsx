@@ -1,21 +1,20 @@
 import { Link } from '@tanstack/react-router'
-import { PencilIcon, Trash2Icon } from 'lucide-react'
+import { Trash2Icon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card'
+import { EditCategoryPopover } from '@/features/categories/components/EditCategoryPopover'
 import { PlayButton } from '@/features/player/components/PlayButton'
 import { getEntityCountByCategoryId } from '@/features/topics/demo-data'
 import type { Category } from '@/features/categories/types'
 
 type CategoryCardProps = {
   category: Category
-  onRename: (id: string) => void
   onDelete: (id: string) => void
 }
 
 export function CategoryCard({
   category,
-  onRename,
   onDelete,
 }: CategoryCardProps) {
   const canDelete = category.topicCount === 0
@@ -40,14 +39,7 @@ export function CategoryCard({
               disabled={!canPlay}
               ariaLabel="Play category"
             />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Rename category"
-              onClick={() => onRename(category.id)}
-            >
-              <PencilIcon />
-            </Button>
+            <EditCategoryPopover category={category} />
             <Button
               variant="destructive"
               size="icon-sm"

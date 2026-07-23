@@ -3,13 +3,11 @@ import { CategoryCard } from '@/features/categories/components/CategoryCard'
 
 type CategoryListProps = {
   categories: Category[]
-  onRename: (id: string) => void
   onDelete: (id: string) => void
 }
 
 export function CategoryList({
   categories,
-  onRename,
   onDelete,
 }: CategoryListProps) {
   return (
@@ -18,7 +16,6 @@ export function CategoryList({
         <CategoryCard
           key={category.id}
           category={category}
-          onRename={onRename}
           onDelete={onDelete}
         />
       ))}

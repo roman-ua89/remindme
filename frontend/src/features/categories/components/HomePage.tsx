@@ -14,20 +14,6 @@ export function HomePage() {
   const queryClient = useQueryClient()
   const { data: categories = [], isLoading } = useCategories()
 
-  function handleRenameCategory(id: string) {
-    const category = categories.find((item) => item.id === id)
-    if (!category) return
-
-    const nextName = window.prompt('Rename category', category.name)?.trim()
-    if (!nextName) return
-
-    queryClient.setQueryData<Category[]>(queryKeys.categories.all, (current = []) =>
-      current.map((item) =>
-        item.id === id ? { ...item, name: nextName } : item,
-      ),
-    )
-  }
-
   function handleDeleteCategory(id: string) {
     queryClient.setQueryData<Category[]>(queryKeys.categories.all, (current = []) =>
       current.filter((item) => item.id !== id),
@@ -59,7 +45,6 @@ export function HomePage() {
 
             <CategoryList
               categories={categories}
-              onRename={handleRenameCategory}
               onDelete={handleDeleteCategory}
             />
           </div>

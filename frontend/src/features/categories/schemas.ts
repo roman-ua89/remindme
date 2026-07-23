@@ -9,3 +9,13 @@ export const createCategoryFormSchema = z.object({
 })
 
 export type CreateCategoryFormValues = z.infer<typeof createCategoryFormSchema>
+
+export const updateCategoryFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Category name is required')
+    .max(100, 'Name must be 100 characters or less'),
+})
+
+export type UpdateCategoryFormValues = z.infer<typeof updateCategoryFormSchema>
