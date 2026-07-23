@@ -1,4 +1,4 @@
-import type { CreateTopicInput, Topic } from '@remindme/contracts/topics'
+import type { CreateTopicInput, Topic, UpdateTopicInput } from '@remindme/contracts/topics'
 
 import { apiClient } from '@/lib/api-client'
 
@@ -16,4 +16,23 @@ export async function createTopic(
     payload,
   )
   return data
+}
+
+export async function updateTopic(
+  categoryId: string,
+  topicId: string,
+  payload: UpdateTopicInput,
+): Promise<Topic> {
+  const { data } = await apiClient.patch<Topic>(
+    `/categories/${categoryId}/topics/${topicId}`,
+    payload,
+  )
+  return data
+}
+
+export async function deleteTopic(
+  categoryId: string,
+  topicId: string,
+): Promise<void> {
+  await apiClient.delete(`/categories/${categoryId}/topics/${topicId}`)
 }

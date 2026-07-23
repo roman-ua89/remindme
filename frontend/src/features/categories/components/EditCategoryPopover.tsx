@@ -59,22 +59,20 @@ export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
 
     return (
         <Popover open={open} onOpenChange={handleOpenChange}>
-            <PopoverTrigger
-                render={
-                    <>
-                        <Tooltip>
-                            <TooltipTrigger render={<span className='inline-flex' />}>
-                                <Button variant='ghost' size='icon-sm' aria-label='Edit category'>
-                                    <PencilIcon />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Edit category name</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </>
-                }
-            />
+            <Tooltip>
+                <TooltipTrigger render={<span className='inline-flex' />}>
+                    <PopoverTrigger
+                        render={
+                            <Button variant='ghost' size='icon-sm' aria-label='Edit category'>
+                                <PencilIcon />
+                            </Button>
+                        }
+                    />
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Edit category name</p>
+                </TooltipContent>
+            </Tooltip>
             <PopoverContent align='end' className='w-64'>
                 <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller

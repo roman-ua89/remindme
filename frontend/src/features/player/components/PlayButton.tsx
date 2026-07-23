@@ -41,7 +41,7 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
                 </Button>
             </TooltipTrigger>
             <TooltipContent>
-                <p>{disabled ? 'Category must have at least one entity' : 'Revise selected category'}</p>
+                <p>{disabled ? 'Category must have at least one entity' : ariaLabel}</p>
             </TooltipContent>
         </Tooltip>
     );

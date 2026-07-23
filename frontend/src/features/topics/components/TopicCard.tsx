@@ -1,20 +1,39 @@
 import { Link } from '@tanstack/react-router'
-import { PencilIcon, Trash2Icon } from 'lucide-react'
+import { Trash2Icon } from 'lucide-react'
+import { useState } from 'react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card'
+import { EditTopicPopover } from '@/features/topics/components/EditTopicPopover'
 import { PlayButton } from '@/features/player/components/PlayButton'
 import type { Topic } from '@/features/topics/types'
+import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx'
 
 type TopicCardProps = {
   topic: Topic
-  onRename: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export function TopicCard({ topic, onRename, onDelete }: TopicCardProps) {
+export function TopicCard({ topic, onDelete }: TopicCardProps) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const canDelete = topic.entityCount === 0
   const canPlay = topic.entityCount > 0
+
+  function handleRemove() {
+    onDelete(topic.id)
+    setDeleteDialogOpen(false)
+  }
 
   return (
     <Card size="sm" className="transition-colors hover:bg-muted/40">
@@ -35,23 +54,43 @@ export function TopicCard({ topic, onRename, onDelete }: TopicCardProps) {
               disabled={!canPlay}
               ariaLabel="Play topic"
             />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Rename topic"
-              onClick={() => onRename(topic.id)}
-            >
-              <PencilIcon />
-            </Button>
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              aria-label="Delete topic"
-              disabled={!canDelete}
-              onClick={() => onDelete(topic.id)}
-            >
-              <Trash2Icon />
-            </Button>
+            <EditTopicPopover topic={topic} />
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              {!canDelete ? (
+                <Tooltip>
+                  <TooltipTrigger render={<span className='inline-flex' />}>
+                    <Button variant='destructive' size='icon-sm' aria-label='Delete topic' disabled>
+                      <Trash2Icon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Only empty topic can be removed</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <AlertDialogTrigger
+                  render={
+                    <Button variant='destructive' size='icon-sm' aria-label='Delete topic'>
+                      <Trash2Icon />
+                    </Button>
+                  }
+                />
+              )}
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete topic?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete &ldquo;{topic.name}&rdquo;. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
+                  <AlertDialogAction variant='destructive' onClick={handleRemove}>
+                    Remove
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardAction>
       </CardHeader>

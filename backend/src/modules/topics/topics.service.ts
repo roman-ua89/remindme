@@ -6,6 +6,7 @@ import type {
 } from '@remindme/contracts/topics'
 
 import { getCategoryForUser } from '../../lib/ownership.js'
+import { conflict } from '../../lib/errors.js'
 import { prisma } from '../../lib/prisma.js'
 
 function toTopicDto(
@@ -104,6 +105,14 @@ export async function deleteTopic(
 ): Promise<void> {
   const { getTopicForUser } = await import('../../lib/ownership.js')
   await getTopicForUser(categoryId, topicId, user)
+
+  const entityCount = await prisma.entity.count({
+    where: { topicId },
+  })
+
+  if (entityCount > 0) {
+    throw conflict('Cannot delete a topic that contains entities')
+  }
 
   await prisma.topic.delete({ where: { id: topicId } })
 }
