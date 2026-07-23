@@ -3,6 +3,7 @@ import { PlayIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { PlayerScope } from '@/features/player/types';
+import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx';
 
 type PlayButtonProps = {
     scope: PlayerScope;
@@ -25,16 +26,23 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
     const navigate = useNavigate();
 
     return (
-        <Button
-            variant='ghost'
-            size='icon-sm'
-            aria-label={ariaLabel}
-            disabled={disabled}
-            onClick={() => {
-                navigate({ to: '/player', search: toPlayerSearch(scope) });
-            }}
-        >
-            <PlayIcon />
-        </Button>
+        <Tooltip>
+            <TooltipTrigger render={<span className='inline-flex' />}>
+                <Button
+                    variant='ghost'
+                    size='icon-sm'
+                    aria-label={ariaLabel}
+                    disabled={disabled}
+                    onClick={() => {
+                        navigate({ to: '/player', search: toPlayerSearch(scope) });
+                    }}
+                >
+                    <PlayIcon />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{disabled ? 'Category must have at least one entity' : 'Revise selected category'}</p>
+            </TooltipContent>
+        </Tooltip>
     );
 }

@@ -12,6 +12,7 @@ import { useUpdateCategory } from '@/features/categories/queries/use-update-cate
 import { updateCategoryFormSchema } from '@/features/categories/schemas';
 import type { UpdateCategoryFormValues } from '@/features/categories/schemas';
 import type { Category } from '@/features/categories/types';
+import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx';
 
 type EditCategoryPopoverProps = {
     category: Category;
@@ -60,9 +61,18 @@ export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
         <Popover open={open} onOpenChange={handleOpenChange}>
             <PopoverTrigger
                 render={
-                    <Button variant='ghost' size='icon-sm' aria-label='Edit category'>
-                        <PencilIcon />
-                    </Button>
+                    <>
+                        <Tooltip>
+                            <TooltipTrigger render={<span className='inline-flex' />}>
+                                <Button variant='ghost' size='icon-sm' aria-label='Edit category'>
+                                    <PencilIcon />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Edit category name</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </>
                 }
             />
             <PopoverContent align='end' className='w-64'>
