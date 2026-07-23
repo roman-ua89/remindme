@@ -1,9 +1,4 @@
-export type Entity = {
-  id: string
-  topicId: string
-  title: string
-  revisedCount: number
-}
+export type { EntityListItem } from '@remindme/contracts/entities'
 
 export type BlockType = 'text' | 'code' | 'image' | 'list'
 

@@ -7,6 +7,16 @@ export async function getTopics(categoryId: string): Promise<Topic[]> {
   return data
 }
 
+export async function getTopicById(
+  categoryId: string,
+  topicId: string,
+): Promise<Topic> {
+  const { data } = await apiClient.get<Topic>(
+    `/categories/${categoryId}/topics/${topicId}`,
+  )
+  return data
+}
+
 export async function createTopic(
   categoryId: string,
   payload: CreateTopicInput,

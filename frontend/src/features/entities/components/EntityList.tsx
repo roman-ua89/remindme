@@ -1,8 +1,8 @@
 import { EntityCard } from '@/features/entities/components/EntityCard'
-import type { Entity } from '@/features/entities/types'
+import type { EntityListItem } from '@/features/entities/types'
 
 type EntityListProps = {
-  entities: Entity[]
+  entities: EntityListItem[]
   onEdit: (id: string) => void
   onRemove: (id: string) => void
 }
