@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-
 import { AppHeader } from '@/components/layout/AppHeader'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs'
@@ -7,17 +5,14 @@ import { AddCategoryPopover } from '@/features/categories/components/AddCategory
 import { CategoryList } from '@/features/categories/components/CategoryList'
 import { EmptyCategoryPrompt } from '@/features/categories/components/EmptyCategoryPrompt'
 import { useCategories } from '@/features/categories/queries/use-categories'
-import type { Category } from '@/features/categories/types'
-import { queryKeys } from '@/lib/query-keys'
+import { useDeleteCategory } from '@/features/categories/queries/use-delete-category'
 
 export function HomePage() {
-  const queryClient = useQueryClient()
   const { data: categories = [], isLoading } = useCategories()
+  const { mutate: deleteCategory } = useDeleteCategory()
 
   function handleDeleteCategory(id: string) {
-    queryClient.setQueryData<Category[]>(queryKeys.categories.all, (current = []) =>
-      current.filter((item) => item.id !== id),
-    )
+    deleteCategory(id)
   }
 
   const hasCategories = categories.length > 0

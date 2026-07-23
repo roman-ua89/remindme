@@ -21,3 +21,7 @@ export async function updateCategory(categoryId: string, payload: UpdateCategory
     const { data } = await apiClient.patch<Category>(`/categories/${categoryId}`, payload);
     return data;
 }
+
+export async function deleteCategory(categoryId: string): Promise<void> {
+    await apiClient.delete(`/categories/${categoryId}`);
+}
