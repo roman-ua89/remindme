@@ -14,5 +14,7 @@ export const queryKeys = {
   entities: {
     all: (categoryId: string, topicId: string) =>
       ['categories', categoryId, 'topics', topicId, 'entities'] as const,
+    detail: (categoryId: string, topicId: string, entityId: string) =>
+      ['categories', categoryId, 'topics', topicId, 'entities', entityId] as const,
   },
 } as const
