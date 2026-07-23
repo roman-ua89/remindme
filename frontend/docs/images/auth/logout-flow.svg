@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .box { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 10; }
+      .user { fill: #dbeafe; stroke: #60a5fa; }
+      .action { fill: #fef3c7; stroke: #fbbf24; }
+      .label { font-size: 12px; fill: #0f172a; font-weight: 600; text-anchor: middle; }
+      .step { font-size: 11px; fill: #334155; }
+      .arrow { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <text x="30" y="28" font-size="18" font-weight="700" fill="#0f172a">Logout flow</text>
+
+  <rect class="box user" x="30" y="70" width="100" height="44"/><text class="label" x="80" y="97">User</text>
+  <rect class="box" x="160" y="70" width="110" height="44"/><text class="label" x="215" y="97">AppHeader</text>
+  <rect class="box" x="300" y="70" width="100" height="44"/><text class="label" x="350" y="97">useLogout</text>
+  <rect class="box" x="430" y="70" width="110" height="44"/><text class="label" x="485" y="97">Backend</text>
+  <rect class="box" x="570" y="70" width="120" height="44"/><text class="label" x="630" y="97">QueryClient</text>
+  <rect class="box action" x="720" y="70" width="40" height="44"/><text class="label" x="740" y="97">/auth/login</text>
+
+  <path class="arrow" d="M130 92 H160"/>
+  <text class="step" x="140" y="85">Click Logout</text>
+  <path class="arrow" d="M270 92 H300"/>
+  <text class="step" x="278" y="85">mutate()</text>
+  <path class="arrow" d="M400 92 H430"/>
+  <text class="step" x="405" y="85">POST /auth/logout</text>
+  <path class="arrow" d="M540 92 H570"/>
+  <text class="step" x="548" y="85">Clear cookie</text>
+  <path class="arrow" d="M690 92 H720"/>
+  <text class="step" x="695" y="85">Clear cache</text>
+
+  <rect x="30" y="150" width="720" height="120" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="50" y="178" font-size="12" font-weight="700" fill="#0f172a">Steps</text>
+  <text x="50" y="202" font-size="11" fill="#334155">1. User clicks Logout in the header dropdown</text>
+  <text x="50" y="222" font-size="11" fill="#334155">2. useLogout calls POST /auth/logout  backend clears remindme_token cookie</text>
+  <text x="50" y="242" font-size="11" fill="#334155">3. Frontend removes cached currentUser from React Query</text>
+  <text x="50" y="262" font-size="11" fill="#334155">4. Navigate to /auth/login  root guard allows it because user is now unauthenticated</text>
+</svg>

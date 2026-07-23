@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
 
 import { unauthorized } from '../lib/errors.js'
+import { MessageKey } from '@remindme/contracts/messages'
 import { AUTH_COOKIE_NAME, verifyToken } from '../lib/jwt.js'
 
 export type AuthUser = {
@@ -32,7 +33,7 @@ export function auth(req: Request, _res: Response, next: NextFunction) {
     }
     next()
   } catch {
-    next(unauthorized('Invalid or expired session'))
+    next(unauthorized(MessageKey.AUTH_INVALID_SESSION))
   }
 }
 

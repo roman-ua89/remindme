@@ -1,5 +1,1 @@
-export type Category = {
-  id: string
-  name: string
-  topicCount: number
-}
+export type { Category, CreateCategoryInput } from '@remindme/contracts/categories'

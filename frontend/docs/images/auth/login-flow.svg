@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .actor { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.5; rx: 8; }
+      .frontend { fill: #dbeafe; stroke: #3b82f6; }
+      .backend { fill: #dcfce7; stroke: #22c55e; }
+      .label { font-size: 12px; fill: #0f172a; font-weight: 600; }
+      .step { font-size: 11px; fill: #334155; }
+      .num { font-size: 11px; font-weight: 700; fill: white; }
+      .circle { fill: #3b82f6; }
+      .line { stroke: #94a3b8; stroke-width: 1.2; stroke-dasharray: 4 4; }
+      .arrow { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <text x="30" y="28" font-size="18" font-weight="700" fill="#0f172a">Login flow</text>
+  <text x="30" y="48" font-size="12" fill="#64748b">What happens when the user submits the login form</text>
+
+  <rect class="actor frontend" x="40" y="70" width="100" height="560"/>
+  <text class="label" x="62" y="95">User</text>
+  <line class="line" x1="90" y1="110" x2="90" y2="620"/>
+
+  <rect class="actor frontend" x="170" y="70" width="110" height="560"/>
+  <text class="label" x="185" y="95">LoginPage</text>
+  <line class="line" x1="225" y1="110" x2="225" y2="620"/>
+
+  <rect class="actor frontend" x="310" y="70" width="100" height="560"/>
+  <text class="label" x="325" y="95">useLogin</text>
+  <line class="line" x1="360" y1="110" x2="360" y2="620"/>
+
+  <rect class="actor frontend" x="440" y="70" width="110" height="560"/>
+  <text class="label" x="455" y="95">api-client</text>
+  <line class="line" x1="495" y1="110" x2="495" y2="620"/>
+
+  <rect class="actor backend" x="590" y="70" width="120" height="560"/>
+  <text class="label" x="610" y="95">auth.routes</text>
+  <line class="line" x1="650" y1="110" x2="650" y2="620"/>
+
+  <rect class="actor backend" x="750" y="70" width="120" height="560"/>
+  <text class="label" x="770" y="95">auth.service</text>
+  <line class="line" x1="810" y1="110" x2="810" y2="620"/>
+
+  <!-- steps -->
+  <circle class="circle" cx="30" cy="130" r="10"/><text class="num" x="27" y="134">1</text>
+  <text class="step" x="50" y="134">User enters email + password and clicks Sign in</text>
+  <path class="arrow" d="M90 140 H225"/>
+
+  <circle class="circle" cx="30" cy="165" r="10"/><text class="num" x="27" y="169">2</text>
+  <text class="step" x="50" y="169">LoginPage validates with Zod (client-side)</text>
+
+  <circle class="circle" cx="30" cy="200" r="10"/><text class="num" x="27" y="204">3</text>
+  <text class="step" x="50" y="204">useLogin.mutate({ email, password })</text>
+  <path class="arrow" d="M225 210 H360"/>
+
+  <circle class="circle" cx="30" cy="245" r="10"/><text class="num" x="27" y="249">4</text>
+  <text class="step" x="50" y="249">POST /auth/login (withCredentials: true)</text>
+  <path class="arrow" d="M360 255 H495 H650"/>
+
+  <circle class="circle" cx="30" cy="290" r="10"/><text class="num" x="27" y="294">5</text>
+  <text class="step" x="50" y="294">Backend validates body, finds user, checks bcrypt password</text>
+  <path class="arrow" d="M650 300 H810"/>
+
+  <circle class="circle" cx="30" cy="335" r="10"/><text class="num" x="27" y="339">6</text>
+  <text class="step" x="50" y="339">Service signs JWT with user id, roles, permissions</text>
+
+  <circle class="circle" cx="30" cy="380" r="10"/><text class="num" x="27" y="384">7</text>
+  <text class="step" x="50" y="384">Response: Set-Cookie remindme_token + User JSON</text>
+  <path class="arrow" d="M810 390 H650 H495 H360" stroke-dasharray="none"/>
+
+  <circle class="circle" cx="30" cy="430" r="10"/><text class="num" x="27" y="434">8</text>
+  <text class="step" x="50" y="434">useLogin caches user in React Query</text>
+
+  <circle class="circle" cx="30" cy="475" r="10"/><text class="num" x="27" y="479">9</text>
+  <text class="step" x="50" y="479">Navigate to / (Home page)</text>
+  <path class="arrow" d="M360 485 H225 H90"/>
+
+  <rect x="40" y="530" width="820" height="70" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="60" y="555" font-size="12" font-weight="700" fill="#1d4ed8">Cookie note</text>
+  <text x="60" y="578" font-size="11" fill="#334155">The browser stores remindme_token automatically. JavaScript cannot read it (httpOnly).</text>
+</svg>

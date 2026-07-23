@@ -8,12 +8,12 @@ import type {
   ResetPasswordInput,
   User,
 } from '@remindme/contracts/auth'
+import { MessageKey, messages } from '@remindme/contracts/messages'
 
 import { prisma } from '../../lib/prisma.js'
 import {
-  badRequest,
+  badRequestKey,
   conflict,
-  notFound,
   unauthorized,
 } from '../../lib/errors.js'
 import { signToken } from '../../lib/jwt.js'
@@ -68,7 +68,7 @@ export async function register(input: RegisterInput): Promise<User> {
   })
 
   if (existing) {
-    throw conflict('Email is already registered')
+    throw conflict(MessageKey.AUTH_EMAIL_ALREADY_REGISTERED)
   }
 
   const userRole = await prisma.role.findUnique({
@@ -76,7 +76,7 @@ export async function register(input: RegisterInput): Promise<User> {
   })
 
   if (!userRole) {
-    throw badRequest('Default user role is not configured')
+    throw badRequestKey(MessageKey.AUTH_DEFAULT_ROLE_NOT_CONFIGURED)
   }
 
   const passwordHash = await bcrypt.hash(input.password, BCRYPT_COST)
@@ -101,12 +101,12 @@ export async function login(input: LoginInput): Promise<{ user: User; token: str
   })
 
   if (!user || !user.isActive) {
-    throw unauthorized('Invalid email or password')
+    throw unauthorized(MessageKey.AUTH_INVALID_CREDENTIALS)
   }
 
   const valid = await bcrypt.compare(input.password, user.passwordHash)
   if (!valid) {
-    throw unauthorized('Invalid email or password')
+    throw unauthorized(MessageKey.AUTH_INVALID_CREDENTIALS)
   }
 
   const profile = await getUserAuthProfile(user.id)
@@ -125,13 +125,16 @@ export async function getCurrentUser(userId: string): Promise<User> {
 
 export async function forgotPassword(
   input: ForgotPasswordInput,
-): Promise<{ message: string; resetToken?: string }> {
+): Promise<{ message: string; messageKey: string; resetToken?: string }> {
   const user = await prisma.user.findUnique({
     where: { email: input.email.toLowerCase() },
   })
 
   if (!user) {
-    return { message: 'If the email exists, a reset link has been sent' }
+    return {
+      message: messages[MessageKey.AUTH_RESET_EMAIL_SENT],
+      messageKey: MessageKey.AUTH_RESET_EMAIL_SENT,
+    }
   }
 
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -146,8 +149,13 @@ export async function forgotPassword(
     },
   })
 
-  const response: { message: string; resetToken?: string } = {
-    message: 'If the email exists, a reset link has been sent',
+  const response: {
+    message: string
+    messageKey: string
+    resetToken?: string
+  } = {
+    message: messages[MessageKey.AUTH_RESET_EMAIL_SENT],
+    messageKey: MessageKey.AUTH_RESET_EMAIL_SENT,
   }
 
   if (process.env.NODE_ENV === 'development') {
@@ -159,7 +167,7 @@ export async function forgotPassword(
 
 export async function resetPassword(
   input: ResetPasswordInput,
-): Promise<{ message: string }> {
+): Promise<{ message: string; messageKey: string }> {
   const tokenHash = crypto
     .createHash('sha256')
     .update(input.token)
@@ -174,7 +182,7 @@ export async function resetPassword(
     resetToken.usedAt ||
     resetToken.expiresAt < new Date()
   ) {
-    throw badRequest('Invalid or expired reset token')
+    throw badRequestKey(MessageKey.AUTH_INVALID_RESET_TOKEN)
   }
 
   const passwordHash = await bcrypt.hash(input.password, BCRYPT_COST)
@@ -190,7 +198,10 @@ export async function resetPassword(
     }),
   ])
 
-  return { message: 'Password has been reset' }
+  return {
+    message: messages[MessageKey.AUTH_PASSWORD_RESET],
+    messageKey: MessageKey.AUTH_PASSWORD_RESET,
+  }
 }
 
 export { getUserAuthProfile }

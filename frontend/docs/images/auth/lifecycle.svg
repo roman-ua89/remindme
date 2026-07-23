@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 280" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .state { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 14; }
+      .active { fill: #dbeafe; stroke: #3b82f6; }
+      .login { fill: #fef3c7; stroke: #f59e0b; }
+      .edge { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .label { font-size: 12px; fill: #0f172a; font-weight: 600; text-anchor: middle; }
+      .note { font-size: 10px; fill: #475569; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <text x="30" y="28" font-size="18" font-weight="700" fill="#0f172a">Auth lifecycle</text>
+
+  <rect class="state" x="40" y="70" width="140" height="56"/><text class="label" x="110" y="95">App opens</text><text class="note" x="110" y="112">unauthenticated</text>
+  <rect class="login" x="220" y="70" width="140" height="56"/><text class="label" x="290" y="102">/auth/login</text>
+  <rect class="active" x="400" y="70" width="140" height="56"/><text class="label" x="470" y="95">Authenticated</text><text class="note" x="470" y="112">cookie set</text>
+  <rect class="state" x="580" y="70" width="140" height="56"/><text class="label" x="650" y="95">Home /</text><text class="note" x="650" y="112">app routes</text>
+
+  <path class="edge" d="M180 98 H220"/>
+  <text class="note" x="200" y="90">redirect</text>
+  <path class="edge" d="M360 98 H400"/>
+  <text class="note" x="380" y="90">login OK</text>
+  <path class="edge" d="M540 98 H580"/>
+  <text class="note" x="560" y="90">navigate</text>
+
+  <path class="edge" d="M470 126 V180 H290 V126"/>
+  <text class="note" x="380" y="175">logout or cookie expired</text>
+
+  <path class="edge" d="M290 126 V155 H330 V126"/>
+  <text class="note" x="350" y="150">wrong password</text>
+  <text class="note" x="350" y="162">(toast, stay on login)</text>
+
+  <rect x="40" y="210" width="740" height="50" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="60" y="240" font-size="11" fill="#334155">While authenticated, user can browse all app routes. Root guard sends them back to / if they try to open /auth/login.</text>
+</svg>

@@ -11,10 +11,10 @@ import {
 import { AddTopicPopover } from '@/features/topics/components/AddTopicPopover'
 
 type EmptyTopicPromptProps = {
-  onAddTopic: (name: string) => void
+  categoryId: string
 }
 
-export function EmptyTopicPrompt({ onAddTopic }: EmptyTopicPromptProps) {
+export function EmptyTopicPrompt({ categoryId }: EmptyTopicPromptProps) {
   return (
     <Empty className="border">
       <EmptyHeader>
@@ -27,7 +27,7 @@ export function EmptyTopicPrompt({ onAddTopic }: EmptyTopicPromptProps) {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <AddTopicPopover onSave={onAddTopic} />
+        <AddTopicPopover categoryId={categoryId} />
       </EmptyContent>
     </Empty>
   )

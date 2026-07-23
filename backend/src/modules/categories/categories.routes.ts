@@ -34,6 +34,16 @@ router.post('/', validate({ body: createCategorySchema }), async (req, res, next
     }
 });
 
+router.get('/:categoryId', validate({ params: categoryIdParamsSchema }), async (req, res, next) => {
+    try {
+        const { categoryId } = req.params as CategoryIdParams;
+        const category = await categoriesService.getCategory(req.user!, categoryId);
+        res.json(category);
+    } catch (error) {
+        next(error);
+    }
+});
+
 router.patch(
     '/:categoryId',
     validate({ params: categoryIdParamsSchema, body: updateCategorySchema }),

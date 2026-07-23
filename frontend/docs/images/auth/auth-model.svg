@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .box { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 10; }
+      .group { fill: #eef2ff; stroke: #818cf8; stroke-width: 1.5; rx: 14; }
+      .title { font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .label { font-size: 13px; fill: #334155; }
+      .small { font-size: 11px; fill: #64748b; }
+      .edge { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .edge-label { font-size: 11px; fill: #475569; }
+    </style>
+  </defs>
+
+  <rect class="group" x="30" y="30" width="300" height="260"/>
+  <text class="title" x="50" y="58">Browser</text>
+
+  <rect class="box" x="60" y="85" width="240" height="56"/>
+  <text class="label" x="80" y="118">React SPA</text>
+
+  <rect class="box" x="60" y="170" width="240" height="56"/>
+  <text class="label" x="80" y="198">httpOnly cookie</text>
+  <text class="small" x="80" y="216">remindme_token</text>
+
+  <rect class="group" x="490" y="30" width="300" height="260"/>
+  <text class="title" x="510" y="58">Backend</text>
+
+  <rect class="box" x="530" y="85" width="220" height="48"/>
+  <text class="label" x="550" y="115">Express API</text>
+
+  <rect class="box" x="530" y="155" width="220" height="48"/>
+  <text class="label" x="550" y="185">JWT sign / verify</text>
+
+  <rect class="box" x="530" y="225" width="220" height="48"/>
+  <text class="label" x="550" y="255">PostgreSQL</text>
+
+  <path class="edge" d="M300 113 H420 V113 H490"/>
+  <text class="edge-label" x="350" y="103">POST /auth/login</text>
+
+  <path class="edge" d="M490 140 H420 V198 H300"/>
+  <text class="edge-label" x="350" y="175">Set-Cookie</text>
+
+  <path class="edge" d="M300 198 H420 V113 H490"/>
+  <text class="edge-label" x="350" y="145">GET /auth/me + cookie</text>
+
+  <path class="edge" d="M640 133 V155"/>
+  <path class="edge" d="M640 203 V225"/>
+</svg>

@@ -12,6 +12,17 @@ function toCategoryDto(category: { id: string; name: string }, topicCount: numbe
     };
 }
 
+export async function getCategory(user: AuthUser, categoryId: string): Promise<Category> {
+    const { getCategoryForUser } = await import('../../lib/ownership.js');
+    const category = await getCategoryForUser(categoryId, user);
+
+    const topicCount = await prisma.topic.count({
+        where: { categoryId: category.id },
+    });
+
+    return toCategoryDto(category, topicCount);
+}
+
 export async function listCategories(user: AuthUser): Promise<Category[]> {
     const categories = await prisma.category.findMany({
         where: { userId: user.id },

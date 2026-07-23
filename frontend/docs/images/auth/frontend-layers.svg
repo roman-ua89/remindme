@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 520" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .layer { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; rx: 12; }
+      .ui { fill: #dbeafe; stroke: #60a5fa; }
+      .hooks { fill: #dcfce7; stroke: #4ade80; }
+      .transport { fill: #fef3c7; stroke: #fbbf24; }
+      .server { fill: #ede9fe; stroke: #a78bfa; }
+      .box { fill: white; stroke: #94a3b8; stroke-width: 1.2; rx: 8; }
+      .title { font-size: 14px; font-weight: 700; fill: #0f172a; }
+      .label { font-size: 12px; fill: #334155; }
+      .edge { stroke: #64748b; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="layer ui" x="40" y="30" width="620" height="90"/>
+  <text class="title" x="60" y="55">UI layer</text>
+  <rect class="box" x="70" y="68" width="120" height="36"/><text class="label" x="88" y="91">LoginPage</text>
+  <rect class="box" x="220" y="68" width="120" height="36"/><text class="label" x="245" y="91">AppHeader</text>
+  <rect class="box" x="370" y="68" width="150" height="36"/><text class="label" x="385" y="91">__root beforeLoad</text>
+
+  <rect class="layer hooks" x="40" y="150" width="620" height="110"/>
+  <text class="title" x="60" y="175">Hook layer (React Query)</text>
+  <rect class="box" x="70" y="188" width="100" height="36"/><text class="label" x="88" y="211">useLogin</text>
+  <rect class="box" x="190" y="188" width="100" height="36"/><text class="label" x="200" y="211">useLogout</text>
+  <rect class="box" x="310" y="188" width="130" height="36"/><text class="label" x="320" y="211">useCurrentUser</text>
+  <rect class="box" x="460" y="188" width="170" height="36"/><text class="label" x="470" y="211">currentUserQueryOptions</text>
+
+  <rect class="layer transport" x="40" y="290" width="620" height="90"/>
+  <text class="title" x="60" y="315">Transport layer</text>
+  <rect class="box" x="120" y="328" width="180" height="36"/><text class="label" x="135" y="351">features/auth/api.ts</text>
+  <rect class="box" x="360" y="328" width="160" height="36"/><text class="label" x="380" y="351">lib/api-client.ts</text>
+
+  <rect class="layer server" x="40" y="410" width="620" height="70"/>
+  <text class="title" x="60" y="435">Backend</text>
+  <rect class="box" x="250" y="448" width="200" height="36"/><text class="label" x="285" y="471">/api/v1/auth/*</text>
+
+  <path class="edge" d="M130 104 V150"/>
+  <path class="edge" d="M280 104 V150"/>
+  <path class="edge" d="M445 104 V150"/>
+  <path class="edge" d="M120 224 V290"/>
+  <path class="edge" d="M240 224 V290"/>
+  <path class="edge" d="M375 224 V290"/>
+  <path class="edge" d="M545 224 V290"/>
+  <path class="edge" d="M210 326 V380 H350 V410"/>
+  <path class="edge" d="M440 364 V410"/>
+</svg>

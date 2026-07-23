@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 360" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .box { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 10; }
+      .frontend { fill: #dbeafe; stroke: #60a5fa; }
+      .backend { fill: #dcfce7; stroke: #4ade80; }
+      .label { font-size: 12px; fill: #0f172a; font-weight: 600; text-anchor: middle; }
+      .step { font-size: 11px; fill: #334155; }
+      .arrow { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .return { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+
+  <text x="30" y="28" font-size="18" font-weight="700" fill="#0f172a">Session check (GET /auth/me)</text>
+  <text x="30" y="48" font-size="12" fill="#64748b">How the route guard knows if the user is logged in</text>
+
+  <rect class="box frontend" x="40" y="80" width="130" height="50"/><text class="label" x="105" y="110">__root guard</text>
+  <rect class="box frontend" x="210" y="80" width="130" height="50"/><text class="label" x="275" y="110">QueryClient</text>
+  <rect class="box frontend" x="380" y="80" width="130" height="50"/><text class="label" x="445" y="110">Axios client</text>
+  <rect class="box backend" x="550" y="80" width="130" height="50"/><text class="label" x="615" y="95">auth</text><text class="label" x="615" y="112">middleware</text>
+  <rect class="box backend" x="700" y="80" width="100" height="50"/><text class="label" x="750" y="110">Service</text>
+
+  <path class="arrow" d="M170 105 H210"/>
+  <text class="step" x="188" y="98">1. fetchQuery</text>
+
+  <path class="arrow" d="M340 105 H380"/>
+  <text class="step" x="352" y="98">2. GET /auth/me</text>
+
+  <path class="arrow" d="M510 105 H550"/>
+  <text class="step" x="520" y="98">3. cookie sent</text>
+
+  <path class="arrow" d="M680 105 H700"/>
+  <text class="step" x="686" y="98">4. verify</text>
+
+  <rect x="40" y="170" width="740" height="70" rx="10" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="60" y="195" font-size="12" font-weight="700" fill="#166534">Success path</text>
+  <text x="60" y="218" font-size="11" fill="#334155">JWT valid ’ load user profile ’ cache in React Query ’ isAuthenticated = true</text>
+
+  <rect x="40" y="260" width="740" height="70" rx="10" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="60" y="285" font-size="12" font-weight="700" fill="#991b1b">Failure path</text>
+  <text x="60" y="308" font-size="11" fill="#334155">No cookie or expired JWT ’ 401 ’ isAuthenticated = false ’ redirect to /auth/login (if on app route)</text>
+
+  <path class="return" d="M750 130 V150 H105 V170"/>
+</svg>

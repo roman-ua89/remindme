@@ -7,6 +7,7 @@ export const fieldErrorSchema = z.object({
 
 export const apiErrorSchema = z.object({
   message: z.string(),
+  messageKey: z.string().optional(),
   code: z.string().optional(),
   errors: z.array(fieldErrorSchema).optional(),
 })

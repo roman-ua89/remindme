@@ -9,8 +9,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { useCurrentUser } from '@/features/auth/queries/use-current-user'
+import { useLogout } from '@/features/auth/queries/use-logout'
 
 export function AppHeader() {
+  const { data: user } = useCurrentUser()
+  const { mutate: logout, isPending } = useLogout()
+
+  const menuLabel = user?.email ?? 'User menu'
+
   return (
     <header className="border-b border-border">
       <PageContainer className="flex h-14 items-center justify-between">
@@ -25,13 +32,18 @@ export function AppHeader() {
           <DropdownMenuTrigger
             render={
               <Button variant="ghost" size="sm">
-                User menu
+                {menuLabel}
                 <ChevronDownIcon />
               </Button>
             }
           />
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={isPending}
+              onClick={() => logout()}
+            >
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </PageContainer>

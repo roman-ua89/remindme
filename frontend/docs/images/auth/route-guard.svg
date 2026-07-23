@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 620" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .start { fill: #dbeafe; stroke: #3b82f6; stroke-width: 1.5; }
+      .process { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 10; }
+      .decision { fill: #fef9c3; stroke: #eab308; stroke-width: 1.5; }
+      .end { fill: #dcfce7; stroke: #22c55e; stroke-width: 1.5; rx: 10; }
+      .redirect { fill: #fee2e2; stroke: #ef4444; stroke-width: 1.5; rx: 10; }
+      .title { font-size: 18px; font-weight: 700; fill: #0f172a; }
+      .label { font-size: 12px; fill: #0f172a; text-anchor: middle; }
+      .small { font-size: 10px; fill: #475569; text-anchor: middle; }
+      .edge { stroke: #64748b; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <text class="title" x="30" y="30">Route guard  where does the user land?</text>
+  <text x="30" y="50" font-size="12" fill="#64748b">Runs on every navigation via __root beforeLoad</text>
+
+  <ellipse class="start" cx="380" cy="90" rx="120" ry="28"/>
+  <text class="label" x="380" y="95">User navigates to URL</text>
+
+  <rect class="process" x="280" y="140" width="200" height="44"/>
+  <text class="label" x="380" y="167">Call GET /auth/me</text>
+
+  <polygon class="decision" points="380,220 470,260 380,300 290,260"/>
+  <text class="label" x="380" y="258">Authenticated?</text>
+
+  <polygon class="decision" points="150,360 240,400 150,440 60,400"/>
+  <text class="label" x="150" y="395">On /auth</text>
+  <text class="small" x="150" y="410">route?</text>
+
+  <polygon class="decision" points="610,360 700,400 610,440 520,400"/>
+  <text class="label" x="610" y="395">On /auth</text>
+  <text class="small" x="610" y="410">route?</text>
+
+  <rect class="redirect" x="500" y="480" width="150" height="40"/>
+  <text class="label" x="575" y="505">Go to /auth/login</text>
+
+  <rect class="redirect" x="50" y="480" width="120" height="40"/>
+  <text class="label" x="110" y="505">Go to /</text>
+
+  <rect class="end" x="315" y="480" width="130" height="40"/>
+  <text class="label" x="380" y="505">Show page</text>
+
+  <path class="edge" d="M380 118 V140"/>
+  <path class="edge" d="M380 184 V220"/>
+  <text class="small" x="400" y="205">200 OK</text>
+  <path class="edge" d="M330 275 L150 340"/>
+  <text class="small" x="220" y="300">Yes</text>
+  <path class="edge" d="M430 275 L610 340"/>
+  <text class="small" x="540" y="300">No (401)</text>
+  <path class="edge" d="M150 440 V480"/>
+  <text class="small" x="165" y="465">Yes</text>
+  <path class="edge" d="M150 400 H250 V505 H170"/>
+  <text class="small" x="210" y="455">No</text>
+  <path class="edge" d="M610 440 V480"/>
+  <text class="small" x="625" y="465">No</text>
+  <path class="edge" d="M610 400 H430 V505 H445"/>
+  <text class="small" x="520" y="455">Yes</text>
+
+  <rect x="30" y="545" width="700" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="50" y="568" font-size="11" fill="#334155">Not logged in + app route (/, /player, &) ’ /auth/login</text>
+  <text x="50" y="588" font-size="11" fill="#334155">Logged in + auth route (/auth/login) ’ /</text>
+</svg>

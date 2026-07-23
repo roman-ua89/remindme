@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
+import { FieldError } from '@/components/shared/FieldError'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,22 +12,30 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { useCreateCategory } from '@/features/categories/queries/use-create-category'
+import { createCategoryFormSchema } from '@/features/categories/schemas'
+import type { CreateCategoryFormValues } from '@/features/categories/schemas'
 
-type AddCategoryPopoverProps = {
-  onSave: (name: string) => void
-}
-
-export function AddCategoryPopover({ onSave }: AddCategoryPopoverProps) {
+export function AddCategoryPopover() {
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
+  const { mutate: createCategory, isPending } = useCreateCategory()
 
-  function handleSave() {
-    const trimmedName = name.trim()
-    if (!trimmedName) return
+  const form = useForm<CreateCategoryFormValues>({
+    resolver: zodResolver(createCategoryFormSchema),
+    defaultValues: {
+      name: '',
+    },
+  })
 
-    onSave(trimmedName)
-    setName('')
-    setOpen(false)
+  const { control, handleSubmit, reset } = form
+
+  const onSubmit = (values: CreateCategoryFormValues) => {
+    createCategory(values, {
+      onSuccess: () => {
+        reset()
+        setOpen(false)
+      },
+    })
   }
 
   return (
@@ -38,23 +49,27 @@ export function AddCategoryPopover({ onSave }: AddCategoryPopoverProps) {
         }
       />
       <PopoverContent align="end" className="w-64">
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="category-name">Category name</Label>
-            <Input
-              id="category-name"
-              value={name}
-              placeholder="e.g. English"
-              onChange={(event) => setName(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleSave()
-              }}
-            />
-          </div>
-          <Button className="w-full" onClick={handleSave}>
-            Save
+        <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <div className="grid gap-2">
+                <Label htmlFor="category-name">Category name</Label>
+                <Input
+                  id="category-name"
+                  placeholder="e.g. English"
+                  aria-invalid={fieldState.invalid}
+                  {...field}
+                />
+                <FieldError message={fieldState.error?.message} />
+              </div>
+            )}
+          />
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? 'Saving…' : 'Save'}
           </Button>
-        </div>
+        </form>
       </PopoverContent>
     </Popover>
   )

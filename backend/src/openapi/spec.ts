@@ -38,6 +38,7 @@ export const openApiSpec = {
       post: { tags: ['categories'], summary: 'Create category' },
     },
     '/categories/{categoryId}': {
+      get: { tags: ['categories'], summary: 'Get category' },
       patch: { tags: ['categories'], summary: 'Update category' },
       delete: { tags: ['categories'], summary: 'Delete empty category' },
     },

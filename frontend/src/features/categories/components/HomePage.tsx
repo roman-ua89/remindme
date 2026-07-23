@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { AppHeader } from '@/components/layout/AppHeader'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -6,22 +6,13 @@ import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs'
 import { AddCategoryPopover } from '@/features/categories/components/AddCategoryPopover'
 import { CategoryList } from '@/features/categories/components/CategoryList'
 import { EmptyCategoryPrompt } from '@/features/categories/components/EmptyCategoryPrompt'
-import { DEMO_CATEGORIES } from '@/features/categories/demo-data'
+import { useCategories } from '@/features/categories/queries/use-categories'
 import type { Category } from '@/features/categories/types'
+import { queryKeys } from '@/lib/query-keys'
 
 export function HomePage() {
-  const [categories, setCategories] = useState<Category[]>(DEMO_CATEGORIES)
-
-  function handleAddCategory(name: string) {
-    setCategories((current) => [
-      ...current,
-      {
-        id: crypto.randomUUID(),
-        name,
-        topicCount: 0,
-      },
-    ])
-  }
+  const queryClient = useQueryClient()
+  const { data: categories = [], isLoading } = useCategories()
 
   function handleRenameCategory(id: string) {
     const category = categories.find((item) => item.id === id)
@@ -30,7 +21,7 @@ export function HomePage() {
     const nextName = window.prompt('Rename category', category.name)?.trim()
     if (!nextName) return
 
-    setCategories((current) =>
+    queryClient.setQueryData<Category[]>(queryKeys.categories.all, (current = []) =>
       current.map((item) =>
         item.id === id ? { ...item, name: nextName } : item,
       ),
@@ -38,7 +29,9 @@ export function HomePage() {
   }
 
   function handleDeleteCategory(id: string) {
-    setCategories((current) => current.filter((item) => item.id !== id))
+    queryClient.setQueryData<Category[]>(queryKeys.categories.all, (current = []) =>
+      current.filter((item) => item.id !== id),
+    )
   }
 
   const hasCategories = categories.length > 0
@@ -48,7 +41,11 @@ export function HomePage() {
       <AppHeader />
 
       <PageContainer className="py-8">
-        {hasCategories ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center gap-1 py-12 text-muted-foreground">
+            Loading categories…
+          </div>
+        ) : hasCategories ? (
           <div className="flex flex-col gap-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col gap-1">
@@ -57,7 +54,7 @@ export function HomePage() {
                 </h1>
                 <AppBreadcrumbs />
               </div>
-              <AddCategoryPopover onSave={handleAddCategory} />
+              <AddCategoryPopover />
             </div>
 
             <CategoryList
@@ -74,7 +71,7 @@ export function HomePage() {
               </h1>
               <AppBreadcrumbs />
             </div>
-            <EmptyCategoryPrompt onAddCategory={handleAddCategory} />
+            <EmptyCategoryPrompt />
           </div>
         )}
       </PageContainer>

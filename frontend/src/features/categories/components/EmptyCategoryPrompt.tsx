@@ -10,11 +10,7 @@ import {
 } from '@/components/ui/empty'
 import { AddCategoryPopover } from '@/features/categories/components/AddCategoryPopover'
 
-type EmptyCategoryPromptProps = {
-  onAddCategory: (name: string) => void
-}
-
-export function EmptyCategoryPrompt({ onAddCategory }: EmptyCategoryPromptProps) {
+export function EmptyCategoryPrompt() {
   return (
     <Empty className="border">
       <EmptyHeader>
@@ -27,7 +23,7 @@ export function EmptyCategoryPrompt({ onAddCategory }: EmptyCategoryPromptProps)
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <AddCategoryPopover onSave={onAddCategory} />
+        <AddCategoryPopover />
       </EmptyContent>
     </Empty>
   )

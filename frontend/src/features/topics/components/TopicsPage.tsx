@@ -4,20 +4,34 @@ import { useParams } from '@tanstack/react-router';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs';
+import { useCategory } from '@/features/categories/queries/use-category';
 import { AddTopicPopover } from '@/features/topics/components/AddTopicPopover';
 import { EmptyTopicPrompt } from '@/features/topics/components/EmptyTopicPrompt';
 import { TopicList } from '@/features/topics/components/TopicList';
-import { getCategoryById, getTopicsByCategoryId } from '@/features/topics/demo-data';
+import { useTopics } from '@/features/topics/queries/use-topics';
 import type { Topic } from '@/features/topics/types';
 
 export function TopicsPage() {
     const { categoryId } = useParams({ from: '/_app/categories/$categoryId/' });
-    const category = getCategoryById(categoryId);
+    const { data: category, isLoading: isCategoryLoading, isError: isCategoryError } = useCategory(categoryId);
+    const { data: fetchedTopics = [], isLoading: isTopicsLoading } = useTopics(categoryId);
+    const [localTopics, setLocalTopics] = useState<Topic[] | null>(null);
 
-    const categoryName = category?.name ?? '';
-    const [topics, setTopics] = useState<Topic[]>(() => getTopicsByCategoryId(categoryId));
+    const topics = localTopics ?? fetchedTopics;
+    const isLoading = isCategoryLoading || isTopicsLoading;
 
-    if (!category) {
+    if (isLoading) {
+        return (
+            <div className='min-h-screen bg-background'>
+                <AppHeader />
+                <PageContainer className='flex flex-col gap-4 py-8'>
+                    <p className='text-muted-foreground'>Loading topics…</p>
+                </PageContainer>
+            </div>
+        );
+    }
+
+    if (isCategoryError || !category) {
         return (
             <div className='min-h-screen bg-background'>
                 <AppHeader />
@@ -32,16 +46,8 @@ export function TopicsPage() {
         );
     }
 
-    function handleAddTopic(name: string) {
-        setTopics((current) => [
-            ...current,
-            {
-                id: crypto.randomUUID(),
-                name,
-                categoryId,
-                entityCount: 0,
-            },
-        ]);
+    function updateTopics(updater: (current: Topic[]) => Topic[]) {
+        setLocalTopics((current) => updater(current ?? fetchedTopics));
     }
 
     function handleRenameTopic(id: string) {
@@ -51,11 +57,11 @@ export function TopicsPage() {
         const nextName = window.prompt('Rename topic', topic.name)?.trim();
         if (!nextName) return;
 
-        setTopics((current) => current.map((item) => (item.id === id ? { ...item, name: nextName } : item)));
+        updateTopics((current) => current.map((item) => (item.id === id ? { ...item, name: nextName } : item)));
     }
 
     function handleDeleteTopic(id: string) {
-        setTopics((current) => current.filter((item) => item.id !== id));
+        updateTopics((current) => current.filter((item) => item.id !== id));
     }
 
     const hasTopics = topics.length > 0;
@@ -73,20 +79,20 @@ export function TopicsPage() {
                                     <div className='flex items-center gap-2'>
                                         <h1 className='font-heading text-2xl font-semibold tracking-tight'>Topics</h1>
                                     </div>
-                                    <AppBreadcrumbs category={{ id: categoryId, name: categoryName }} />
+                                    <AppBreadcrumbs category={{ id: categoryId, name: category.name }} />
                                 </div>
-                                <AddTopicPopover onSave={handleAddTopic} />
+                                <AddTopicPopover categoryId={categoryId} />
                             </div>
 
                             <TopicList topics={topics} onRename={handleRenameTopic} onDelete={handleDeleteTopic} />
                         </>
                     ) : (
                         <>
-                            <div className='flex flex-col items-center gap-1'>
-                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>{categoryName}</h1>
-                                <AppBreadcrumbs category={{ id: categoryId, name: categoryName }} />
+                            <div className='flex flex-col justify-between gap-1'>
+                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>{category.name}</h1>
+                                <AppBreadcrumbs category={{ id: categoryId, name: category.name }} />
                             </div>
-                            <EmptyTopicPrompt onAddTopic={handleAddTopic} />
+                            <EmptyTopicPrompt categoryId={categoryId} />
                         </>
                     )}
                 </div>

@@ -6,11 +6,13 @@ import {
   registerSchema,
   resetPasswordSchema,
 } from '@remindme/contracts/auth'
+import { MessageKey, messages } from '@remindme/contracts/messages'
 
 import { auth } from '../../middleware/auth.js'
 import { validate } from '../../middleware/validate.js'
 import { AUTH_COOKIE_NAME } from '../../lib/jwt.js'
 import { env } from '../../config/env.js'
+import { SESSION_MAX_AGE_MS } from '../../config/session.js'
 import * as authService from './auth.service.js'
 
 const router = Router()
@@ -19,7 +21,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: SESSION_MAX_AGE_MS,
   path: '/',
 }
 
@@ -49,7 +51,10 @@ router.post('/login', validate({ body: loginSchema }), async (req, res, next) =>
 
 router.post('/logout', (_req, res) => {
   res.clearCookie(AUTH_COOKIE_NAME, { path: '/' })
-  res.json({ message: 'Logged out' })
+  res.json({
+    message: messages[MessageKey.AUTH_LOGGED_OUT],
+    messageKey: MessageKey.AUTH_LOGGED_OUT,
+  })
 })
 
 router.get('/me', auth, async (req, res, next) => {

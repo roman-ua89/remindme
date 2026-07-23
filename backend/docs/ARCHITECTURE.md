@@ -6,6 +6,7 @@ A beginner-friendly guide to how the RemindMe backend is structured, how request
 
 **Related docs:**
 - [README](../README.md) — setup, env vars, npm scripts
+- [DATA-FLOWS.md](./DATA-FLOWS.md) — which DB columns change per API operation
 - [frontend/docs/ARCHITECTURE.md](../../frontend/docs/ARCHITECTURE.md) — frontend mirror of this pattern
 - [frontend/docs/DATABASE.md](../../frontend/docs/DATABASE.md) — database schema details
 
