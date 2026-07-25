@@ -24,7 +24,7 @@ import { useTopic } from '@/features/topics/queries/use-topic';
 type EntityConstructorPageProps = {
     categoryId: string;
     topicId: string;
-    entityId?: string;
+    entityId: string;
 };
 
 export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityConstructorPageProps) {
@@ -122,7 +122,10 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                     <div className='flex items-start justify-between gap-4'>
                         <div className='flex flex-col gap-1'>
                             <h1 className='font-heading text-2xl font-semibold tracking-tight'>{isEditMode ? 'Edit entity' : 'New entity'}</h1>
-                            <AppBreadcrumbs category={{ id: categoryId, name: category.name }} topic={{ id: topicId, name: topic.name }} />
+                            <AppBreadcrumbs
+                                category={{ id: categoryId, name: category.name }}
+                                topic={{ id: topicId, name: topic.name }}
+                                entity={{ id: entityId, name: entity?.title || '' }} />
                         </div>
 
                         <div className='flex items-center gap-2'>

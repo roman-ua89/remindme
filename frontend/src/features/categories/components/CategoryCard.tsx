@@ -41,7 +41,7 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
             <CardHeader>
                 <CardTitle>
                     <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1 hover:text-primary'>
-                        {category.name}
+                        {category.name} <span className="text-stone-300">Topics: {category.topicCount}</span>
                     </Link>
                 </CardTitle>
                 <CardAction>

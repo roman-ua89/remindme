@@ -44,7 +44,7 @@ export function TopicCard({ topic, onDelete }: TopicCardProps) {
             params={{ categoryId: topic.categoryId, topicId: topic.id }}
             className="block w-full py-1 hover:text-primary"
           >
-            {topic.name}
+            {topic.name} <span className="text-stone-300">Entities: {topic.entityCount}</span>
           </Link>
         </CardTitle>
         <CardAction>
