@@ -15,6 +15,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AppPlayerRouteImport } from './routes/_app/player'
+import { Route as AppFrontendRouteImport } from './routes/_app/frontend'
 import { Route as AppCategoriesCategoryIdIndexRouteImport } from './routes/_app/categories/$categoryId/index'
 import { Route as AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/index'
 import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/new'
@@ -49,6 +50,11 @@ const AppPlayerRoute = AppPlayerRouteImport.update({
   path: '/player',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppFrontendRoute = AppFrontendRouteImport.update({
+  id: '/frontend',
+  path: '/frontend',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppCategoriesCategoryIdIndexRoute =
   AppCategoriesCategoryIdIndexRouteImport.update({
     id: '/categories/$categoryId/',
@@ -77,6 +83,7 @@ const AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
+  '/frontend': typeof AppFrontendRoute
   '/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/': typeof AuthIndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
 }
 export interface FileRoutesByTo {
+  '/frontend': typeof AppFrontendRoute
   '/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof AppIndexRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/_app/frontend': typeof AppFrontendRoute
   '/_app/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
   '/_app/': typeof AppIndexRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/frontend'
     | '/player'
     | '/auth/login'
     | '/auth/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/categories/$categoryId/topics/$topicId/entities/new'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/frontend'
     | '/player'
     | '/auth/login'
     | '/'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app'
     | '/auth'
+    | '/_app/frontend'
     | '/_app/player'
     | '/auth/login'
     | '/_app/'
@@ -193,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPlayerRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/frontend': {
+      id: '/_app/frontend'
+      path: '/frontend'
+      fullPath: '/frontend'
+      preLoaderRoute: typeof AppFrontendRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/categories/$categoryId/': {
       id: '/_app/categories/$categoryId/'
       path: '/categories/$categoryId'
@@ -225,6 +244,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteRouteChildren {
+  AppFrontendRoute: typeof AppFrontendRoute
   AppPlayerRoute: typeof AppPlayerRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCategoriesCategoryIdIndexRoute: typeof AppCategoriesCategoryIdIndexRoute
@@ -234,6 +254,7 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppFrontendRoute: AppFrontendRoute,
   AppPlayerRoute: AppPlayerRoute,
   AppIndexRoute: AppIndexRoute,
   AppCategoriesCategoryIdIndexRoute: AppCategoriesCategoryIdIndexRoute,

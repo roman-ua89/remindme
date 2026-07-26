@@ -36,7 +36,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     const { data: topic, isLoading: isTopicLoading, isError: isTopicError } = useTopic(categoryId, topicId);
     const { mutate: createEntity, isPending: isCreating } = useCreateEntity(categoryId, topicId);
     const { data: entity, isLoading: isEntityLoading, isError: isEntityError } = useEntity(categoryId, topicId, entityId);
-    const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId ?? '');
+    const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId);
 
     const isEditMode = Boolean(entityId);
     const isLoading = isCategoryLoading || isTopicLoading || (isEditMode && isEntityLoading);
@@ -120,7 +120,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
             <PageContainer className='py-8'>
                 <form className='flex flex-col gap-6' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex items-start justify-between gap-4'>
-                        <div className='flex flex-col gap-1'>
+                        <div className='flex flex-col gap-1 mb-6'>
                             <h1 className='font-heading text-2xl font-semibold tracking-tight'>{isEditMode ? 'Edit entity' : 'New entity'}</h1>
                             <AppBreadcrumbs
                                 category={{ id: categoryId, name: category.name }}
