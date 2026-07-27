@@ -143,7 +143,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                             <Button onClick={returnBack} variant={"outline"}>
                                 Back
                             </Button>
-                            <Button type='submit' disabled={isSaving || !isFormDirty}>
+                            <Button type='submit' disabled={isSaving || !isFormDirty || !fields.length}>
                                 {isSaving ? 'Saving…' : 'Save'}
                             </Button>
                         </div>
