@@ -31,6 +31,6 @@ export const devPlanTasks: DevPlanTask[] = [
         label: 'Player page. Entity in the middle. Two buttons: Done and Skip. Prefetch next entity. Take items randomly among lower revised_count.',
         done: false,
     },
-    { id: 'entity-page-delete', label: 'Entity page: add delete button with confirmation modal.', done: false },
+    { id: 'entity-page-delete', label: 'Entity page: add delete button with confirmation modal.', done: true },
     // { id: '', label: '', done: false },
 ];

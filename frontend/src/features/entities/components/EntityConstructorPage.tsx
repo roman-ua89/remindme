@@ -7,7 +7,14 @@ import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { EntityContentPanel } from '@/features/entities/components/EntityContentPanel';
 import { EntityTemplatesPanel } from '@/features/entities/components/EntityTemplatesPanel';
 import { useCreateEntity } from '@/features/entities/queries/use-create-entity';
@@ -20,6 +27,9 @@ import { toEntityFormValues } from '@/features/entities/utils/to-form-values';
 import { toSaveEntityPayload } from '@/features/entities/utils/to-save-payload';
 import { useCategory } from '@/features/categories/queries/use-category';
 import { useTopic } from '@/features/topics/queries/use-topic';
+import { useDeleteEntity } from '#/features/entities/queries/use-delete-entity.ts';
+import { Spinner } from '#/components/ui/spinner.tsx';
+import { AlertDialog } from '#/components/ui/alert-dialog.tsx';
 
 type EntityConstructorPageProps = {
     categoryId: string;
@@ -31,12 +41,14 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     const navigate = useNavigate();
     const [hoveredTemplate, setHoveredTemplate] = useState<BlockType | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const { data: category, isLoading: isCategoryLoading, isError: isCategoryError } = useCategory(categoryId);
     const { data: topic, isLoading: isTopicLoading, isError: isTopicError } = useTopic(categoryId, topicId);
     const { mutate: createEntity, isPending: isCreating } = useCreateEntity(categoryId, topicId);
     const { data: entity, isLoading: isEntityLoading, isError: isEntityError } = useEntity(categoryId, topicId, entityId);
     const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId ?? '');
+    const { mutate: deleteEntity, isPending: isDeleting } = useDeleteEntity(categoryId, topicId);
 
     const isEditMode = Boolean(entityId);
     const isLoading = isCategoryLoading || isTopicLoading || (isEditMode && isEntityLoading);
@@ -50,7 +62,13 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
         },
     });
 
-    const { control, handleSubmit, reset, watch, formState: { isDirty: isFormDirty } } = form;
+    const {
+        control,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { isDirty: isFormDirty },
+    } = form;
     const { fields, append, remove, move } = useFieldArray({
         control,
         name: 'blocks',
@@ -115,20 +133,37 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
         createEntity(payload);
     };
 
+    const showDeleteConfirmation = () => {
+        if (isEditMode && entityId) {
+            setDeleteDialogOpen(true);
+        }
+    };
+
+    const handleDelete = () => {
+        if (isEditMode && entityId) {
+            deleteEntity({ entityId }, {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    navigateToTopic();
+                }
+            });
+        }
+    };
+
     const returnBack = () => {
         if (!isFormDirty) {
             navigateToTopic();
         } else {
             setCancelDialogOpen(true);
         }
-    }
+    };
 
     return (
         <div className='min-h-screen bg-background'>
             <AppHeader />
 
             <PageContainer className='py-8'>
-                <form className='flex flex-col gap-6' onSubmit={handleSubmit(onSubmit)}>
+                <form className='flex flex-col gap-6 mb-6' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex items-start justify-between gap-4'>
                         <div className='flex flex-col gap-1 mb-6'>
                             <h1 className='font-heading text-2xl font-semibold tracking-tight'>{isEditMode ? 'Edit entity' : 'New entity'}</h1>
@@ -140,7 +175,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button onClick={returnBack} variant={"outline"}>
+                            <Button onClick={returnBack} variant={'outline'}>
                                 Back
                             </Button>
                             <Button type='submit' disabled={isSaving || !isFormDirty || !fields.length}>
@@ -167,6 +202,11 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         />
                     </div>
                 </form>
+                {isEditMode && (
+                    <Button variant='destructive' onClick={showDeleteConfirmation}>
+                        Delete this entity
+                    </Button>
+                )}
             </PageContainer>
 
             <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
@@ -192,6 +232,31 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent showCloseButton={false}>
+                    <DialogHeader>
+                        <DialogTitle>Are you sure?</DialogTitle>
+                        <DialogDescription>This will permanently delete <b>"{watchTitle}"</b>. This action cannot be undone.</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button type='button' variant='outline' onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+                            Cancel
+                        </Button>
+                        <Button
+                            disabled={isDeleting}
+                            type='button'
+                            variant='destructive'
+                            onClick={() => {
+                                handleDelete();
+                            }}
+                        >
+                            {isDeleting && <Spinner />}
+                            Delete
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </AlertDialog>
         </div>
     );
 }
