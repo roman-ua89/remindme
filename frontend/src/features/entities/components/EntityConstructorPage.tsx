@@ -159,6 +159,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         />
 
                         <EntityTemplatesPanel
+                            blocks={fields}
                             entityId={entityId}
                             blockCount={fields.length}
                             onHoverTemplate={setHoveredTemplate}

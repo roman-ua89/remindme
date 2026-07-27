@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BlockEditorRouter } from '@/features/entities/components/BlockEditorRouter';
 import type { BlockType, EntityBlockForm, EntityConstructorFormValues } from '@/features/entities/types';
-import { MAX_ENTITY_BLOCKS } from '@/features/entities/types';
 import { cn } from '@/lib/utils';
 import { constants } from '#/lib/constants.ts';
 
@@ -66,7 +65,9 @@ export function EntityContentPanel({ control, blocks, hoveredTemplate, onRemoveB
     return (
         <div className='flex flex-col gap-4 flex-grow-1 '>
             <div className='grid gap-2'>
-                <Label htmlFor='entity-title'>Title <span className="text-stone-400">(max {constants.maxTitleSymbols} symbols)</span> *</Label>
+                <Label htmlFor='entity-title'>
+                    Title <span className='text-stone-400'>(max {constants.maxTitleSymbols} symbols)</span> *
+                </Label>
                 <Controller
                     control={control}
                     name='title'
@@ -108,10 +109,6 @@ export function EntityContentPanel({ control, blocks, hoveredTemplate, onRemoveB
             ) : null}
 
             {blocks.length === 0 && !hoveredTemplate ? <p className='text-sm text-muted-foreground'>No blocks yet</p> : null}
-
-            <p className='text-sm text-muted-foreground'>
-                Blocks ({blocks.length}/{MAX_ENTITY_BLOCKS})
-            </p>
         </div>
     );
 }

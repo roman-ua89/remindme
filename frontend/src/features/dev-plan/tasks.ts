@@ -16,7 +16,7 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: 'topics-pagination', label: 'Topics pagination', done: false },
     { id: 'entities-pagination', label: 'Entities pagination', done: false },
     { id: 'entity-blocks', label: 'Entity page: Show plus icon when hover on block', done: true },
-    { id: 'entity-blocks-counter', label: 'Entity page: move max blocks counter to the right', done: false },
+    { id: 'entity-blocks-counter', label: 'Entity page: move max blocks counter to the right', done: true },
     { id: 'favicon', label: 'Add favicon and other app icons', done: false },
     { id: 'new-entity-title', label: 'When creating new entity, update title in breadcrumbs dynamically', done: true },
     { id: 'min-1-block-in-entity', label: 'New entity must have at least one block', done: false },

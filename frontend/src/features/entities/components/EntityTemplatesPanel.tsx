@@ -1,7 +1,7 @@
 import { Code2, FileText, Image, List, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import type { BlockType } from '@/features/entities/types';
+import type { BlockType, EntityBlockForm } from '@/features/entities/types';
 import { MAX_ENTITY_BLOCKS } from '@/features/entities/types';
 import { cn } from '@/lib/utils';
 
@@ -17,13 +17,14 @@ const templates: Array<{
 ];
 
 type EntityTemplatesPanelProps = {
+    blocks: EntityBlockForm[];
     entityId?: string;
     blockCount: number;
     onHoverTemplate: (type: BlockType | null) => void;
     onInsertTemplate: (type: BlockType) => void;
 };
 
-export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemplate, entityId }: EntityTemplatesPanelProps) {
+export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemplate, entityId, blocks }: EntityTemplatesPanelProps) {
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
@@ -55,6 +56,12 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
                     Preview
                 </Button>
             )}
+
+
+
+            <p className='text-sm text-muted-foreground'>
+                Blocks ({blocks.length}/{MAX_ENTITY_BLOCKS})
+            </p>
         </div>
     );
 }
