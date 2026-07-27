@@ -149,7 +149,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         </div>
                     </div>
 
-                    <div className='grid gap-6 md:grid-cols-2'>
+                    <div className='flex gap-6'>
                         <EntityContentPanel
                             control={control}
                             blocks={fields}

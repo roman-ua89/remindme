@@ -64,7 +64,7 @@ export function EntityContentPanel({ control, blocks, hoveredTemplate, onRemoveB
     }
 
     return (
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 flex-grow-1 '>
             <div className='grid gap-2'>
                 <Label htmlFor='entity-title'>Title <span className="text-stone-400">(max {constants.maxTitleSymbols} symbols)</span> *</Label>
                 <Controller

@@ -1,4 +1,4 @@
-import { Code2, FileText, Image, List } from 'lucide-react';
+import { Code2, FileText, Image, List, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { BlockType } from '@/features/entities/types';
@@ -27,7 +27,7 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 flex-grow-0 basis-2xs'>
             <h2 className='text-sm font-medium'>Templates</h2>
             <div className='flex flex-col gap-2'>
                 {templates.map(({ type, label, icon: Icon }) => (
@@ -35,7 +35,7 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
                         key={type}
                         type='button'
                         variant='outline'
-                        className={cn('w-full justify-start')}
+                        className={cn('w-full justify-start group relative')}
                         disabled={isAtLimit}
                         onMouseEnter={() => onHoverTemplate(type)}
                         onMouseLeave={() => onHoverTemplate(null)}
@@ -45,6 +45,7 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
                     >
                         <Icon />
                         {label}
+                        <Plus className="opacity-0 group-hover:opacity-100 absolute right-[10px]" />
                     </Button>
                 ))}
             </div>
