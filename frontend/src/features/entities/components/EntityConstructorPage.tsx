@@ -116,7 +116,11 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     };
 
     const returnBack = () => {
-
+        if (!isFormDirty) {
+            navigateToTopic();
+        } else {
+            setCancelDialogOpen(true);
+        }
     }
 
     return (
