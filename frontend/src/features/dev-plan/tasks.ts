@@ -17,7 +17,8 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: 'entity-blocks', label: 'Entity page: Show plus icon when hover on block', done: false },
     { id: 'entity-blocks-counter', label: 'Entity page: move max blocks counter to the right', done: false },
     { id: 'favicon', label: 'Add favicon and other app icons', done: false },
-    { id: 'new-entity-title', label: 'When creating new entity, update title in breadcrumbs dynamically', done: false },
+    { id: 'new-entity-title', label: 'When creating new entity, update title in breadcrumbs dynamically', done: true },
+    { id: 'min-1-block-in-entity', label: 'New entity must have at least one block', done: false },
     { id: 'user-statistic-metrics', label: 'User metrics page: amount of cat/top/ent', done: false },
     {
         id: 'all-entities-remove',

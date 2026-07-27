@@ -9,6 +9,7 @@ const playerSearchSchema = z
         categoryId: z.string().optional(),
         topicId: z.string().optional(),
         entityId: z.string().optional(),
+        preview: z.string().optional(),
     })
     .refine(
         (search) => {
@@ -23,17 +24,6 @@ export const Route = createFileRoute('/_app/player')({
     component: PlayerRoute,
 });
 
-function PlayerRoute() {
-    const search = Route.useSearch();
-    const scope = toPlayerScope(search);
-
-    if (!scope) {
-        throw redirect({ to: '/' });
-    }
-
-    return <PlayerPage scope={scope} />;
-}
-
 function toPlayerScope(search: z.infer<typeof playerSearchSchema>): PlayerScope | null {
     if (search.categoryId) {
         return { type: 'category', categoryId: search.categoryId };
@@ -44,5 +34,19 @@ function toPlayerScope(search: z.infer<typeof playerSearchSchema>): PlayerScope 
     if (search.entityId) {
         return { type: 'entity', entityId: search.entityId };
     }
+    if (search.entityId && search.preview) {
+        return { type: 'entity', entityId: search.entityId, preview: true };
+    }
     return null;
+}
+
+function PlayerRoute() {
+    const search = Route.useSearch();
+    const scope = toPlayerScope(search);
+
+    if (!scope) {
+        throw redirect({ to: '/' });
+    }
+
+    return <PlayerPage scope={scope} />;
 }

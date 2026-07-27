@@ -24,7 +24,7 @@ import { useTopic } from '@/features/topics/queries/use-topic';
 type EntityConstructorPageProps = {
     categoryId: string;
     topicId: string;
-    entityId: string;
+    entityId?: string;
 };
 
 export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityConstructorPageProps) {
@@ -36,7 +36,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     const { data: topic, isLoading: isTopicLoading, isError: isTopicError } = useTopic(categoryId, topicId);
     const { mutate: createEntity, isPending: isCreating } = useCreateEntity(categoryId, topicId);
     const { data: entity, isLoading: isEntityLoading, isError: isEntityError } = useEntity(categoryId, topicId, entityId);
-    const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId);
+    const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId ?? '');
 
     const isEditMode = Boolean(entityId);
     const isLoading = isCategoryLoading || isTopicLoading || (isEditMode && isEntityLoading);
@@ -50,11 +50,13 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
         },
     });
 
-    const { control, handleSubmit, reset } = form;
+    const { control, handleSubmit, reset, watch } = form;
     const { fields, append, remove, move } = useFieldArray({
         control,
         name: 'blocks',
     });
+
+    const watchTitle = watch('title');
 
     useLayoutEffect(() => {
         if (entity) {
@@ -125,7 +127,8 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                             <AppBreadcrumbs
                                 category={{ id: categoryId, name: category.name }}
                                 topic={{ id: topicId, name: topic.name }}
-                                entity={{ id: entityId, name: entity?.title || '' }} />
+                                entity={{ id: entityId ?? '', name: watchTitle || entity?.title || '' }}
+                            />
                         </div>
 
                         <div className='flex items-center gap-2'>
@@ -145,6 +148,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         />
 
                         <EntityTemplatesPanel
+                            entityId={entityId}
                             blockCount={fields.length}
                             onHoverTemplate={setHoveredTemplate}
                             onInsertTemplate={handleInsertTemplate}
