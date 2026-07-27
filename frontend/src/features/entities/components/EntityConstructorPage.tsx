@@ -50,7 +50,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
         },
     });
 
-    const { control, handleSubmit, reset, watch } = form;
+    const { control, handleSubmit, reset, watch, formState: { isDirty: isFormDirty } } = form;
     const { fields, append, remove, move } = useFieldArray({
         control,
         name: 'blocks',
@@ -115,6 +115,10 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
         createEntity(payload);
     };
 
+    const returnBack = () => {
+
+    }
+
     return (
         <div className='min-h-screen bg-background'>
             <AppHeader />
@@ -132,7 +136,10 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button type='submit' disabled={isSaving}>
+                            <Button onClick={returnBack} variant={"outline"}>
+                                Back
+                            </Button>
+                            <Button type='submit' disabled={isSaving || !isFormDirty}>
                                 {isSaving ? 'Saving…' : 'Save'}
                             </Button>
                         </div>
