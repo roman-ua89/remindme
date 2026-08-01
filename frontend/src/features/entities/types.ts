@@ -14,6 +14,11 @@ export type ListBlockRow = {
   rightValue: string
 }
 
+export type ListBlockContentJson = {
+  showOneLineAtATime: boolean
+  blurRightSideByDefault: boolean
+}
+
 export type EntityBlockFormBase = {
   clientId: string
   blockType: BlockType
@@ -37,6 +42,7 @@ export type ImageBlockForm = EntityBlockFormBase & {
 
 export type ListBlockForm = EntityBlockFormBase & {
   blockType: 'list'
+  contentJson: ListBlockContentJson
   rows: ListBlockRow[]
 }
 
@@ -72,6 +78,7 @@ export type SaveEntityImageBlock = {
 export type SaveEntityListBlock = {
   blockType: 'list'
   position: number
+  contentJson: ListBlockContentJson
   rows: ListBlockRow[]
 }
 

@@ -18,7 +18,9 @@ export function BlockPreviewRouter({ block }: BlockPreviewRouterProps) {
 
       {block.blockType === 'image' ? <ImageBlockPreview previewUrl={block.previewUrl} /> : null}
 
-      {block.blockType === 'list' ? <ListBlockPreview rows={block.rows} /> : null}
+      {block.blockType === 'list' ? (
+        <ListBlockPreview rows={block.rows} contentJson={block.contentJson} />
+      ) : null}
     </BlockPreviewChrome>
   )
 }

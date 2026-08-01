@@ -16,6 +16,11 @@ export const listBlockRowSchema = z.object({
   rightValue: z.string(),
 })
 
+export const listBlockContentJsonSchema = z.object({
+  showOneLineAtATime: z.boolean(),
+  blurRightSideByDefault: z.boolean(),
+})
+
 const positionSchema = z.number().int().min(0).max(MAX_ENTITY_BLOCKS - 1)
 
 export const saveEntityBlockSchema = z.discriminatedUnion('blockType', [
@@ -37,6 +42,7 @@ export const saveEntityBlockSchema = z.discriminatedUnion('blockType', [
   z.object({
     blockType: z.literal('list'),
     position: positionSchema,
+    contentJson: listBlockContentJsonSchema,
     rows: z.array(listBlockRowSchema).min(1),
   }),
 ])
@@ -86,6 +92,7 @@ export const entityBlockResponseSchema = z.discriminatedUnion('blockType', [
     id: z.string().uuid(),
     blockType: z.literal('list'),
     position: positionSchema,
+    contentJson: listBlockContentJsonSchema,
     rows: z.array(
       listBlockRowSchema.extend({
         id: z.string().uuid(),
@@ -109,6 +116,7 @@ export const entityByIdParamsSchema = z.object({
   entityId: z.string().uuid(),
 })
 
+export type ListBlockContentJson = z.infer<typeof listBlockContentJsonSchema>
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
 export type SaveEntityBlock = z.infer<typeof saveEntityBlockSchema>

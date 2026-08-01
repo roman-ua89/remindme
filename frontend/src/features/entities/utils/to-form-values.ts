@@ -33,6 +33,7 @@ function toFormBlock(block: EntityBlockResponse): EntityBlockForm {
       return {
         clientId,
         blockType: 'list',
+        contentJson: block.contentJson,
         rows: block.rows.map(({ leftValue, rightValue }) => ({
           leftValue,
           rightValue,

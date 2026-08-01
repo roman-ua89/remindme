@@ -147,11 +147,20 @@ Each entity has its own ordered sequence of blocks. Types can be mixed and order
 | **Text** | Prose / notes | TipTap rich text editor (bold, italic, underline, headings, lists, tables) |
 | **Code** | Code snippet | `@uiw/react-codemirror` editor with language selector; MVP: **JavaScript** and **TypeScript** |
 | **Image** | Visual content | Custom upload container: centered file picker + drag-drop; preview after upload; remove to re-upload |
-| **List** | Key–value pairs | Rows with **left** and **right** columns; **+** adds a row within the block |
+| **List** | Key–value pairs | Rows with **left** and **right** columns; **+** adds a row within the block; optional checkboxes: **Show one line at a time**, **Blur right side by default** |
 
 Additional block types may be added in future versions; v1 supports the four types above.
 
 **List block:** The **+** button adds a row inside that List block (left/right values). It does not add a new top-level constructor block.
+
+**List block options** (checkboxes below **+ Add row**, each on its own line):
+
+| Option | Default | Behavior |
+|--------|---------|----------|
+| **Show one line at a time** | off | Preview and Player show one row at a time with Previous/Next navigation when multiple rows exist |
+| **Blur right side by default** | off | Right column text is blurred until the user clicks/taps to reveal (revision-style guess-then-check) |
+
+Both options compose: e.g. one visible row with a blurred right side.
 
 **Image block:** Empty state shows a drop zone with a centered **Choose image** button. Drag-and-drop onto the container triggers the same upload flow. Once uploaded, the image preview fills the container. A remove control clears the image and returns to the empty state so the user can upload again.
 

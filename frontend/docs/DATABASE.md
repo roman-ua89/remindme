@@ -254,7 +254,7 @@ Ordered content units for one entity. There is **no** separate constructor table
 | `text` | required | null | none |
 | `code` | required | null | none |
 | `image` | null | required | none |
-| `list` | null | null | `list_block_rows` |
+| `list` | options JSON (see §4) | null | `list_block_rows` |
 
 ---
 
@@ -336,7 +336,21 @@ Exact node schema follows the TipTap extension set configured in the app; treat 
 
 ### Image / List
 
-No `content_json`. Image uses `media_asset_id`. List uses `list_block_rows`.
+Image blocks use `media_asset_id` only (no `content_json`). List blocks use `list_block_rows` for row data and `content_json` for display options.
+
+### List (`block_type = list`)
+
+```json
+{
+  "showOneLineAtATime": false,
+  "blurRightSideByDefault": true
+}
+```
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `showOneLineAtATime` | yes | When `true`, preview/Player show one row at a time |
+| `blurRightSideByDefault` | yes | When `true`, right column is blurred until user reveals it |
 
 ---
 

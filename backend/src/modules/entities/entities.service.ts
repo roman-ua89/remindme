@@ -2,6 +2,7 @@ import type {
     Entity,
     EntityBlockResponse,
     EntityListItem,
+    ListBlockContentJson,
     SaveEntityInput,
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
@@ -47,6 +48,14 @@ function toEntityListItem(entity: {
     };
 }
 
+function toListBlockContentJson(contentJson: unknown): ListBlockContentJson {
+    const json = contentJson as Partial<ListBlockContentJson> | null | undefined;
+    return {
+        showOneLineAtATime: json?.showOneLineAtATime ?? false,
+        blurRightSideByDefault: json?.blurRightSideByDefault ?? false,
+    };
+}
+
 function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
     switch (block.blockType) {
         case 'text':
@@ -76,6 +85,7 @@ function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
                 id: block.id,
                 blockType: 'list',
                 position: block.position,
+                contentJson: toListBlockContentJson(block.contentJson),
                 rows: block.listRows.map((row) => ({
                     id: row.id,
                     position: row.position,
@@ -136,7 +146,7 @@ async function replaceBlocks(tx: Prisma.TransactionClient, entityId: string, blo
                 blockType: block.blockType as BlockType,
                 position: block.position,
                 contentJson:
-                    block.blockType === 'text' || block.blockType === 'code'
+                    block.blockType === 'text' || block.blockType === 'code' || block.blockType === 'list'
                         ? (block.contentJson as Prisma.InputJsonValue)
                         : undefined,
                 mediaAssetId: block.blockType === 'image' ? block.mediaAssetId : undefined,

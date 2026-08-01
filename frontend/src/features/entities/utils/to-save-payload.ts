@@ -25,6 +25,7 @@ function toSaveBlock(block: EntityBlockForm, position: number): SaveEntityBlock 
             return {
                 blockType: 'list',
                 position,
+                contentJson: block.contentJson,
                 rows: block.rows,
             };
     }

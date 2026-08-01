@@ -3,7 +3,9 @@ import type { Control, FieldPath } from 'react-hook-form'
 import { Controller, useFieldArray } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import type {
   EntityConstructorFormValues,
   ListBlockRow,
@@ -72,6 +74,36 @@ export function ListBlockEditor({ control, name }: ListBlockEditorProps) {
         <PlusIcon />
         Add row
       </Button>
+
+      <Controller
+        control={control}
+        name={`${name}.contentJson.showOneLineAtATime` as 'blocks.0.contentJson.showOneLineAtATime'}
+        render={({ field }) => (
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={`${name}-show-one-line`}
+              checked={field.value as boolean}
+              onCheckedChange={(checked) => field.onChange(checked === true)}
+            />
+            <Label htmlFor={`${name}-show-one-line`}>Show one line at a time</Label>
+          </div>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name={`${name}.contentJson.blurRightSideByDefault` as 'blocks.0.contentJson.blurRightSideByDefault'}
+        render={({ field }) => (
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={`${name}-blur-right`}
+              checked={field.value as boolean}
+              onCheckedChange={(checked) => field.onChange(checked === true)}
+            />
+            <Label htmlFor={`${name}-blur-right`}>Blur right side by default</Label>
+          </div>
+        )}
+      />
     </div>
   )
 }

@@ -14,6 +14,11 @@ const listBlockRowSchema = z.object({
   rightValue: z.string(),
 })
 
+const listBlockContentJsonSchema = z.object({
+  showOneLineAtATime: z.boolean(),
+  blurRightSideByDefault: z.boolean(),
+})
+
 const textBlockFormSchema = z.object({
   clientId: z.string(),
   blockType: z.literal('text'),
@@ -36,6 +41,7 @@ const imageBlockFormSchema = z.object({
 const listBlockFormSchema = z.object({
   clientId: z.string(),
   blockType: z.literal('list'),
+  contentJson: listBlockContentJsonSchema,
   rows: z.array(listBlockRowSchema).min(1, 'List must have at least one row'),
 })
 
@@ -76,6 +82,7 @@ export const saveEntitySchema = z.object({
         z.object({
           blockType: z.literal('list'),
           position: z.number().int().min(0).max(MAX_ENTITY_BLOCKS - 1),
+          contentJson: listBlockContentJsonSchema,
           rows: z.array(listBlockRowSchema).min(1),
         }),
       ]),
