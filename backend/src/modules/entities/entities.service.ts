@@ -12,7 +12,9 @@ import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/c
 import type { AuthUser } from '../../middleware/auth.js';
 import { getEntityByIdForUser, getEntityForUser, getTopicForUser } from '../../lib/ownership.js';
 import { badRequest } from '../../lib/errors.js';
+import { mediaUrl } from '../../lib/media-url.js';
 import { prisma } from '../../lib/prisma.js';
+import { deleteMediaAssetsIfUnreferenced } from '../media/media.service.js';
 
 type BlockWithRows = EntityBlock & {
     listRows: Array<{
@@ -23,10 +25,6 @@ type BlockWithRows = EntityBlock & {
     }>;
     mediaAsset: { id: string; storageKey: string } | null;
 };
-
-function mediaUrl(storageKey: string) {
-    return `/api/v1/media/files/${storageKey}`;
-}
 
 function toEntityListItem(entity: {
     id: string;
@@ -263,7 +261,16 @@ export async function deleteEntity(
     entityId: string,
 ): Promise<void> {
     await getEntityForUser(categoryId, topicId, entityId, user);
+
+    const imageBlocks = await prisma.entityBlock.findMany({
+        where: { entityId, mediaAssetId: { not: null } },
+        select: { mediaAssetId: true },
+    });
+    const mediaAssetIds = [...new Set(imageBlocks.map((block) => block.mediaAssetId!))];
+
     await prisma.entity.delete({ where: { id: entityId } });
+
+    await deleteMediaAssetsIfUnreferenced(mediaAssetIds);
 }
 
 export async function reviseEntity(
@@ -298,4 +305,4 @@ export async function skipEntity(
     return toEntityListItem(entity);
 }
 
-export { mediaUrl };
+export { mediaUrl } from '../../lib/media-url.js';

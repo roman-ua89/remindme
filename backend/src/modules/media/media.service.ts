@@ -8,7 +8,7 @@ import type { AuthUser } from '../../middleware/auth.js'
 import { badRequest } from '../../lib/errors.js'
 import { prisma } from '../../lib/prisma.js'
 import { env } from '../../config/env.js'
-import { mediaUrl } from '../entities/entities.service.js'
+import { mediaUrl } from '../../lib/media-url.js'
 
 const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -83,5 +83,34 @@ export async function getMediaFile(storageKey: string) {
   return {
     asset,
     filePath,
+  }
+}
+
+export async function deleteMediaAssetsIfUnreferenced(mediaAssetIds: string[]) {
+  if (mediaAssetIds.length === 0) {
+    return
+  }
+
+  for (const mediaAssetId of mediaAssetIds) {
+    const referenceCount = await prisma.entityBlock.count({
+      where: { mediaAssetId },
+    })
+
+    if (referenceCount > 0) {
+      continue
+    }
+
+    const asset = await prisma.mediaAsset.findUnique({
+      where: { id: mediaAssetId },
+    })
+
+    if (!asset) {
+      continue
+    }
+
+    const filePath = path.join(env.UPLOAD_DIR, asset.storageKey)
+    await fs.unlink(filePath).catch(() => undefined)
+
+    await prisma.mediaAsset.delete({ where: { id: mediaAssetId } })
   }
 }
