@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { PlayIcon } from 'lucide-react';
+import { PlayIcon, PlayOff } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { PlayerScope } from '@/features/player/types';
@@ -37,7 +37,7 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
                         navigate({ to: '/player', search: toPlayerSearch(scope) });
                     }}
                 >
-                    <PlayIcon />
+                    {disabled ? <PlayOff /> : <PlayIcon />}
                 </Button>
             </TooltipTrigger>
             <TooltipContent>
