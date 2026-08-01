@@ -17,6 +17,11 @@ export async function getEntity(categoryId: string, topicId: string, entityId: s
     return data;
 }
 
+export async function getEntityById(entityId: string): Promise<Entity> {
+    const { data } = await apiClient.get<Entity>(`/entities/${entityId}`);
+    return data;
+}
+
 export async function updateEntity(categoryId: string, topicId: string, entityId: string, payload: UpdateEntityInput): Promise<Entity> {
     const { data } = await apiClient.patch<Entity>(`/categories/${categoryId}/topics/${topicId}/entities/${entityId}`, payload);
     return data;

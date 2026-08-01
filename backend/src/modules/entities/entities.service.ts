@@ -9,7 +9,7 @@ import { MAX_ENTITY_BLOCKS } from '@remindme/contracts/entities';
 import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/client';
 
 import type { AuthUser } from '../../middleware/auth.js';
-import { getEntityForUser, getTopicForUser } from '../../lib/ownership.js';
+import { getEntityByIdForUser, getEntityForUser, getTopicForUser } from '../../lib/ownership.js';
 import { badRequest } from '../../lib/errors.js';
 import { prisma } from '../../lib/prisma.js';
 
@@ -174,6 +174,11 @@ export async function getEntity(
     entityId: string,
 ): Promise<Entity> {
     await getEntityForUser(categoryId, topicId, entityId, user);
+    return loadEntityWithBlocks(entityId);
+}
+
+export async function getEntityById(user: AuthUser, entityId: string): Promise<Entity> {
+    await getEntityByIdForUser(entityId, user);
     return loadEntityWithBlocks(entityId);
 }
 

@@ -105,6 +105,10 @@ export const entityIdParamsSchema = z.object({
   entityId: z.string().uuid(),
 })
 
+export const entityByIdParamsSchema = z.object({
+  entityId: z.string().uuid(),
+})
+
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
 export type SaveEntityBlock = z.infer<typeof saveEntityBlockSchema>
@@ -114,3 +118,4 @@ export type EntityListItem = z.infer<typeof entityListItemSchema>
 export type EntityBlockResponse = z.infer<typeof entityBlockResponseSchema>
 export type Entity = z.infer<typeof entitySchema>
 export type EntityIdParams = z.infer<typeof entityIdParamsSchema>
+export type EntityByIdParams = z.infer<typeof entityByIdParamsSchema>

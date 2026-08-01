@@ -60,6 +60,9 @@ export const openApiSpec = {
       patch: { tags: ['entities'], summary: 'Update entity with blocks' },
       delete: { tags: ['entities'], summary: 'Delete entity' },
     },
+    '/entities/{entityId}': {
+      get: { tags: ['entities'], summary: 'Get entity with blocks by entity ID only' },
+    },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/revise': {
       patch: { tags: ['entities'], summary: 'Mark entity as revised (Player Done)' },
     },

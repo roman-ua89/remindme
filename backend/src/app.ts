@@ -10,6 +10,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { categoriesRoutes } from './modules/categories/categories.routes.js';
+import { entitiesFlatRoutes } from './modules/entities/entities-flat.routes.js';
 import { entitiesRoutes } from './modules/entities/entities.routes.js';
 import { mediaRoutes } from './modules/media/media.routes.js';
 import { topicsRoutes } from './modules/topics/topics.routes.js';
@@ -51,6 +52,7 @@ export async function createApp() {
     api.use('/categories', categoriesRoutes);
     api.use('/categories/:categoryId/topics', topicsRoutes);
     api.use('/categories/:categoryId/topics/:topicId/entities', entitiesRoutes);
+    api.use('/entities', entitiesFlatRoutes);
     api.use('/media', mediaRoutes);
     api.use('/users', usersRoutes);
 
