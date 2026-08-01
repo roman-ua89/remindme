@@ -4,11 +4,14 @@ import type { Control, FieldPath } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 import type {
   EntityConstructorFormValues,
   ImageBlockForm,
 } from '@/features/entities/types'
+import { useUploadMedia } from '@/features/media/queries/use-upload-media'
+import { resolveMediaUrl } from '@/features/media/utils'
 
 type ImageBlockEditorProps = {
   control: Control<EntityConstructorFormValues>
@@ -37,18 +40,31 @@ type ImageBlockEditorInnerProps = {
 
 function ImageBlockEditorInner({ value, onChange }: ImageBlockEditorInnerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const uploadMedia = useUploadMedia()
 
-  function handleFile(file: File | undefined) {
-    if (!file || !file.type.startsWith('image/')) return
+  async function handleFile(file: File | undefined) {
+    if (!file || !file.type.startsWith('image/') || uploadMedia.isPending) {
+      return
+    }
 
-    const mediaAssetId = crypto.randomUUID()
-    const previewUrl = URL.createObjectURL(file)
-
-    onChange({ ...value, mediaAssetId, previewUrl })
+    try {
+      const asset = await uploadMedia.mutateAsync(file)
+      onChange({
+        ...value,
+        mediaAssetId: asset.id,
+        previewUrl: resolveMediaUrl(asset.url),
+      })
+    } catch {
+      // Error toast is handled by useUploadMedia
+    } finally {
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+    }
   }
 
   function handleRemove() {
-    if (value.previewUrl) {
+    if (value.previewUrl?.startsWith('blob:')) {
       URL.revokeObjectURL(value.previewUrl)
     }
 
@@ -58,6 +74,15 @@ function ImageBlockEditorInner({ value, onChange }: ImageBlockEditorInnerProps) 
   function handleDrop(event: React.DragEvent<HTMLDivElement>) {
     event.preventDefault()
     handleFile(event.dataTransfer.files[0])
+  }
+
+  if (uploadMedia.isPending) {
+    return (
+      <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-input bg-muted/20 px-4 py-8">
+        <Spinner className="size-8 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Uploading image…</p>
+      </div>
+    )
   }
 
   if (value.mediaAssetId && value.previewUrl) {

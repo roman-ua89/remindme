@@ -4,6 +4,7 @@ import type {
   EntityBlockForm,
   EntityConstructorFormValues,
 } from '@/features/entities/types'
+import { resolveMediaUrl } from '@/features/media/utils'
 
 function toFormBlock(block: EntityBlockResponse): EntityBlockForm {
   const clientId = crypto.randomUUID()
@@ -26,7 +27,7 @@ function toFormBlock(block: EntityBlockResponse): EntityBlockForm {
         clientId,
         blockType: 'image',
         mediaAssetId: block.mediaAssetId,
-        previewUrl: block.mediaUrl,
+        previewUrl: block.mediaUrl ? resolveMediaUrl(block.mediaUrl) : undefined,
       }
     case 'list':
       return {
