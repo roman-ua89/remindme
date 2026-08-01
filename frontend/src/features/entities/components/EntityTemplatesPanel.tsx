@@ -22,9 +22,10 @@ type EntityTemplatesPanelProps = {
     blockCount: number;
     onHoverTemplate: (type: BlockType | null) => void;
     onInsertTemplate: (type: BlockType) => void;
+    togglePreviewMode: () => void;
 };
 
-export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemplate, entityId, blocks }: EntityTemplatesPanelProps) {
+export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemplate, entityId, blocks, togglePreviewMode }: EntityTemplatesPanelProps) {
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
@@ -52,7 +53,7 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
             </div>
             {isAtLimit ? <p className='text-sm text-muted-foreground'>Maximum {MAX_ENTITY_BLOCKS} blocks reached</p> : null}
             {entityId && (
-                <Button variant='softBlue' onClick={() => {}}>
+                <Button variant='softBlue' onClick={togglePreviewMode}>
                     Preview
                 </Button>
             )}
