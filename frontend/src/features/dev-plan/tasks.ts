@@ -8,7 +8,7 @@ export type DevPlanTask = {
 export const devPlanTasks: DevPlanTask[] = [
     // { id: 'auth-registration', label: 'Registration page', done: false },
     // { id: 'auth-forgot-password', label: 'Forgot password flow', done: false },
-    { id: 'global-back', label: 'Show Back button on Topic and Entity page', done: false },
+    { id: 'global-back', label: 'Show Back button on Topic and Entity page', done: true },
     { id: 'amount-tree', label: 'Show amount of topics and entities on category card', done: false },
     { id: 'entity-preview', label: 'Preview mode for entity', done: true },
     { id: 'entity-close', label: 'Entity page: add back button', done: true },

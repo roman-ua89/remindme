@@ -1,154 +1,128 @@
-import { useEffect } from 'react'
-import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import { useEffect } from 'react';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 
-import { AppHeader } from '@/components/layout/AppHeader'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs'
-import { ListPagination } from '@/components/shared/ListPagination'
-import { useCategory } from '@/features/categories/queries/use-category'
-import { AddEntityButton } from '@/features/entities/components/AddEntityButton'
-import { EmptyEntityPrompt } from '@/features/entities/components/EmptyEntityPrompt'
-import { EntityList } from '@/features/entities/components/EntityList'
-import { useDeleteEntity } from '@/features/entities/queries/use-delete-entity'
-import { useEntities } from '@/features/entities/queries/use-entities'
-import { useTopic } from '@/features/topics/queries/use-topic'
+import { AppHeader } from '@/components/layout/AppHeader';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs';
+import { ListPagination } from '@/components/shared/ListPagination';
+import { useCategory } from '@/features/categories/queries/use-category';
+import { AddEntityButton } from '@/features/entities/components/AddEntityButton';
+import { EmptyEntityPrompt } from '@/features/entities/components/EmptyEntityPrompt';
+import { EntityList } from '@/features/entities/components/EntityList';
+import { useDeleteEntity } from '@/features/entities/queries/use-delete-entity';
+import { useEntities } from '@/features/entities/queries/use-entities';
+import { useTopic } from '@/features/topics/queries/use-topic';
+import { Button } from '#/components/ui/button.tsx';
+import { ChevronLeft } from 'lucide-react';
 
 export function EntitiesPage() {
-  const navigate = useNavigate({
-    from: '/categories/$categoryId/topics/$topicId/',
-  })
-  const { categoryId, topicId } = useParams({
-    from: '/_app/categories/$categoryId/topics/$topicId/',
-  })
-  const { page: pageParam } = useSearch({
-    from: '/_app/categories/$categoryId/topics/$topicId/',
-  })
-  const page = pageParam ?? 1
+    const navigate = useNavigate({
+        from: '/categories/$categoryId/topics/$topicId/',
+    });
+    const { categoryId, topicId } = useParams({
+        from: '/_app/categories/$categoryId/topics/$topicId/',
+    });
+    const { page: pageParam } = useSearch({
+        from: '/_app/categories/$categoryId/topics/$topicId/',
+    });
+    const page = pageParam ?? 1;
 
-  const {
-    data: category,
-    isLoading: isCategoryLoading,
-    isError: isCategoryError,
-  } = useCategory(categoryId)
-  const {
-    data: topic,
-    isLoading: isTopicLoading,
-    isError: isTopicError,
-  } = useTopic(categoryId, topicId)
-  const { data, isLoading: isEntitiesLoading } = useEntities(
-    categoryId,
-    topicId,
-    page,
-  )
-  const { mutate: deleteEntity } = useDeleteEntity(categoryId, topicId)
+    const { data: category, isLoading: isCategoryLoading, isError: isCategoryError } = useCategory(categoryId);
+    const { data: topic, isLoading: isTopicLoading, isError: isTopicError } = useTopic(categoryId, topicId);
+    const { data, isLoading: isEntitiesLoading } = useEntities(categoryId, topicId, page);
+    const { mutate: deleteEntity } = useDeleteEntity(categoryId, topicId);
 
-  const entities = data?.items ?? []
-  const totalItems = data?.totalItems ?? 0
-  const totalPages = data?.totalPages ?? 0
-  const isLoading = isCategoryLoading || isTopicLoading || isEntitiesLoading
+    const entities = data?.items ?? [];
+    const totalItems = data?.totalItems ?? 0;
+    const totalPages = data?.totalPages ?? 0;
+    const isLoading = isCategoryLoading || isTopicLoading || isEntitiesLoading;
 
-  useEffect(() => {
-    if (!data) {
-      return
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+        if (data.totalPages >= 1 && page > data.totalPages) {
+            void navigate({
+                search: (prev) => ({
+                    ...prev,
+                    page: data.totalPages === 1 ? undefined : data.totalPages,
+                }),
+                replace: true,
+            });
+        }
+    }, [data, navigate, page]);
+
+    function handleEditEntity(id: string) {
+        void navigate({
+            to: '/categories/$categoryId/topics/$topicId/entities/$entityId',
+            params: { categoryId, topicId, entityId: id },
+        });
     }
-    if (data.totalPages >= 1 && page > data.totalPages) {
-      void navigate({
-        search: (prev) => ({
-          ...prev,
-          page: data.totalPages === 1 ? undefined : data.totalPages,
-        }),
-        replace: true,
-      })
+
+    function handleRemoveEntity(id: string) {
+        deleteEntity({ entityId: id });
     }
-  }, [data, navigate, page])
 
-  function handleEditEntity(id: string) {
-    void navigate({
-      to: '/categories/$categoryId/topics/$topicId/entities/$entityId',
-      params: { categoryId, topicId, entityId: id },
-    })
-  }
+    function handlePageChange(nextPage: number) {
+        void navigate({
+            search: (prev) => ({
+                ...prev,
+                page: nextPage === 1 ? undefined : nextPage,
+            }),
+        });
+    }
 
-  function handleRemoveEntity(id: string) {
-    deleteEntity({ entityId: id })
-  }
+    const goBack = () => {
+        navigate({ to: '/categories/$categoryId', params: { categoryId } });
+    };
 
-  function handlePageChange(nextPage: number) {
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        page: nextPage === 1 ? undefined : nextPage,
-      }),
-    })
-  }
+    const hasEntities = totalItems > 0;
 
-  const hasEntities = totalItems > 0
+    return (
+        <div className='min-h-screen bg-background'>
+            <AppHeader />
 
-  return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
+            <PageContainer className='py-8'>
+                {isLoading ? (
+                    <div className='flex flex-col items-center gap-1 py-12 text-muted-foreground'>Loading entities…</div>
+                ) : isCategoryError || isTopicError || !category || !topic ? (
+                    <div className='flex flex-col gap-4'>
+                        <div className='flex flex-col gap-1'>
+                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>Topic not found</h1>
+                            <AppBreadcrumbs category={category ? { id: categoryId, name: category.name } : undefined} />
+                        </div>
+                        <p className='text-muted-foreground'>Topic not found.</p>
+                    </div>
+                ) : hasEntities ? (
+                    <div className='flex flex-col gap-6'>
+                        <div className='flex items-start justify-between gap-4'>
+                            <div className='flex flex-col gap-1'>
+                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>Entities</h1>
+                                <AppBreadcrumbs category={{ id: categoryId, name: category.name }} topic={{ id: topicId, name: topic.name }} />
+                            </div>
+                            <div className='flex gap-2'>
+                                <Button variant='outline' onClick={goBack}>
+                                    <ChevronLeft />
+                                    Back to Topics
+                                </Button>
+                                <AddEntityButton categoryId={categoryId} topicId={topicId} />
+                            </div>
+                        </div>
 
-      <PageContainer className="py-8">
-        {isLoading ? (
-          <div className="flex flex-col items-center gap-1 py-12 text-muted-foreground">
-            Loading entities…
-          </div>
-        ) : isCategoryError || isTopicError || !category || !topic ? (
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                Topic not found
-              </h1>
-              <AppBreadcrumbs
-                category={
-                  category ? { id: categoryId, name: category.name } : undefined
-                }
-              />
-            </div>
-            <p className="text-muted-foreground">Topic not found.</p>
-          </div>
-        ) : hasEntities ? (
-          <div className="flex flex-col gap-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                  Entities
-                </h1>
-                <AppBreadcrumbs
-                  category={{ id: categoryId, name: category.name }}
-                  topic={{ id: topicId, name: topic.name }}
-                />
-              </div>
-              <AddEntityButton categoryId={categoryId} topicId={topicId} />
-            </div>
+                        <EntityList entities={entities} onEdit={handleEditEntity} onRemove={handleRemoveEntity} />
 
-            <EntityList
-              entities={entities}
-              onEdit={handleEditEntity}
-              onRemove={handleRemoveEntity}
-            />
-
-            <ListPagination
-              page={page}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col justify-between gap-1">
-              <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                {topic.name}
-              </h1>
-              <AppBreadcrumbs
-                category={{ id: categoryId, name: category.name }}
-                topic={{ id: topicId, name: topic.name }}
-              />
-            </div>
-            <EmptyEntityPrompt categoryId={categoryId} topicId={topicId} />
-          </div>
-        )}
-      </PageContainer>
-    </div>
-  )
+                        <ListPagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+                    </div>
+                ) : (
+                    <div className='flex flex-col gap-6'>
+                        <div className='flex flex-col justify-between gap-1'>
+                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>{topic.name}</h1>
+                            <AppBreadcrumbs category={{ id: categoryId, name: category.name }} topic={{ id: topicId, name: topic.name }} />
+                        </div>
+                        <EmptyEntityPrompt categoryId={categoryId} topicId={topicId} />
+                    </div>
+                )}
+            </PageContainer>
+        </div>
+    );
 }
