@@ -24,7 +24,7 @@ import { useDeleteEntity } from '#/features/entities/queries/use-delete-entity.t
 import { Spinner } from '#/components/ui/spinner.tsx';
 import { AlertDialog } from '#/components/ui/alert-dialog.tsx';
 import { EntityPreview } from '#/features/entities/components/EntityPreview.tsx';
-import { ChevronLeft, Save } from 'lucide-react';
+import { ChevronLeft, Save, Trash2 } from 'lucide-react';
 
 type EntityConstructorPageProps = {
     categoryId: string;
@@ -212,7 +212,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                 </form>
                 {isEditMode && (
                     <Button variant='destructive' onClick={showDeleteConfirmation}>
-                        Delete this entity
+                        <Trash2 /> Delete this entity
                     </Button>
                 )}
             </PageContainer>

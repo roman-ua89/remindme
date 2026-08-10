@@ -4,6 +4,7 @@ import type { Editor } from '@tiptap/react';
 import type { Control, FieldPath } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import Highlight from '@tiptap/extension-highlight';
+import TextAlign from '@tiptap/extension-text-align';
 
 import type { EntityConstructorFormValues } from '@/features/entities/types';
 import { tiptapExtensions } from '@/lib/tiptap/extensions';
@@ -34,6 +35,12 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
                 isItalic: context.editor?.isActive('italic') ?? false,
                 isStrike: context.editor?.isActive('strike') ?? false,
                 isHighlight: context.editor?.isActive('highlight') ?? false,
+                isAlignLeft: context.editor?.isActive({ textAlign: 'left' }) ?? false,
+                isAlignCenter: context.editor?.isActive({ textAlign: 'center' }) ?? false,
+                isParagraph: context.editor?.isActive('paragraph') ?? false,
+                isHeading1: context.editor?.isActive('heading', { level: 1 }) ?? false,
+                isHeading2: context.editor?.isActive('heading', { level: 2 }) ?? false,
+                isHeading3: context.editor?.isActive('heading', { level: 3 }) ?? false,
             };
         },
     });
@@ -69,12 +76,60 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
                 Strike
             </Button>
             <Button
-                type='button'
                 variant={editorState?.isHighlight ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
                 size='sm'
                 onClick={() => editor.chain().focus().toggleHighlight().run()}
             >
                 Highlight
+            </Button>
+            <Button
+                variant={editorState?.isAlignLeft ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            >
+                Left
+            </Button>
+            <Button
+                variant={editorState?.isAlignCenter ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            >
+                Center
+            </Button>
+            <Button
+                variant={editorState?.isHeading1 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            >
+                H1
+            </Button>
+            <Button
+                variant={editorState?.isHeading2 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            >
+                H2
+            </Button>
+            <Button
+                variant={editorState?.isHeading3 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            >
+                H3
+            </Button>
+            <Button
+                variant={editorState?.isParagraph ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                type='button'
+                size='sm'
+                onClick={() => editor.chain().focus().setParagraph().run()}
+            >
+                Paragraph
             </Button>
         </div>
     );
@@ -82,7 +137,14 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 
 function TextBlockEditorInner({ value, onChange }: TextBlockEditorInnerProps) {
     const editor = useEditor({
-        extensions: [...tiptapExtensions, Highlight],
+        extensions: [
+            ...tiptapExtensions,
+            Highlight,
+            TextAlign,
+            TextAlign.configure({
+                types: ['paragraph', 'heading'],
+            }),
+        ],
         content: value ?? {
             type: 'doc',
             content: [{ type: 'paragraph' }],
