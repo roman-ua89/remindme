@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { categoryIdParamsSchema } from './categories.js'
+import { paginatedResponseSchema } from './common/pagination.js'
 
 export const topicSchema = z.object({
   id: z.string().uuid(),
@@ -21,7 +22,10 @@ export const topicIdParamsSchema = categoryIdParamsSchema.extend({
   topicId: z.string().uuid(),
 })
 
+export const topicListPageSchema = paginatedResponseSchema(topicSchema)
+
 export type Topic = z.infer<typeof topicSchema>
 export type CreateTopicInput = z.infer<typeof createTopicSchema>
 export type UpdateTopicInput = z.infer<typeof updateTopicSchema>
 export type TopicIdParams = z.infer<typeof topicIdParamsSchema>
+export type TopicListPage = z.infer<typeof topicListPageSchema>

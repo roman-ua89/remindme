@@ -6,6 +6,10 @@ import {
     updateCategorySchema,
     type CategoryIdParams,
 } from '@remindme/contracts/categories';
+import {
+    paginationQuerySchema,
+    type PaginationQuery,
+} from '@remindme/contracts/common/pagination';
 
 import { auth } from '../../middleware/auth.js';
 import { requirePermission } from '../../middleware/require-permission.js';
@@ -16,9 +20,10 @@ const router = Router();
 
 router.use(auth, requirePermission('content:manage_own'));
 
-router.get('/', async (req, res, next) => {
+router.get('/', validate({ query: paginationQuerySchema }), async (req, res, next) => {
     try {
-        const categories = await categoriesService.listCategories(req.user!);
+        const pagination = req.query as unknown as PaginationQuery;
+        const categories = await categoriesService.listCategories(req.user!, pagination);
         res.json(categories);
     } catch (error) {
         next(error);

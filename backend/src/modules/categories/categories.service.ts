@@ -1,8 +1,15 @@
 import type { AuthUser } from '../../middleware/auth.js';
-import type { Category, CreateCategoryInput, UpdateCategoryInput } from '@remindme/contracts/categories';
+import type {
+    Category,
+    CategoryListPage,
+    CreateCategoryInput,
+    UpdateCategoryInput,
+} from '@remindme/contracts/categories';
+import type { PaginationQuery } from '@remindme/contracts/common/pagination';
 
-import { prisma } from '../../lib/prisma.js';
 import { conflict } from '../../lib/errors.js';
+import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
+import { prisma } from '../../lib/prisma.js';
 
 function toCategoryDto(category: { id: string; name: string }, topicCount: number): Category {
     return {
@@ -23,16 +30,26 @@ export async function getCategory(user: AuthUser, categoryId: string): Promise<C
     return toCategoryDto(category, topicCount);
 }
 
-export async function listCategories(user: AuthUser): Promise<Category[]> {
-    const categories = await prisma.category.findMany({
-        where: { userId: user.id },
-        orderBy: { position: 'asc' },
-        include: {
-            _count: { select: { topics: true } },
-        },
-    });
+export async function listCategories(user: AuthUser, pagination: PaginationQuery): Promise<CategoryListPage> {
+    const where = { userId: user.id };
+    const [totalItems, categories] = await Promise.all([
+        prisma.category.count({ where }),
+        prisma.category.findMany({
+            where,
+            orderBy: { position: 'asc' },
+            skip: getPaginationSkip(pagination),
+            take: pagination.pageSize,
+            include: {
+                _count: { select: { topics: true } },
+            },
+        }),
+    ]);
 
-    return categories.map((category) => toCategoryDto(category, category._count.topics));
+    return toPaginatedResponse(
+        categories.map((category) => toCategoryDto(category, category._count.topics)),
+        totalItems,
+        pagination,
+    );
 }
 
 export async function createCategory(user: AuthUser, input: CreateCategoryInput): Promise<Category> {

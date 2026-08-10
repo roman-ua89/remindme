@@ -1,1 +1,5 @@
-export type { Topic, CreateTopicInput } from '@remindme/contracts/topics'
+export type {
+  Topic,
+  TopicListPage,
+  CreateTopicInput,
+} from '@remindme/contracts/topics'

@@ -1,6 +1,10 @@
+import { useEffect } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+
 import { AppHeader } from '@/components/layout/AppHeader'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs'
+import { ListPagination } from '@/components/shared/ListPagination'
 import { AddCategoryPopover } from '@/features/categories/components/AddCategoryPopover'
 import { CategoryList } from '@/features/categories/components/CategoryList'
 import { EmptyCategoryPrompt } from '@/features/categories/components/EmptyCategoryPrompt'
@@ -8,14 +12,42 @@ import { useCategories } from '@/features/categories/queries/use-categories'
 import { useDeleteCategory } from '@/features/categories/queries/use-delete-category'
 
 export function HomePage() {
-  const { data: categories = [], isLoading } = useCategories()
+  const navigate = useNavigate({ from: '/' })
+  const { page: pageParam } = useSearch({ from: '/_app/' })
+  const page = pageParam ?? 1
+  const { data, isLoading } = useCategories(page)
   const { mutate: deleteCategory } = useDeleteCategory()
+
+  const categories = data?.items ?? []
+  const totalItems = data?.totalItems ?? 0
+  const totalPages = data?.totalPages ?? 0
+
+  useEffect(() => {
+    if (!data) {
+      return
+    }
+    if (data.totalPages >= 1 && page > data.totalPages) {
+      void navigate({
+        search: (prev) => ({ ...prev, page: data.totalPages }),
+        replace: true,
+      })
+    }
+  }, [data, navigate, page])
 
   function handleDeleteCategory(id: string) {
     deleteCategory(id)
   }
 
-  const hasCategories = categories.length > 0
+  function handlePageChange(nextPage: number) {
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        page: nextPage === 1 ? undefined : nextPage,
+      }),
+    })
+  }
+
+  const hasCategories = totalItems > 0
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,6 +73,12 @@ export function HomePage() {
             <CategoryList
               categories={categories}
               onDelete={handleDeleteCategory}
+            />
+
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
           </div>
         ) : (

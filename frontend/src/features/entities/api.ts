@@ -1,9 +1,22 @@
-import type { Entity, EntityListItem, SaveEntityInput, UpdateEntityInput } from '@remindme/contracts/entities';
+import type { PaginationQuery } from '@remindme/contracts/common/pagination';
+import type {
+    Entity,
+    EntityListPage,
+    SaveEntityInput,
+    UpdateEntityInput,
+} from '@remindme/contracts/entities';
 
 import { apiClient } from '@/lib/api-client';
 
-export async function getEntities(categoryId: string, topicId: string): Promise<EntityListItem[]> {
-    const { data } = await apiClient.get<EntityListItem[]>(`/categories/${categoryId}/topics/${topicId}/entities`);
+export async function getEntities(
+    categoryId: string,
+    topicId: string,
+    pagination: PaginationQuery,
+): Promise<EntityListPage> {
+    const { data } = await apiClient.get<EntityListPage>(
+        `/categories/${categoryId}/topics/${topicId}/entities`,
+        { params: pagination },
+    );
     return data;
 }
 

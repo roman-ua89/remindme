@@ -2,17 +2,20 @@ import type {
     Entity,
     EntityBlockResponse,
     EntityListItem,
+    EntityListPage,
     ListBlockContentJson,
     SaveEntityInput,
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
 import { MAX_ENTITY_BLOCKS } from '@remindme/contracts/entities';
+import type { PaginationQuery } from '@remindme/contracts/common/pagination';
 import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/client';
 
 import type { AuthUser } from '../../middleware/auth.js';
 import { getEntityByIdForUser, getEntityForUser, getTopicForUser } from '../../lib/ownership.js';
 import { badRequest } from '../../lib/errors.js';
 import { mediaUrl } from '../../lib/media-url.js';
+import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
 import { prisma } from '../../lib/prisma.js';
 import { deleteMediaAssetsIfUnreferenced } from '../media/media.service.js';
 
@@ -164,15 +167,26 @@ async function replaceBlocks(tx: Prisma.TransactionClient, entityId: string, blo
     }
 }
 
-export async function listEntities(user: AuthUser, categoryId: string, topicId: string): Promise<EntityListItem[]> {
+export async function listEntities(
+    user: AuthUser,
+    categoryId: string,
+    topicId: string,
+    pagination: PaginationQuery,
+): Promise<EntityListPage> {
     await getTopicForUser(categoryId, topicId, user);
 
-    const entities = await prisma.entity.findMany({
-        where: { topicId },
-        orderBy: { position: 'asc' },
-    });
+    const where = { topicId };
+    const [totalItems, entities] = await Promise.all([
+        prisma.entity.count({ where }),
+        prisma.entity.findMany({
+            where,
+            orderBy: { position: 'asc' },
+            skip: getPaginationSkip(pagination),
+            take: pagination.pageSize,
+        }),
+    ]);
 
-    return entities.map(toEntityListItem);
+    return toPaginatedResponse(entities.map(toEntityListItem), totalItems, pagination);
 }
 
 export async function getEntity(

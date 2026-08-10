@@ -1,1 +1,5 @@
-export type { Category, CreateCategoryInput } from '@remindme/contracts/categories'
+export type {
+  Category,
+  CategoryListPage,
+  CreateCategoryInput,
+} from '@remindme/contracts/categories'

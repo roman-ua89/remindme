@@ -1,12 +1,15 @@
 import type { AuthUser } from '../../middleware/auth.js'
+import type { PaginationQuery } from '@remindme/contracts/common/pagination'
 import type {
   CreateTopicInput,
   Topic,
+  TopicListPage,
   UpdateTopicInput,
 } from '@remindme/contracts/topics'
 
-import { getCategoryForUser } from '../../lib/ownership.js'
 import { conflict } from '../../lib/errors.js'
+import { getCategoryForUser } from '../../lib/ownership.js'
+import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js'
 import { prisma } from '../../lib/prisma.js'
 
 function toTopicDto(
@@ -24,18 +27,29 @@ function toTopicDto(
 export async function listTopics(
   user: AuthUser,
   categoryId: string,
-): Promise<Topic[]> {
+  pagination: PaginationQuery,
+): Promise<TopicListPage> {
   await getCategoryForUser(categoryId, user)
 
-  const topics = await prisma.topic.findMany({
-    where: { categoryId },
-    orderBy: { position: 'asc' },
-    include: {
-      _count: { select: { entities: true } },
-    },
-  })
+  const where = { categoryId }
+  const [totalItems, topics] = await Promise.all([
+    prisma.topic.count({ where }),
+    prisma.topic.findMany({
+      where,
+      orderBy: { position: 'asc' },
+      skip: getPaginationSkip(pagination),
+      take: pagination.pageSize,
+      include: {
+        _count: { select: { entities: true } },
+      },
+    }),
+  ])
 
-  return topics.map((topic) => toTopicDto(topic, topic._count.entities))
+  return toPaginatedResponse(
+    topics.map((topic) => toTopicDto(topic, topic._count.entities)),
+    totalItems,
+    pagination,
+  )
 }
 
 export async function getTopic(

@@ -7,6 +7,10 @@ import {
   type EntityIdParams,
 } from '@remindme/contracts/entities'
 import { topicIdParamsSchema, type TopicIdParams } from '@remindme/contracts/topics'
+import {
+  paginationQuerySchema,
+  type PaginationQuery,
+} from '@remindme/contracts/common/pagination'
 
 import { auth } from '../../middleware/auth.js'
 import { requirePermission } from '../../middleware/require-permission.js'
@@ -19,14 +23,16 @@ router.use(auth, requirePermission('content:manage_own'))
 
 router.get(
   '/',
-  validate({ params: topicIdParamsSchema }),
+  validate({ params: topicIdParamsSchema, query: paginationQuerySchema }),
   async (req, res, next) => {
     try {
       const { categoryId, topicId } = req.params as TopicIdParams
+      const pagination = req.query as unknown as PaginationQuery
       const entities = await entitiesService.listEntities(
         req.user!,
         categoryId,
         topicId,
+        pagination,
       )
       res.json(entities)
     } catch (error) {

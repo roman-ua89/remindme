@@ -9,6 +9,19 @@ type ValidationSchemas = {
   query?: ZodType
 }
 
+/**
+ * Express 5 exposes `req.query` as a getter-only property, so direct
+ * assignment throws. Replace it with a data property for this request.
+ */
+function setRequestQuery(req: Request, value: unknown) {
+  Object.defineProperty(req, 'query', {
+    value,
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  })
+}
+
 export function validate(schemas: ValidationSchemas) {
   return (req: Request, _res: Response, next: NextFunction) => {
     const fieldErrors: Array<{ field: string; message: string }> = []
@@ -51,7 +64,7 @@ export function validate(schemas: ValidationSchemas) {
           })
         }
       } else {
-        req.query = result.data as Request['query']
+        setRequestQuery(req, result.data)
       }
     }
 

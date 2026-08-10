@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { paginatedResponseSchema } from './common/pagination.js'
+
 export const MAX_ENTITY_BLOCKS = 20
 
 export const blockTypeSchema = z.enum(['text', 'code', 'image', 'list'])
@@ -116,6 +118,8 @@ export const entityByIdParamsSchema = z.object({
   entityId: z.string().uuid(),
 })
 
+export const entityListPageSchema = paginatedResponseSchema(entityListItemSchema)
+
 export type ListBlockContentJson = z.infer<typeof listBlockContentJsonSchema>
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
@@ -127,3 +131,4 @@ export type EntityBlockResponse = z.infer<typeof entityBlockResponseSchema>
 export type Entity = z.infer<typeof entitySchema>
 export type EntityIdParams = z.infer<typeof entityIdParamsSchema>
 export type EntityByIdParams = z.infer<typeof entityByIdParamsSchema>
+export type EntityListPage = z.infer<typeof entityListPageSchema>

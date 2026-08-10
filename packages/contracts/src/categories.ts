@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { paginatedResponseSchema } from './common/pagination.js'
+
 export const categorySchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -18,7 +20,10 @@ export const categoryIdParamsSchema = z.object({
   categoryId: z.string().uuid(),
 })
 
+export const categoryListPageSchema = paginatedResponseSchema(categorySchema)
+
 export type Category = z.infer<typeof categorySchema>
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
 export type CategoryIdParams = z.infer<typeof categoryIdParamsSchema>
+export type CategoryListPage = z.infer<typeof categoryListPageSchema>

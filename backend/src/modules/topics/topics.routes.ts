@@ -10,6 +10,10 @@ import {
   categoryIdParamsSchema,
   type CategoryIdParams,
 } from '@remindme/contracts/categories'
+import {
+  paginationQuerySchema,
+  type PaginationQuery,
+} from '@remindme/contracts/common/pagination'
 
 import { auth } from '../../middleware/auth.js'
 import { requirePermission } from '../../middleware/require-permission.js'
@@ -22,11 +26,16 @@ router.use(auth, requirePermission('content:manage_own'))
 
 router.get(
   '/',
-  validate({ params: categoryIdParamsSchema }),
+  validate({ params: categoryIdParamsSchema, query: paginationQuerySchema }),
   async (req, res, next) => {
     try {
       const { categoryId } = req.params as CategoryIdParams
-      const topics = await topicsService.listTopics(req.user!, categoryId)
+      const pagination = req.query as unknown as PaginationQuery
+      const topics = await topicsService.listTopics(
+        req.user!,
+        categoryId,
+        pagination,
+      )
       res.json(topics)
     } catch (error) {
       next(error)

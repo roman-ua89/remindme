@@ -1,9 +1,21 @@
-import type { CreateTopicInput, Topic, UpdateTopicInput } from '@remindme/contracts/topics'
+import type { PaginationQuery } from '@remindme/contracts/common/pagination'
+import type {
+  CreateTopicInput,
+  Topic,
+  TopicListPage,
+  UpdateTopicInput,
+} from '@remindme/contracts/topics'
 
 import { apiClient } from '@/lib/api-client'
 
-export async function getTopics(categoryId: string): Promise<Topic[]> {
-  const { data } = await apiClient.get<Topic[]>(`/categories/${categoryId}/topics`)
+export async function getTopics(
+  categoryId: string,
+  pagination: PaginationQuery,
+): Promise<TopicListPage> {
+  const { data } = await apiClient.get<TopicListPage>(
+    `/categories/${categoryId}/topics`,
+    { params: pagination },
+  )
   return data
 }
 
