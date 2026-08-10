@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
+import type { Editor } from '@tiptap/react';
 import type { Control, FieldPath } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import Highlight from '@tiptap/extension-highlight';
 
 import type { EntityConstructorFormValues } from '@/features/entities/types';
 import { tiptapExtensions } from '@/lib/tiptap/extensions';
+import { Button } from '#/components/ui/button.tsx';
 
 type TextBlockEditorProps = {
     control: Control<EntityConstructorFormValues>;
@@ -22,10 +25,65 @@ type TextBlockEditorInnerProps = {
     onChange: (value: Record<string, unknown>) => void;
 };
 
+const MenuBar = ({ editor }: { editor: Editor | null }) => {
+    const editorState = useEditorState({
+        editor,
+        selector: (context) => {
+            return {
+                isBold: context.editor?.isActive('bold') ?? false,
+                isItalic: context.editor?.isActive('italic') ?? false,
+                isStrike: context.editor?.isActive('strike') ?? false,
+                isHighlight: context.editor?.isActive('highlight') ?? false,
+            };
+        },
+    });
+
+    if (!editor) {
+        return null;
+    }
+
+    return (
+        <div className='flex gap-2 mb-3'>
+            <Button
+                type='button'
+                variant={editorState?.isBold ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                size='sm'
+                onClick={() => editor.chain().focus().toggleBold().run()}
+            >
+                Bold
+            </Button>
+            <Button
+                type='button'
+                variant={editorState?.isItalic ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                size='sm'
+                onClick={() => editor.chain().focus().toggleItalic().run()}
+            >
+                Italic
+            </Button>
+            <Button
+                type='button'
+                variant={editorState?.isStrike ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                size='sm'
+                onClick={() => editor.chain().focus().toggleStrike().run()}
+            >
+                Strike
+            </Button>
+            <Button
+                type='button'
+                variant={editorState?.isHighlight ? 'selectedEditorBtn' : 'defaultEditorBtn'}
+                size='sm'
+                onClick={() => editor.chain().focus().toggleHighlight().run()}
+            >
+                Highlight
+            </Button>
+        </div>
+    );
+};
+
 function TextBlockEditorInner({ value, onChange }: TextBlockEditorInnerProps) {
     const editor = useEditor({
-        extensions: tiptapExtensions,
-        content: (value as Record<string, unknown>) ?? {
+        extensions: [...tiptapExtensions, Highlight],
+        content: value ?? {
             type: 'doc',
             content: [{ type: 'paragraph' }],
         },
@@ -40,14 +98,12 @@ function TextBlockEditorInner({ value, onChange }: TextBlockEditorInnerProps) {
     });
 
     useEffect(() => {
-        if (!editor) return;
-
         const currentContent = JSON.stringify(editor.getJSON());
         const nextContent = JSON.stringify(value ?? null);
 
         if (currentContent !== nextContent) {
             editor.commands.setContent(
-                (value as Record<string, unknown>) ?? {
+                value ?? {
                     type: 'doc',
                     content: [{ type: 'paragraph' }],
                 },
@@ -55,5 +111,10 @@ function TextBlockEditorInner({ value, onChange }: TextBlockEditorInnerProps) {
         }
     }, [editor, value]);
 
-    return <EditorContent editor={editor} />;
+    return (
+        <>
+            <MenuBar editor={editor} />
+            <EditorContent editor={editor} />
+        </>
+    );
 }
