@@ -24,6 +24,7 @@ import { useDeleteEntity } from '#/features/entities/queries/use-delete-entity.t
 import { Spinner } from '#/components/ui/spinner.tsx';
 import { AlertDialog } from '#/components/ui/alert-dialog.tsx';
 import { EntityPreview } from '#/features/entities/components/EntityPreview.tsx';
+import { ChevronLeft, Save } from 'lucide-react';
 
 type EntityConstructorPageProps = {
     categoryId: string;
@@ -182,10 +183,10 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
 
                         <div className='flex items-center gap-2'>
                             <Button onClick={returnBack} variant={'outline'}>
-                                Back
+                                <ChevronLeft /> Back
                             </Button>
                             <Button type='submit' disabled={isSaving || !isFormDirty || !fields.length}>
-                                {isSaving ? 'Saving…' : 'Save'}
+                                <Save /> {isSaving ? 'Saving…' : 'Save'}
                             </Button>
                         </div>
                     </div>

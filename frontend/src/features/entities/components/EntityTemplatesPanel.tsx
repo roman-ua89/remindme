@@ -1,4 +1,4 @@
-import { Code2, FileText, Image, List, Plus } from 'lucide-react';
+import { Code2, FileText, Image, Layers2, List, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { BlockType, EntityBlockForm } from '@/features/entities/types';
@@ -25,7 +25,14 @@ type EntityTemplatesPanelProps = {
     togglePreviewMode: () => void;
 };
 
-export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemplate, entityId, blocks, togglePreviewMode }: EntityTemplatesPanelProps) {
+export function EntityTemplatesPanel({
+    blockCount,
+    onHoverTemplate,
+    onInsertTemplate,
+    entityId,
+    blocks,
+    togglePreviewMode,
+}: EntityTemplatesPanelProps) {
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
@@ -54,7 +61,7 @@ export function EntityTemplatesPanel({ blockCount, onHoverTemplate, onInsertTemp
             {isAtLimit ? <p className='text-sm text-muted-foreground'>Maximum {MAX_ENTITY_BLOCKS} blocks reached</p> : null}
             {entityId && (
                 <Button variant='softBlue' onClick={togglePreviewMode}>
-                    Preview
+                    <Layers2 /> Preview
                 </Button>
             )}
 
