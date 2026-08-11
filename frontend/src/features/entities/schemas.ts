@@ -15,7 +15,6 @@ const listBlockRowSchema = z.object({
 })
 
 const listBlockContentJsonSchema = z.object({
-  showOneLineAtATime: z.boolean(),
   blurRightSideByDefault: z.boolean(),
 })
 

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
 import type { ListBlockContentJson, ListBlockRow } from '@/features/entities/types'
 
 type ListBlockPreviewProps = {
@@ -47,53 +46,7 @@ function ListRowPreview({ row, blurRightSideByDefault }: ListRowPreviewProps) {
 }
 
 export function ListBlockPreview({ rows, contentJson }: ListBlockPreviewProps) {
-  const [currentRowIndex, setCurrentRowIndex] = useState(0)
-  const { showOneLineAtATime, blurRightSideByDefault } = contentJson
-
-  if (showOneLineAtATime) {
-    const safeIndex = Math.min(currentRowIndex, Math.max(rows.length - 1, 0))
-    const row = rows[safeIndex]
-
-    return (
-      <div className="flex flex-col gap-2">
-        {row ? (
-          <ListRowPreview
-            key={safeIndex}
-            row={row}
-            blurRightSideByDefault={blurRightSideByDefault}
-          />
-        ) : null}
-
-        {rows.length > 1 ? (
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={safeIndex === 0}
-              onClick={() => setCurrentRowIndex((index) => Math.max(index - 1, 0))}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              {safeIndex + 1} / {rows.length}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={safeIndex >= rows.length - 1}
-              onClick={() =>
-                setCurrentRowIndex((index) => Math.min(index + 1, rows.length - 1))
-              }
-            >
-              Next
-            </Button>
-          </div>
-        ) : null}
-      </div>
-    )
-  }
+  const { blurRightSideByDefault } = contentJson
 
   return (
     <div className="flex flex-col gap-2">

@@ -43,7 +43,6 @@ export function createBlock(blockType: BlockType): EntityBlockForm {
         clientId,
         blockType: 'list',
         contentJson: {
-          showOneLineAtATime: false,
           blurRightSideByDefault: false,
         },
         rows: [createEmptyListRow()],

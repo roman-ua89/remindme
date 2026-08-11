@@ -19,7 +19,6 @@ export const listBlockRowSchema = z.object({
 })
 
 export const listBlockContentJsonSchema = z.object({
-  showOneLineAtATime: z.boolean(),
   blurRightSideByDefault: z.boolean(),
 })
 

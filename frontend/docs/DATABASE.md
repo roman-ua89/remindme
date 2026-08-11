@@ -342,14 +342,12 @@ Image blocks use `media_asset_id` only (no `content_json`). List blocks use `lis
 
 ```json
 {
-  "showOneLineAtATime": false,
   "blurRightSideByDefault": true
 }
 ```
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `showOneLineAtATime` | yes | When `true`, preview/Player show one row at a time |
 | `blurRightSideByDefault` | yes | When `true`, right column is blurred until user reveals it |
 
 ---

@@ -15,7 +15,6 @@ export type ListBlockRow = {
 }
 
 export type ListBlockContentJson = {
-  showOneLineAtATime: boolean
   blurRightSideByDefault: boolean
 }
 

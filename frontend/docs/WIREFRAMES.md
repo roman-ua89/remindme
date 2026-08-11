@@ -601,7 +601,6 @@ One List block in the left column, expanded:
 │                                                                 │
 │  [ + Add row ]                                                  │
 │                                                                 │
-│  ☐ Show one line at a time                                      │
 │  ☐ Blur right side by default                                   │
 └─────────────────────────────────────────────────────────────────┘
 ```

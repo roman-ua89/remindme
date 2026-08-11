@@ -52,7 +52,6 @@ function toEntityListItem(entity: {
 function toListBlockContentJson(contentJson: unknown): ListBlockContentJson {
     const json = contentJson as Partial<ListBlockContentJson> | null | undefined;
     return {
-        showOneLineAtATime: json?.showOneLineAtATime ?? false,
         blurRightSideByDefault: json?.blurRightSideByDefault ?? false,
     };
 }

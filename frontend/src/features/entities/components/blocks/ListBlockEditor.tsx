@@ -77,21 +77,6 @@ export function ListBlockEditor({ control, name }: ListBlockEditorProps) {
 
       <Controller
         control={control}
-        name={`${name}.contentJson.showOneLineAtATime` as 'blocks.0.contentJson.showOneLineAtATime'}
-        render={({ field }) => (
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id={`${name}-show-one-line`}
-              checked={field.value as boolean}
-              onCheckedChange={(checked) => field.onChange(checked === true)}
-            />
-            <Label htmlFor={`${name}-show-one-line`}>Show one line at a time</Label>
-          </div>
-        )}
-      />
-
-      <Controller
-        control={control}
         name={`${name}.contentJson.blurRightSideByDefault` as 'blocks.0.contentJson.blurRightSideByDefault'}
         render={({ field }) => (
           <div className="flex items-center gap-2">

@@ -380,7 +380,7 @@ Used by `createEntity` and `updateEntity` when blocks are saved. Not a public AP
 | `text` | TipTap/ProseMirror JSON | NULL |
 | `code` | `{ language, value }` | NULL |
 | `image` | NULL | FK to `media_assets.id` |
-| `list` | `{ showOneLineAtATime, blurRightSideByDefault }` | NULL (+ child rows in `list_block_rows`) |
+| `list` | `{ blurRightSideByDefault }` | NULL (+ child rows in `list_block_rows`) |
 
 ```sql
 DELETE FROM list_block_rows
