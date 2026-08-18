@@ -98,18 +98,20 @@ function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
     }
 }
 
+const entityBlocksInclude = {
+    blocks: {
+        orderBy: { position: 'asc' as const },
+        include: {
+            listRows: { orderBy: { position: 'asc' as const } },
+            mediaAsset: true,
+        },
+    },
+};
+
 async function loadEntityWithBlocks(entityId: string): Promise<Entity> {
     const entity = await prisma.entity.findUnique({
         where: { id: entityId },
-        include: {
-            blocks: {
-                orderBy: { position: 'asc' },
-                include: {
-                    listRows: { orderBy: { position: 'asc' } },
-                    mediaAsset: true,
-                },
-            },
-        },
+        include: entityBlocksInclude,
     });
 
     if (!entity) {
@@ -120,6 +122,41 @@ async function loadEntityWithBlocks(entityId: string): Promise<Entity> {
         ...toEntityListItem(entity),
         blocks: entity.blocks.map((block) => toBlockResponse(block as BlockWithRows)),
     };
+}
+
+export async function loadEntitiesWithCategory(
+    entityIds: string[],
+): Promise<Array<Entity & { categoryId: string }>> {
+    if (entityIds.length === 0) {
+        return [];
+    }
+
+    const entities = await prisma.entity.findMany({
+        where: { id: { in: entityIds } },
+        include: {
+            ...entityBlocksInclude,
+            topic: {
+                select: { categoryId: true },
+            },
+        },
+    });
+
+    const byId = new Map(entities.map((entity) => [entity.id, entity]));
+
+    return entityIds.flatMap((id) => {
+        const entity = byId.get(id);
+        if (!entity) {
+            return [];
+        }
+
+        return [
+            {
+                ...toEntityListItem(entity),
+                categoryId: entity.topic.categoryId,
+                blocks: entity.blocks.map((block) => toBlockResponse(block as BlockWithRows)),
+            },
+        ];
+    });
 }
 
 function validateBlocks(input: SaveEntityInput) {

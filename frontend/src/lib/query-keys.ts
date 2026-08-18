@@ -33,4 +33,8 @@ export const queryKeys = {
     detail: (categoryId: string, topicId: string, entityId: string) =>
       ['categories', categoryId, 'topics', topicId, 'entities', entityId] as const,
   },
+  player: {
+    all: ['player'] as const,
+    batch: (scopeKey: string) => ['player', 'batch', scopeKey] as const,
+  },
 } as const

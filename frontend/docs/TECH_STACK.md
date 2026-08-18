@@ -2,7 +2,7 @@
 
 Technical reference for RemindMe. Defines **which libraries to use**, **how they fit together**, and **conventions** for the `frontend/`, `backend/`, and `packages/contracts/` workspace packages.
 
-This is the technical counterpart to [PRODUCT.md](PRODUCT.md). For folder layout and module boundaries, see [ARCHITECTURE.md](ARCHITECTURE.md). For tables and fields, see [DATABASE.md](DATABASE.md). For original product notes, see [ABOUT.md](ABOUT.md).
+This is the technical counterpart to [PRODUCT.md](PRODUCT.md). For folder layout and module boundaries, see [ARCHITECTURE.md](ARCHITECTURE.md). For tables and fields, see [DATABASE.md](DATABASE.md). For Player pack/session behavior, see [PLAYER.md](PLAYER.md). For original product notes, see [ABOUT.md](ABOUT.md).
 
 ---
 
@@ -164,7 +164,7 @@ Maps product features from [PRODUCT.md](PRODUCT.md) to stack owners:
 | Category detail (topics list) | Query |
 | Topic detail (entity list) | Query |
 | Entity constructor (create/edit) | Forms (Title + blocks) + Mutation |
-| Player (revision) | Query (current entity + prefetch next) + Mutation (Done/Skip) |
+| Player (revision) | Mutation (fetch pack + Done/Skip); current pack held in page state |
 | Auth pages | Router guards + Query for user profile + Forms |
 
 **Deferred (not v1 UI):** statistics chart — see [PRODUCT.md §8](PRODUCT.md).
@@ -260,19 +260,17 @@ queryKeys.topics.list(categoryId)
 queryKeys.topics.detail(categoryId, topicId)
 queryKeys.entities.list(categoryId, topicId)
 queryKeys.entities.detail(categoryId, topicId, entityId)
-queryKeys.player.entity(scope, entityId)
-queryKeys.player.queue(scope)
+queryKeys.player.all
+queryKeys.player.batch(scopeKey)
 ```
 
-### Player prefetch
+### Player batch session
 
-The **Player** ([PRODUCT.md §3.5](PRODUCT.md)) shows one entity at a time and preloads the next in the background:
+The **Player** ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)) shows one entity at a time from an in-memory pack of up to 10 full entities:
 
-- **`use-player-entity.ts`** — `useQuery` for the current entity (with blocks)
-- **`use-prefetch-next-entity.ts`** — `queryClient.prefetchQuery` after the current entity resolves and the next ID is known from `utils/queue.ts`
-- **`use-mark-done.ts`** / **`use-mark-skip.ts`** — mutations; invalidate entity detail, scoped lists, and player queue keys on success
-
-Use `placeholderData: keepPreviousData` (or equivalent) on the current-entity query so the preview does not flash empty while advancing.
+- **`use-player-batch.ts`** — mutation that fetches a pack (`POST /player/batch`) and applies the round-reset rule when `items` is empty
+- **`use-mark-done.ts`** / **`use-mark-skip.ts`** — mutations; invalidate scoped entity/topic/category list keys on success
+- Session queue lives in `PlayerPage` state — the next card is `queue[1]`, so there is no per-entity GET or prefetch hook
 
 ### Custom hooks
 
@@ -287,8 +285,7 @@ features/entities/queries/use-entities.ts           → useEntities()
 features/categories/queries/use-create-category.ts  → useCreateCategory()
 features/entities/queries/use-create-entity.ts      → useCreateEntity()
 features/entities/queries/use-update-entity.ts      → useUpdateEntity()
-features/player/queries/use-player-entity.ts      → usePlayerEntity()
-features/player/queries/use-prefetch-next-entity.ts → usePrefetchNextEntity()
+features/player/queries/use-player-batch.ts       → usePlayerBatch()
 features/player/queries/use-mark-done.ts          → useMarkDone()
 features/player/queries/use-mark-skip.ts          → useMarkSkip()
 ```
@@ -348,7 +345,7 @@ features/entities/queries/use-create-entity.ts
 features/media/api.ts
 features/media/queries/use-upload-media.ts
 features/player/api.ts
-features/player/queries/use-player-entity.ts
+features/player/queries/use-player-batch.ts
 features/player/queries/use-mark-done.ts
 features/player/queries/use-mark-skip.ts
 ```
@@ -383,7 +380,7 @@ Entity lists (topic detail entities, and any other large collections) use **clas
 - **Persist sparingly:** theme via `persist` middleware if needed
 - Entity constructor form state uses **react-hook-form**, not Zustand
 
-**Optional:** `stores/player-session.ts` — Player session queue and set of entities shown this session ([ARCHITECTURE.md §8](ARCHITECTURE.md)); can live in `PlayerPage` component state instead.
+Player pack state lives in `PlayerPage` component state ([PLAYER.md](PLAYER.md)); there is no `player-session` store.
 
 ---
 
@@ -859,6 +856,7 @@ packages/contracts/src/
   categories.ts
   topics.ts
   entities.ts
+  player.ts
   media.ts
   common/
     pagination.ts
@@ -966,6 +964,7 @@ Grouped by [PRODUCT.md](PRODUCT.md) flows. Exact paths and DTOs are defined in `
 | **Categories** | `GET /categories`, `POST /categories` (name only), `PATCH/DELETE /categories/:categoryId` |
 | **Topics** | `GET/POST /categories/:categoryId/topics`; `GET/PATCH/DELETE /categories/:categoryId/topics/:topicId` |
 | **Entities** | `GET/POST /categories/:categoryId/topics/:topicId/entities`; `GET/PATCH/DELETE /categories/:categoryId/topics/:topicId/entities/:entityId` |
+| **Player** | `POST /player/batch`; `PATCH …/entities/:entityId/revise`; `PATCH …/entities/:entityId/skip` |
 | **Entity blocks** | Nested in entity create/update payload — atomic save of title + ordered blocks (max 20) |
 | **Media** | `POST /media/upload` → returns `media_asset_id` (standalone; referenced by image blocks) |
 | **Admin API** | `GET/PATCH /users/:id` — gated by `users:manage`; **no admin UI in v1** (see §16) |
@@ -1082,6 +1081,7 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 
 | Date | Change |
 |------|--------|
+| 2026-08-18 | Player batched session: pack mutation instead of per-entity prefetch; Progress bar |
 | 2026-06-29 | Initial tech stack document |
 | 2026-06-29 | Adopt react-hook-form + Zod for forms |
 | 2026-06-29 | Adopt Tailwind CSS + shadcn/ui for styling and UI primitives |

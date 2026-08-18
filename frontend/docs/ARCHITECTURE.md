@@ -73,6 +73,7 @@ remindme/
   frontend/                    # client SPA
     docs/
       PRODUCT.md
+      PLAYER.md
       TECH_STACK.md
       ARCHITECTURE.md        ← this document
     public/
@@ -477,25 +478,27 @@ features/media/
 
 ### 5.6 `features/player/`
 
-Revision flow — **Player** page at `/player` ([PRODUCT.md §3.5](PRODUCT.md)). Shows one entity at a time as read-only preview; **Done** / **Skip** mutate counters; session queue and scheduling live client-side.
+Revision flow — **Player** page at `/player` ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)). Shows one entity at a time as read-only preview; **Done** / **Skip** mutate counters; the current pack and per-round shown ids live in `PlayerPage` state.
 
 ```
 features/player/
-  api.ts                      # markEntityDone, markEntitySkip; list entities in scope for queue
-  types.ts                    # PlayerScope, PlayerSessionState — from contracts or local types
+  constants.ts                # PLAYER_BATCH_SIZE = 10
+  api.ts                      # fetchPlayerBatch, markEntityDone, markEntitySkip
+  types.ts                    # PlayerScope, PlayerSessionState, PlayerBatchItem
   queries/
-    use-player-entity.ts      # useQuery — current entity with blocks
-    use-prefetch-next-entity.ts  # prefetchQuery for next entity while user reviews current
+    use-player-batch.ts       # fetch / refill pack (includes round-reset)
     use-mark-done.ts          # useMutation — revised_count + 1
     use-mark-skip.ts          # useMutation — skipped_count + 1
   components/
     PlayerPage.tsx
-    PlayerPreview.tsx         # read-only Title + blocks; reuses EntityPreviewPanel or shared renderer
+    PlayerProgress.tsx        # pack-only Progress bar
+    PlayerPreview.tsx         # read-only Title + blocks; EntityReadOnlyContent
     PlayerActions.tsx         # Done / Skip buttons
-    PlayerCompletion.tsx      # session-complete empty state
+    PlayerBatchCompleteDialog.tsx  # Next 10 / Home
+    PlayerDepleted.tsx        # zero eligible entities
     PlayButton.tsx            # icon-only row action → /player with scope search param
   utils/
-    queue.ts                  # min-pool selection, random pick, once-per-session consumption
+    session.ts                # queue of full entities, shownEntityIds, round reset, progress
 ```
 
 | Component | Used on |
@@ -505,17 +508,17 @@ features/player/
 
 | Concern | Owner |
 |---------|--------|
-| Read-only entity render | `PlayerPreview.tsx` — same block renderers as `EntityPreviewPanel` (TipTap HTML, CodeMirror read-only, Image, List) |
-| Scheduling | `utils/queue.ts` — min `revised_count` pool, Done → min pool, Skip → random in scope ([PRODUCT.md §3.5](PRODUCT.md)) |
-| Counter mutations | `use-mark-done.ts` / `use-mark-skip.ts`; invalidate `queryKeys.entities.*` and `queryKeys.player.*` |
-| Next-entity preload | `use-prefetch-next-entity.ts` — TanStack Query `prefetchQuery` after current entity resolves |
-| Session state | Component state or optional `stores/player-session.ts` (entities shown this session, remaining queue) — no server session table |
+| Read-only entity render | `PlayerPreview.tsx` — same block renderers as entity preview (TipTap HTML, CodeMirror read-only, Image, List) |
+| Pack + scheduling | `POST /api/v1/player/batch` (min `revised_count` sample) + `utils/session.ts` queue ([PLAYER.md](PLAYER.md)) |
+| Counter mutations | `use-mark-done.ts` / `use-mark-skip.ts`; invalidate `queryKeys.entities.*` and topic/category list keys |
+| Next-entity ready | Head of the in-memory pack (`queue[1]`) — no per-entity GET or prefetch hook |
+| Session state | `PlayerPage` React state — current pack + `shownEntityIds` for the current **round**; no server session table |
 
 **Route:** `src/routes/_app/player.tsx` validates search params (`categoryId` \| `topicId` \| `entityId` — exactly one required) and renders `PlayerPage`.
 
-**Query keys:** add `queryKeys.player.entity(scope, entityId)` and `queryKeys.player.queue(scope)` in `lib/query-keys.ts`.
+**Query keys:** `queryKeys.player.all`, `queryKeys.player.batch(scopeKey)` in `lib/query-keys.ts`. The pack itself is session state, not a cached query.
 
-**Backend mirror (when implemented):** `PATCH /entities/:id/revise` (done) and `PATCH /entities/:id/skip` (skip), or equivalent — contracts in `packages/contracts/src/entities.ts`.
+**Backend:** `POST /api/v1/player/batch` (contracts in `packages/contracts/src/player.ts`); Done/Skip reuse nested `PATCH …/revise` and `PATCH …/skip`.
 
 ---
 
@@ -610,13 +613,13 @@ Cross-route **ephemeral** state that is not server data and not form state.
 ```
 src/stores/
   ui.ts                 # theme, nav drawer open, transient UI flags
-  player-session.ts     # optional — Player session queue + shown-entity set (cross-route if needed)
 ```
 
 | Store | Persists? | Notes |
 |-------|-----------|-------|
 | `ui.ts` | Optional (`persist` for theme only) | Theme and transient UI flags |
-| `player-session.ts` | No | Optional — Player queue and entities shown this session; can live in `PlayerPage` component state instead |
+
+Player pack state lives in `PlayerPage` component state ([PLAYER.md](PLAYER.md)) — no `player-session` store.
 
 **One store file per domain.** Use selectors to limit re-renders. Stores do not call Axios — mutations run in components via Query hooks. Entity constructor draft state lives in react-hook-form, not Zustand.
 
@@ -728,6 +731,7 @@ Mutations follow the same path; on success, Query invalidates keys from `lib/que
 | Document | Covers |
 |----------|--------|
 | [PRODUCT.md](PRODUCT.md) | What the app does — pages, flows, business rules |
+| [PLAYER.md](PLAYER.md) | How the Player deals packs, Done/Skip, and round reset |
 | [WIREFRAMES.md](WIREFRAMES.md) | Page layouts and ASCII wireframes — MVP 1024px fixed width |
 | [TECH_STACK.md](TECH_STACK.md) | Libraries, Query/Router/Zustand conventions, `packages/contracts` (§12), tooling |
 | [ABOUT.md](ABOUT.md) | Original product notes |
@@ -747,4 +751,5 @@ Mutations follow the same path; on success, Query invalidates keys from `lib/que
 | 2026-07-13 | Adopt TipTap for Entity constructor Text blocks |
 | 2026-07-13 | Adopt `@uiw/react-codemirror` for Entity constructor Code blocks (JavaScript + TypeScript) |
 | 2026-07-13 | Image blocks: custom `ImageBlockEditor` — file picker + drag-drop; preview with remove |
+| 2026-08-18 | Player batched client session: `POST /player/batch`, pack progress, continue modal, round reset |
 | 2026-07-13 | Add `features/player/` and `/player` route; Play button on list rows; replace deferred-revision language |

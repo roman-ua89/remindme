@@ -9,7 +9,7 @@ export const devPlanTasks: DevPlanTask[] = [
     // { id: 'auth-registration', label: 'Registration page', done: false },
     // { id: 'auth-forgot-password', label: 'Forgot password flow', done: false },
     { id: 'global-back', label: 'Show Back button on Topic and Entity page', done: true },
-    { id: 'amount-tree', label: 'Show amount of topics and entities on category card', done: false },
+    { id: 'amount-tree', label: 'Show amount of topics and entities on category card', done: true },
     { id: 'entity-preview', label: 'Preview mode for entity', done: true },
     { id: 'entity-close', label: 'Entity page: add back button', done: true },
     { id: 'entity-save-default', label: 'Entity page: save button should be active only after changes', done: true },
@@ -25,7 +25,7 @@ export const devPlanTasks: DevPlanTask[] = [
     {
         id: 'player-page',
         label: 'Player page. Entity in the middle. Two buttons: Done and Skip. Prefetch next entity. Take items randomly among lower revised_count.',
-        done: false,
+        done: true,
     },
     { id: 'entity-page-delete', label: 'Entity page: add delete button with confirmation modal.', done: true },
     { id: 'home-metrics', label: 'after login show some info blocks of how many entities were skipped (with buttons), revised', done: false },

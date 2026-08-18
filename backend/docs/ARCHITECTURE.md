@@ -9,6 +9,7 @@ A beginner-friendly guide to how the RemindMe backend is structured, how request
 - [DATA-FLOWS.md](./DATA-FLOWS.md) — which DB columns change per API operation
 - [frontend/docs/ARCHITECTURE.md](../../frontend/docs/ARCHITECTURE.md) — frontend mirror of this pattern
 - [frontend/docs/DATABASE.md](../../frontend/docs/DATABASE.md) — database schema details
+- [frontend/docs/PLAYER.md](../../frontend/docs/PLAYER.md) — Player pack session and `POST /player/batch`
 
 ---
 
@@ -253,7 +254,7 @@ flowchart LR
 | `features/topics/` | `modules/topics/` | `topics.ts` | `…/categories/:categoryId/topics` |
 | `features/entities/` | `modules/entities/` | `entities.ts` | `…/topics/:topicId/entities` |
 | `features/media/` | `modules/media/` | `media.ts` | `/api/v1/media` |
-| `features/player/` (revise/skip) | `modules/entities/` | `entities.ts` | `…/entities/:entityId/revise` |
+| `features/player/` | `modules/player/` + `modules/entities/` | `player.ts`, `entities.ts` | `/api/v1/player/batch`, `…/entities/:entityId/revise` |
 | Admin users | `modules/users/` | `users.ts` | `/api/v1/users` |
 
 ### Content hierarchy (database + URLs)
@@ -633,7 +634,7 @@ backend/
       prisma.ts           # singleton PrismaClient
       errors.ts           # AppError + helpers
       jwt.ts              # sign/verify JWT, cookie name
-      ownership.ts        # getCategory/Topic/EntityForUser
+      ownership.ts        # getCategory/Topic/EntityForUser + getTopicByIdForUser
     middleware/
       auth.ts             # cookie → req.user
       require-permission.ts
@@ -644,6 +645,7 @@ backend/
       categories/         # CRUD root of content tree
       topics/             # nested under category
       entities/           # nested under topic; blocks; revise/skip
+      player/             # POST /player/batch — min revised_count sample
       media/              # upload + serve files
       users/              # admin user management
     openapi/spec.ts       # Swagger UI at /api/docs (dev only)

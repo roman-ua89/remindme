@@ -18,9 +18,3 @@ export function getCategoryById(categoryId: string): Category | undefined {
 export function getTopicsByCategoryId(categoryId: string): Topic[] {
   return DEMO_TOPICS.filter((topic) => topic.categoryId === categoryId)
 }
-
-export function getEntityCountByCategoryId(categoryId: string): number {
-  return DEMO_TOPICS
-    .filter((topic) => topic.categoryId === categoryId)
-    .reduce((sum, topic) => sum + topic.entityCount, 0)
-}

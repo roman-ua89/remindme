@@ -47,6 +47,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Categories | createCategory, updateCategory, deleteCategory | listCategories, getCategory |
 | Topics | createTopic, updateTopic, deleteTopic | listTopics, getTopic |
 | Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity | listEntities, getEntity |
+| Player | — | getPlayerBatch |
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
 
@@ -356,6 +357,19 @@ WHERE id = '<entity_id>';
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
 | `entities` | UPDATE | `skipped_count` (increment by 1) |
+
+---
+
+#### Get Player batch
+
+- **Service:** `getPlayerBatch()` — [player.service.ts](../src/modules/player/player.service.ts)
+- **Route:** `POST /api/v1/player/batch`
+- **Transaction:** no
+- **Behavior:** ownership check on scope; eligible rows (`visibility = included`, not in `excludeEntityIds`); sample up to `limit` ids from the minimum `revised_count` pool (shuffled); load full entities with blocks + `categoryId`. See [PLAYER.md](../../frontend/docs/PLAYER.md).
+
+| Table | Operation | Notes |
+|-------|-----------|-------|
+| `entities` (+ `topics`, `entity_blocks`, `list_block_rows`, `media_assets`) | READ | Min-pool sample, then full entity load |
 
 ---
 

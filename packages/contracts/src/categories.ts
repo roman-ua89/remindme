@@ -6,6 +6,7 @@ export const categorySchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   topicCount: z.number().int().nonnegative(),
+  entityCount: z.number().int().nonnegative(),
 })
 
 export const createCategorySchema = z.object({

@@ -33,6 +33,25 @@ export async function getTopicForUser(categoryId: string, topicId: string, user:
     return topic;
 }
 
+export async function getTopicByIdForUser(topicId: string, user: AuthUser) {
+    const topic = await prisma.topic.findUnique({
+        where: { id: topicId },
+        include: {
+            category: true,
+        },
+    });
+
+    if (!topic) {
+        throw notFound('Topic not found');
+    }
+
+    if (topic.category.userId !== user.id && !hasPermission(user, 'content:manage_any')) {
+        throw forbidden();
+    }
+
+    return topic;
+}
+
 export async function getEntityForUser(categoryId: string, topicId: string, entityId: string, user: AuthUser) {
     await getTopicForUser(categoryId, topicId, user);
 

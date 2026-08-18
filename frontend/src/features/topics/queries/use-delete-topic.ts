@@ -20,6 +20,7 @@ export function useDeleteTopic(categoryId: string) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.categories.detail(categoryId),
       })
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all })
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error))

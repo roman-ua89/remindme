@@ -20,6 +20,9 @@ export function useCreateEntity(categoryId: string, topicId: string) {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.topics.detail(categoryId, topicId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.categories.all,
+            });
             navigate({
                 to: '/categories/$categoryId/topics/$topicId',
                 params: { categoryId, topicId },

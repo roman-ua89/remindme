@@ -21,6 +21,9 @@ export function useDeleteEntity(categoryId: string, topicId: string) {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.topics.detail(categoryId, topicId),
             });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.categories.all,
+            });
         },
         onError: (error) => {
             toast.error(getApiErrorMessage(error));

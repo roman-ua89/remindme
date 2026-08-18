@@ -11,23 +11,59 @@ import { conflict } from '../../lib/errors.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
 import { prisma } from '../../lib/prisma.js';
 
-function toCategoryDto(category: { id: string; name: string }, topicCount: number): Category {
+function toCategoryDto(
+    category: { id: string; name: string },
+    topicCount: number,
+    entityCount: number,
+): Category {
     return {
         id: category.id,
         name: category.name,
         topicCount,
+        entityCount,
     };
+}
+
+async function countEntitiesInCategory(categoryId: string): Promise<number> {
+    return prisma.entity.count({
+        where: { topic: { categoryId } },
+    });
+}
+
+async function countEntitiesByCategoryIds(categoryIds: string[]): Promise<Map<string, number>> {
+    const counts = new Map<string, number>(categoryIds.map((id) => [id, 0]));
+
+    if (categoryIds.length === 0) {
+        return counts;
+    }
+
+    const topics = await prisma.topic.findMany({
+        where: { categoryId: { in: categoryIds } },
+        select: {
+            categoryId: true,
+            _count: { select: { entities: true } },
+        },
+    });
+
+    for (const topic of topics) {
+        counts.set(topic.categoryId, (counts.get(topic.categoryId) ?? 0) + topic._count.entities);
+    }
+
+    return counts;
 }
 
 export async function getCategory(user: AuthUser, categoryId: string): Promise<Category> {
     const { getCategoryForUser } = await import('../../lib/ownership.js');
     const category = await getCategoryForUser(categoryId, user);
 
-    const topicCount = await prisma.topic.count({
-        where: { categoryId: category.id },
-    });
+    const [topicCount, entityCount] = await Promise.all([
+        prisma.topic.count({
+            where: { categoryId: category.id },
+        }),
+        countEntitiesInCategory(category.id),
+    ]);
 
-    return toCategoryDto(category, topicCount);
+    return toCategoryDto(category, topicCount, entityCount);
 }
 
 export async function listCategories(user: AuthUser, pagination: PaginationQuery): Promise<CategoryListPage> {
@@ -45,8 +81,12 @@ export async function listCategories(user: AuthUser, pagination: PaginationQuery
         }),
     ]);
 
+    const entityCounts = await countEntitiesByCategoryIds(categories.map((category) => category.id));
+
     return toPaginatedResponse(
-        categories.map((category) => toCategoryDto(category, category._count.topics)),
+        categories.map((category) =>
+            toCategoryDto(category, category._count.topics, entityCounts.get(category.id) ?? 0),
+        ),
         totalItems,
         pagination,
     );
@@ -68,7 +108,7 @@ export async function createCategory(user: AuthUser, input: CreateCategoryInput)
         },
     });
 
-    return toCategoryDto(category, 0);
+    return toCategoryDto(category, 0, 0);
 }
 
 export async function updateCategory(
@@ -87,7 +127,9 @@ export async function updateCategory(
         },
     });
 
-    return toCategoryDto(category, category._count.topics);
+    const entityCount = await countEntitiesInCategory(category.id);
+
+    return toCategoryDto(category, category._count.topics, entityCount);
 }
 
 export async function deleteCategory(user: AuthUser, categoryId: string): Promise<void> {

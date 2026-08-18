@@ -658,6 +658,9 @@ Revision page. Shows one entity at a time as a read-only preview. Uses app layou
 ┌────────────────────────────── 1024px ──────────────────────────────┐
 │  RemindMe                          [ Stop ]        [User menu ▾]   │
 ├────────────────────────────────────────────────────────────────────┤
+│  Player                                            [ Stop ]        │
+│  3 of 10                                          7 left           │
+│  ████████░░░░░░░░░░░░░░░░                                          │
 │                                                                    │
 │  ┌──────────────── Entity preview (read-only) ─────────────────┐ │
 │  │                                                                │ │
@@ -680,17 +683,18 @@ Revision page. Shows one entity at a time as a read-only preview. Uses app layou
 
 | Element | Behavior |
 |---------|----------|
-| **Stop** | Top of page (header area or page title row); navigates to **Home** (`/`) immediately; does not change counters for the current entity |
+| **Stop** | Top of page (page title row); navigates to **Home** (`/`) immediately; does not change counters for the current entity |
+| **Progress** | Pack-only bar under the title row: `{completed} of {total}` and `{left} left` — see [PLAYER.md](PLAYER.md) |
 | **Entity preview** | Read-only Title + all constructor blocks (same render as Entity constructor left panel) |
-| **Done** | Increments `revised_count`; advances to next entity per [PRODUCT.md §3.5](PRODUCT.md) scheduling |
-| **Skip** | Increments `skipped_count` only; advances to next entity per scheduling rules |
-| **Preload** | Next entity fetched in background (TanStack Query) while user reviews current entity |
+| **Done** | Increments `revised_count`; advances to the next entity in the current pack |
+| **Skip** | Increments `skipped_count` only; advances to the next entity in the current pack |
+| **In-memory next** | Next entity is already in the client pack queue — no extra GET while playing |
 
 Search params (one required): `categoryId`, `topicId`, or `entityId`.
 
-### 8.2 Session complete
+### 8.2 Pack complete / depleted
 
-Shown when the last entity in the session is Done or Skipped (or scope was empty). User stays on `/player` — no auto-redirect.
+**Pack complete** — shown when the last entity in the current pack is Done or Skipped. User stays on `/player` — no auto-redirect.
 
 ```
 ┌────────────────────────────── 1024px ──────────────────────────────┐
@@ -698,10 +702,9 @@ Shown when the last entity in the session is Done or Skipped (or scope was empty
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │                    ┌─────────────────────┐                         │
-│                    │   (checkmark icon)  │                         │
+│                    │  Batch complete     │                         │
 │                    │                     │                         │
-│                    │  Session complete   │                         │
-│                    │                     │                         │
+│                    │  [ Get next 10 ]    │                         │
 │                    │  [ Go to Home ]     │                         │
 │                    └─────────────────────┘                         │
 │                                                                    │
@@ -710,9 +713,12 @@ Shown when the last entity in the session is Done or Skipped (or scope was empty
 
 | Element | Behavior |
 |---------|----------|
-| **Session complete** | Centered message; no per-session statistics summary |
-| **Go to Home** | Optional link/button → `/` (same destination as **Stop**) |
+| **Batch complete** | Modal after the current pack is exhausted; no per-session statistics |
+| **Get next 10** | Fetches another pack (round reset if the scope was fully shown) |
+| **Go to Home** | → `/` (same destination as **Stop**) |
 | **Stop** | Still available — navigates to Home |
+
+**Depleted** — shown only when the scope has zero eligible entities (`visibility = included` count is 0), on open or after a failed round reset. Home only; no **Get next 10**.
 
 ---
 
@@ -781,6 +787,7 @@ Suggested Tailwind on app shell outer wrapper:
 | Document | Covers |
 |----------|--------|
 | [PRODUCT.md](PRODUCT.md) | Flows, business rules, entity block types |
+| [PLAYER.md](PLAYER.md) | How the Player deals packs, Done/Skip, and round reset |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Routes, feature folders, layout components |
 | [TECH_STACK.md](TECH_STACK.md) | Tailwind, shadcn/ui, TanStack Router |
 
@@ -790,6 +797,7 @@ Suggested Tailwind on app shell outer wrapper:
 
 | Date | Change |
 |------|--------|
+| 2026-08-18 | Player pack progress bar; batch-complete modal (Next 10 / Home); depleted empty state |
 | 2026-07-13 | Entity list rows show gray `{revised_count} revised` label before Play button |
 | 2026-07-13 | Add Player wireframe (`/player`); Play button on category, topic, and entity list rows; completion state |
 | 2026-07-13 | List row actions use icon-only buttons (pencil / trash) with `aria-label` text — not visible labels |

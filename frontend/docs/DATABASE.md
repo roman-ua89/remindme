@@ -19,13 +19,13 @@ Product behavior lives in [PRODUCT.md](PRODUCT.md). This document describes how 
 | List blocks | Normalized child rows in `list_block_rows` |
 | Password reset | Dedicated token table (hashed tokens, expiry, single-use) |
 | Revision counters | Stored on `entities` (`revised_count`, `skipped_count`) — updated by **Player** UI; no session tables |
-| Revision eligibility | `entities.visibility` gates whether an entity can enter the Player queue |
-| Scope | v1 includes **Player** at `/player`; no statistics page or session summary tables |
+| Revision eligibility | `entities.visibility` gates whether an entity can enter a Player pack |
+| Scope | v1 includes **Player** at `/player`; session queue is a client-held pack (see [PLAYER.md](PLAYER.md)); no statistics page or session summary tables |
 
 ### Explicit non-tables
 
 - No `entity_constructors` / templates table — the constructor is a page, not a domain entity.
-- No revision-session or statistics aggregate tables (counters live on `entities`; Player session queue is client-side).
+- No revision-session or statistics aggregate tables (counters live on `entities`; the Player holds the current pack and per-round shown ids on the client — [PLAYER.md](PLAYER.md)).
 
 ---
 
@@ -213,16 +213,16 @@ Belongs to exactly one topic. Title is not a constructor block and does not coun
 
 **Revision fields (Player UI):**
 
-Player scheduling ([PRODUCT.md §3.5](PRODUCT.md)) uses these fields within a scope (category, topic, or single entity):
+Player scheduling ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)) uses these fields within a scope (category, topic, or single entity):
 
-- **Eligibility:** only `visibility = included` entities enter the Player queue.
-- **First entity (category/topic scope):** random pick from entities at the **minimum** `revised_count` in scope.
-- **All equal:** when every eligible entity has the same `revised_count`, pick randomly from all eligible entities in scope.
-- **After Done:** increment `revised_count`; next entity = random from entities with the **lowest** `revised_count` in scope.
-- **After Skip:** increment `skipped_count` only; next entity = random from **all** eligible entities in scope (not restricted to the minimum pool).
-- **Once per session:** each entity in scope is shown at most once per Player session (tracked client-side; no session table).
-- **Single-entity scope:** Play on one entity row shows that entity once; Done or Skip ends the session.
+- **Eligibility:** only `visibility = included` entities enter a Player pack.
+- **Pack contents:** random sample (up to 10) from entities at the **minimum** `revised_count` among eligible rows not in the client’s `shownEntityIds` for the current round.
+- **After Done:** increment `revised_count`; the next card is the next item already in the client pack. The following pack re-queries the min pool.
+- **After Skip:** increment `skipped_count` only; navigation is the same as Done. The entity stays in the low pool and can re-enter after a **round reset**.
+- **Once per round:** each entity in scope is shown at most once per round (`shownEntityIds` on the client; no session table). When a pack request returns empty, shown ids are cleared and a new round starts.
+- **Single-entity scope:** Play on one entity row deals a pack of 1; continue after Done/Skip resets the round and can show the same entity again.
 - `visibility = excluded` removes the entity from the Player candidate set (still editable on Topic detail / constructor).
+- Index `(topic_id, visibility, revised_count)` supports the min-pool pack query.
 
 ---
 
@@ -396,7 +396,7 @@ Rules that the schema and application should uphold together (see PRODUCT.md):
 | Revised / skipped counters start at 0 | `revised_count` / `skipped_count` NOT NULL, default `0`; non-negative |
 | Done increments revised_count | Player **Done** → `revised_count + 1` |
 | Skip does not count as revised | Player **Skip** → `skipped_count + 1` only |
-| Excluded entities are not Player-eligible | Filter `visibility = 'included'` when building the Player queue |
+| Excluded entities are not Player-eligible | Filter `visibility = 'included'` when building a Player pack |
 | 0–20 constructor blocks per entity | Unique positions 0–19; app disables add at 20 |
 | Block order persisted | `entity_blocks.position` |
 | User sees only own content | Filter via `categories.user_id` (admins use `content:manage_any`) |

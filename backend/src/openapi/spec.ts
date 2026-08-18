@@ -12,6 +12,7 @@ export const openApiSpec = {
     { name: 'topics' },
     { name: 'entities' },
     { name: 'media' },
+    { name: 'player' },
     { name: 'users' },
   ],
   paths: {
@@ -68,6 +69,12 @@ export const openApiSpec = {
     },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/skip': {
       patch: { tags: ['entities'], summary: 'Mark entity as skipped (Player Skip)' },
+    },
+    '/player/batch': {
+      post: {
+        tags: ['player'],
+        summary: 'Return a shuffled batch of eligible entities at the minimum revised_count',
+      },
     },
     '/media/upload': {
       post: { tags: ['media'], summary: 'Upload image file' },

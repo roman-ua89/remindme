@@ -4,7 +4,7 @@ Structured product knowledge for RemindMe. Defines **what the app is**, **how it
 
 For the original raw notes, see [ABOUT.md](ABOUT.md).
 
-For the chosen frontend libraries and conventions, see [TECH_STACK.md](TECH_STACK.md). For codebase folder layout (`frontend/` + `backend/`), see [ARCHITECTURE.md](ARCHITECTURE.md). For page wireframes and the MVP 1024px layout, see [WIREFRAMES.md](WIREFRAMES.md). For tables and fields, see [DATABASE.md](DATABASE.md).
+For the chosen frontend libraries and conventions, see [TECH_STACK.md](TECH_STACK.md). For codebase folder layout (`frontend/` + `backend/`), see [ARCHITECTURE.md](ARCHITECTURE.md). For page wireframes and the MVP 1024px layout, see [WIREFRAMES.md](WIREFRAMES.md). For tables and fields, see [DATABASE.md](DATABASE.md). For how the Player deals batches and resets rounds, see [PLAYER.md](PLAYER.md).
 
 ---
 
@@ -173,21 +173,23 @@ Additional block types may be added in future versions; v1 supports the four typ
 
 ### 3.5 Player
 
-The **Player** (`/player`) is where the user revises information. It shows one entity at a time as a read-only preview (Title + all constructor blocks — same content as the Entity constructor left panel).
+The **Player** (`/player`) is where the user revises information. It shows one entity at a time as a read-only preview (Title + all constructor blocks — same content as the Entity constructor left panel). Implementation detail: [PLAYER.md](PLAYER.md).
 
 **Layout**
 
 - **Top — Stop:** Button near the top of the page; exits the Player immediately and returns to **Home** (`/`). Does not change counters for the current entity.
+- **Progress:** A pack progress bar under the title row (`completed of total` plus how many are left in this pack).
 - **Center — entity preview:** Read-only render of the current entity (Title + blocks in sequence).
 - **Bottom — actions:** **Done** and **Skip** buttons below the preview.
 
 **Behavior**
 
-- One entity is shown at a time; the next entity is preloaded in the background.
-- **Done** — increments `revised_count` for the current entity in the database; advances to the next entity per scheduling rules (§4.5).
-- **Skip** — increments `skipped_count` only (does not increment `revised_count`); advances to the next entity per scheduling rules (§4.5).
-- **Session end** — when the last entity in the session is Done or Skipped, the Player stays on `/player` and shows a completion message (no summary screen, no auto-redirect).
-- **Empty scope** — if there are no eligible entities in scope, **Play** is disabled on the list row; navigating to `/player` with an empty scope shows an empty/completion state.
+- The Player deals **packs of up to 10** eligible entities (fewer if the min pool is smaller). The next card is already in the client queue.
+- **Done** — increments `revised_count` for the current entity; advances to the next item in the current pack.
+- **Skip** — increments `skipped_count` only (does not increment `revised_count`); advances to the next item in the current pack. Skip and Done differ only by which counter they update.
+- **Pack complete** — when the current pack is exhausted, a modal offers **Get next 10** or **Go to Home**. The user stays on `/player` (no summary screen, no auto-redirect).
+- **Round reset** — if the next pack is empty because every eligible entity was already shown this round, shown ids are cleared and a new pack is dealt. Play continues.
+- **Empty scope** — if there are no eligible entities in scope, **Play** is disabled on the list row when possible; navigating to `/player` with an empty scope shows a depleted state (Home only).
 
 **Entry points**
 
@@ -195,20 +197,17 @@ The **Player** (`/player`) is where the user revises information. It shows one e
 |------|-------------|---------------|
 | Home (categories list) | Each category row | All entities in that category (across topics) |
 | Category detail (topics list) | Each topic row | All entities in that topic |
-| Topic detail (entities list) | Each entity row | That entity only (one-item session) |
+| Topic detail (entities list) | Each entity row | That entity only (packs of 1; continues after a round reset) |
 
 Tapping a row name still navigates to detail; **Play** navigates to `/player` with the scope encoded in route search params (`categoryId`, `topicId`, or `entityId`).
 
-**Scheduling (category and topic scopes only)**
+**Scheduling**
 
 1. Only entities with `visibility = included` are eligible (see [DATABASE.md](DATABASE.md)).
-2. **First entity:** pick randomly from entities at the **minimum** `revised_count` in scope.
-3. **All equal:** when every eligible entity in scope has the same `revised_count`, pick randomly from all eligible entities in scope.
-4. **After Done:** increment `revised_count`; next entity = random from entities with the **lowest** `revised_count` in scope.
-5. **After Skip:** increment `skipped_count` only; next entity = random from **all** eligible entities in scope (not restricted to the minimum pool).
-6. **Once per session:** each entity in scope is shown at most once per Player session.
-
-Single-entity sessions (Play on an entity row) show that entity once; after Done or Skip, the completion state is shown.
+2. Each pack is a random sample from entities at the **minimum** `revised_count` among those not yet shown this round.
+3. An entity is shown at most once per **round** (the current pass through the scope). A new round starts when every eligible entity has been shown.
+4. After Done, that entity’s `revised_count` rises, so it is less likely to appear until others catch up.
+5. After Skip, `revised_count` stays the same, so the entity stays in the low pool and can re-enter on the next round.
 
 ---
 
@@ -248,24 +247,23 @@ Notes:
 **Start from a category (Home)**
 
 1. Home → **Play** on a category row → **Player** (`/player?categoryId=…`)
-2. First entity shown: random pick from entities at minimum `revised_count` in that category (only `visibility = included`)
+2. First pack: up to 10 random entities at minimum `revised_count` in that category (only `visibility = included`)
 3. User reviews the read-only preview
-4. **Done** → `revised_count` incremented → next entity: random from lowest `revised_count` pool in category
-5. **Skip** → `skipped_count` incremented → next entity: random from all eligible entities in category
-6. Repeat until every eligible entity in the category has been shown once
-7. Completion message shown on `/player`
+4. **Done** or **Skip** → matching counter incremented → next entity in the current pack
+5. When the pack is empty → modal: **Get next 10** or **Go to Home**
+6. Continue deals another pack, excluding entities already shown this round
+7. When a pack request is empty, the round resets and play continues from the current min pool
 
 **Start from a topic (Category detail)**
 
 1. Category detail → **Play** on a topic row → **Player** (`/player?topicId=…`)
-2. Same scheduling rules as category scope, limited to entities in that topic
-3. Session ends with completion message on `/player`
+2. Same pack / Done / Skip / continue rules, limited to entities in that topic
 
 **Start from a single entity (Topic detail)**
 
 1. Topic detail → **Play** on an entity row → **Player** (`/player?entityId=…`)
-2. That entity is shown once
-3. **Done** or **Skip** → completion message on `/player`
+2. That entity is shown (pack of 1) if eligible
+3. **Done** or **Skip** → continue modal; next pack after a round reset is the same entity again
 
 **Stop at any time**
 
@@ -300,7 +298,7 @@ Notes:
 - **Revision (Player):**
   - **Done** increments `revised_count`; **Skip** increments `skipped_count` only
   - Entities with `visibility = excluded` are not eligible for the Player
-  - Category/topic sessions: each eligible entity shown once; scheduling favors entities at minimum `revised_count` (see §3.5)
+  - Packs of up to 10 from the minimum `revised_count` pool; each eligible entity at most once per round (see §3.5 and [PLAYER.md](PLAYER.md))
   - **Play** disabled on list rows when scope has zero eligible entities
 
 ---
@@ -368,3 +366,12 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 | Scheduling | Min revised_count pool, random, once per session | Restored with Done → min pool; Skip → random in scope |
 | Session end | Session summary page | Completion message on `/player` (no summary screen) |
 | Counter mutations | Schema only | Done → `revised_count + 1`; Skip → `skipped_count + 1` |
+
+### Player batches (2026-08-18)
+
+| Topic | Previous | Updated |
+|-------|----------|---------|
+| Queue | Load all eligible client-side; once per session | Packs of ≤10 full entities; next card already in the client queue |
+| Session end | Completion message after every eligible entity once | Continue modal each pack; **round reset** when the scope is fully shown |
+| Skip scheduling | Random from all remaining in scope | Next in current pack (counter only differs) |
+| Progress | None | Pack-only progress bar (`completed of total`) |

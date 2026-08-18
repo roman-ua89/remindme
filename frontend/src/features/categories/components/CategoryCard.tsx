@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditCategoryPopover } from '@/features/categories/components/EditCategoryPopover';
 import { PlayButton } from '@/features/player/components/PlayButton';
-import { getEntityCountByCategoryId } from '@/features/topics/demo-data';
 import type { Category } from '@/features/categories/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx';
 
@@ -29,7 +28,7 @@ type CategoryCardProps = {
 export function CategoryCard({ category, onDelete }: CategoryCardProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const canDelete = category.topicCount === 0;
-    const canPlay = getEntityCountByCategoryId(category.id) > 0;
+    const canPlay = category.entityCount > 0;
 
     function handleRemove() {
         onDelete(category.id);
@@ -41,7 +40,10 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
             <CardHeader>
                 <CardTitle>
                     <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1 hover:text-primary'>
-                        {category.name} <span className="text-stone-300">Topics: {category.topicCount}</span>
+                        {category.name}{' '}
+                        <span className="text-stone-300">
+                            Topics: {category.topicCount} · Entities: {category.entityCount}
+                        </span>
                     </Link>
                 </CardTitle>
                 <CardAction>

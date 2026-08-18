@@ -9,6 +9,7 @@
     "./categories": "./src/categories.ts",
     "./topics": "./src/topics.ts",
     "./entities": "./src/entities.ts",
+    "./player": "./src/player.ts",
     "./media": "./src/media.ts",
     "./users": "./src/users.ts",
     "./common/errors": "./src/common/errors.ts",

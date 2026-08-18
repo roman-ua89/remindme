@@ -48,5 +48,12 @@ function PlayerRoute() {
         throw redirect({ to: '/' });
     }
 
-    return <PlayerPage scope={scope} />;
+    const scopeKey =
+        scope.type === 'category'
+            ? scope.categoryId
+            : scope.type === 'topic'
+              ? scope.topicId
+              : scope.entityId;
+
+    return <PlayerPage key={scopeKey} scope={scope} />;
 }
