@@ -1,4 +1,4 @@
-import type { PaginationQuery } from '@remindme/contracts/common/pagination';
+import type { ListSearchQuery } from '@remindme/contracts/common/pagination';
 import type {
     Entity,
     EntityListPage,
@@ -11,11 +11,11 @@ import { apiClient } from '@/lib/api-client';
 export async function getEntities(
     categoryId: string,
     topicId: string,
-    pagination: PaginationQuery,
+    query: ListSearchQuery,
 ): Promise<EntityListPage> {
     const { data } = await apiClient.get<EntityListPage>(
         `/categories/${categoryId}/topics/${topicId}/entities`,
-        { params: pagination },
+        { params: query },
     );
     return data;
 }

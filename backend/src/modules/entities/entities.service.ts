@@ -8,7 +8,7 @@ import type {
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
 import { MAX_ENTITY_BLOCKS } from '@remindme/contracts/entities';
-import type { PaginationQuery } from '@remindme/contracts/common/pagination';
+import type { ListSearchQuery } from '@remindme/contracts/common/pagination';
 import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/client';
 
 import type { AuthUser } from '../../middleware/auth.js';
@@ -16,6 +16,7 @@ import { getEntityByIdForUser, getEntityForUser, getTopicForUser } from '../../l
 import { badRequest } from '../../lib/errors.js';
 import { mediaUrl } from '../../lib/media-url.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
+import { textContainsFilter } from '../../lib/search.js';
 import { prisma } from '../../lib/prisma.js';
 import { deleteMediaAssetsIfUnreferenced } from '../media/media.service.js';
 
@@ -124,9 +125,7 @@ async function loadEntityWithBlocks(entityId: string): Promise<Entity> {
     };
 }
 
-export async function loadEntitiesWithCategory(
-    entityIds: string[],
-): Promise<Array<Entity & { categoryId: string }>> {
+export async function loadEntitiesWithCategory(entityIds: string[]): Promise<Array<Entity & { categoryId: string }>> {
     if (entityIds.length === 0) {
         return [];
     }
@@ -207,22 +206,22 @@ export async function listEntities(
     user: AuthUser,
     categoryId: string,
     topicId: string,
-    pagination: PaginationQuery,
+    query: ListSearchQuery,
 ): Promise<EntityListPage> {
     await getTopicForUser(categoryId, topicId, user);
 
-    const where = { topicId };
+    const where = { topicId, ...textContainsFilter('title', query.search) };
     const [totalItems, entities] = await Promise.all([
         prisma.entity.count({ where }),
         prisma.entity.findMany({
             where,
             orderBy: { position: 'asc' },
-            skip: getPaginationSkip(pagination),
-            take: pagination.pageSize,
+            skip: getPaginationSkip(query),
+            take: query.pageSize,
         }),
     ]);
 
-    return toPaginatedResponse(entities.map(toEntityListItem), totalItems, pagination);
+    return toPaginatedResponse(entities.map(toEntityListItem), totalItems, query);
 }
 
 export async function getEntity(

@@ -23,5 +23,6 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: '15', label: 'On player page show Topic and Category the entity had been taken from.', done: false },
     { id: '16', label: 'External link on Entity Constructor. Show the link in Player and preview.', done: false },
     { id: '17', label: '12 items per page', done: false },
+    { id: '18', label: 'Notes for next entities. Bottom right corner.', done: false },
     // { id: '', label: '', done: false },
 ];

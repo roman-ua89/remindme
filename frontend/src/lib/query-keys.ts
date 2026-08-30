@@ -1,4 +1,4 @@
-import type { PaginationQuery } from '@remindme/contracts/common/pagination'
+import type { ListSearchQuery, PaginationQuery } from '@remindme/contracts/common/pagination'
 
 export const queryKeys = {
   auth: {
@@ -20,7 +20,7 @@ export const queryKeys = {
   entities: {
     all: (categoryId: string, topicId: string) =>
       ['categories', categoryId, 'topics', topicId, 'entities'] as const,
-    list: (categoryId: string, topicId: string, pagination: PaginationQuery) =>
+    list: (categoryId: string, topicId: string, query: ListSearchQuery) =>
       [
         'categories',
         categoryId,
@@ -28,7 +28,7 @@ export const queryKeys = {
         topicId,
         'entities',
         'list',
-        pagination,
+        query,
       ] as const,
     detail: (categoryId: string, topicId: string, entityId: string) =>
       ['categories', categoryId, 'topics', topicId, 'entities', entityId] as const,

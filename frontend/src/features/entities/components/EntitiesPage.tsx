@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 
 import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { AppBreadcrumbs } from '@/components/shared/AppBreadcrumbs';
 import { ListPagination } from '@/components/shared/ListPagination';
+import { ListSearchInput } from '@/components/shared/ListSearchInput';
 import { useCategory } from '@/features/categories/queries/use-category';
 import { AddEntityButton } from '@/features/entities/components/AddEntityButton';
 import { EmptyEntityPrompt } from '@/features/entities/components/EmptyEntityPrompt';
@@ -12,6 +13,7 @@ import { EntityList } from '@/features/entities/components/EntityList';
 import { useDeleteEntity } from '@/features/entities/queries/use-delete-entity';
 import { useEntities } from '@/features/entities/queries/use-entities';
 import { useTopic } from '@/features/topics/queries/use-topic';
+import { useListSearch } from '@/lib/use-list-search';
 import { Button } from '#/components/ui/button.tsx';
 import { ChevronLeft } from 'lucide-react';
 
@@ -27,15 +29,40 @@ export function EntitiesPage() {
     });
     const page = pageParam ?? 1;
 
+    const resetPage = useCallback(() => {
+        void navigate({
+            search: (prev) => ({ ...prev, page: undefined }),
+            replace: true,
+        });
+    }, [navigate]);
+
+    const { inputValue, searchQuery, isSearchActive, handleInputChange, clearSearch } = useListSearch({
+        onSearchChange: resetPage,
+    });
+
     const { data: category, isLoading: isCategoryLoading, isError: isCategoryError } = useCategory(categoryId);
     const { data: topic, isLoading: isTopicLoading, isError: isTopicError } = useTopic(categoryId, topicId);
-    const { data, isLoading: isEntitiesLoading } = useEntities(categoryId, topicId, page);
+    const { data, isLoading: isEntitiesLoading, isPending } = useEntities(categoryId, topicId, page, undefined, searchQuery);
     const { mutate: deleteEntity } = useDeleteEntity(categoryId, topicId);
 
+    const topicHasEntitiesRef = useRef(0);
+
+    useEffect(() => {
+        if (!searchQuery && data !== undefined) {
+            topicHasEntitiesRef.current = data.totalItems;
+        }
+    }, [data, searchQuery]);
+
     const entities = data?.items ?? [];
-    const totalItems = data?.totalItems ?? 0;
     const totalPages = data?.totalPages ?? 0;
-    const isLoading = isCategoryLoading || isTopicLoading || isEntitiesLoading;
+    const isPageLoading = isCategoryLoading || isTopicLoading;
+    const isEntitiesInitialLoad = isEntitiesLoading && data === undefined;
+    const showFullPageLoader = isPageLoading || isEntitiesInitialLoad;
+
+    const topicEntityCount = isSearchActive ? topicHasEntitiesRef.current : (data?.totalItems ?? 0);
+    const showEntitiesView = topicEntityCount > 0 || isSearchActive;
+
+    const isSearchResultsFound = isSearchActive && !isPending && (data?.totalItems ?? 0) > 0;
 
     useEffect(() => {
         if (!data) {
@@ -72,18 +99,21 @@ export function EntitiesPage() {
         });
     }
 
+    function handleCleanSearch() {
+        clearSearch();
+        resetPage();
+    }
+
     const goBack = () => {
         navigate({ to: '/categories/$categoryId', params: { categoryId } });
     };
-
-    const hasEntities = totalItems > 0;
 
     return (
         <div className='min-h-screen bg-background'>
             <AppHeader />
 
             <PageContainer className='py-8'>
-                {isLoading ? (
+                {showFullPageLoader ? (
                     <div className='flex flex-col items-center gap-1 py-12 text-muted-foreground'>Loading entities…</div>
                 ) : isCategoryError || isTopicError || !category || !topic ? (
                     <div className='flex flex-col gap-4'>
@@ -93,7 +123,7 @@ export function EntitiesPage() {
                         </div>
                         <p className='text-muted-foreground'>Topic not found.</p>
                     </div>
-                ) : hasEntities ? (
+                ) : showEntitiesView ? (
                     <div className='flex flex-col gap-6'>
                         <div className='flex items-start justify-between gap-4'>
                             <div className='flex flex-col gap-1'>
@@ -108,6 +138,14 @@ export function EntitiesPage() {
                                 <AddEntityButton categoryId={categoryId} topicId={topicId} />
                             </div>
                         </div>
+
+                        <ListSearchInput
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            isPending={isSearchActive && isPending}
+                            showClean={isSearchResultsFound}
+                            onClean={handleCleanSearch}
+                        />
 
                         <EntityList entities={entities} onEdit={handleEditEntity} onRemove={handleRemoveEntity} />
 

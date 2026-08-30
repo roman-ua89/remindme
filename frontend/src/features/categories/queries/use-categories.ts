@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getCategories } from '@/features/categories/api';
 import { queryKeys } from '@/lib/query-keys';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 12;
 
 export function useCategories(page: number, pageSize = DEFAULT_PAGE_SIZE) {
     const pagination = { page, pageSize };

@@ -7,6 +7,12 @@ export const paginationQuerySchema = z.object({
 
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>
 
+export const listSearchQuerySchema = paginationQuerySchema.extend({
+  search: z.string().trim().min(1).optional(),
+})
+
+export type ListSearchQuery = z.infer<typeof listSearchQuerySchema>
+
 export function paginatedResponseSchema<T extends z.ZodType>(itemSchema: T) {
   return z.object({
     items: z.array(itemSchema),

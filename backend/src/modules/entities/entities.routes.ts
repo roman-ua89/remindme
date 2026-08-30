@@ -8,8 +8,8 @@ import {
 } from '@remindme/contracts/entities'
 import { topicIdParamsSchema, type TopicIdParams } from '@remindme/contracts/topics'
 import {
-  paginationQuerySchema,
-  type PaginationQuery,
+  listSearchQuerySchema,
+  type ListSearchQuery,
 } from '@remindme/contracts/common/pagination'
 
 import { auth } from '../../middleware/auth.js'
@@ -23,16 +23,16 @@ router.use(auth, requirePermission('content:manage_own'))
 
 router.get(
   '/',
-  validate({ params: topicIdParamsSchema, query: paginationQuerySchema }),
+  validate({ params: topicIdParamsSchema, query: listSearchQuerySchema }),
   async (req, res, next) => {
     try {
       const { categoryId, topicId } = req.params as TopicIdParams
-      const pagination = req.query as unknown as PaginationQuery
+      const query = req.query as unknown as ListSearchQuery
       const entities = await entitiesService.listEntities(
         req.user!,
         categoryId,
         topicId,
-        pagination,
+        query,
       )
       res.json(entities)
     } catch (error) {
