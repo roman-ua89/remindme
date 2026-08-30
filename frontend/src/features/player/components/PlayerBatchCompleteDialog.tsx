@@ -27,7 +27,7 @@ export function PlayerBatchCompleteDialog({
                 <DialogHeader>
                     <DialogTitle>Batch complete</DialogTitle>
                     <DialogDescription>
-                        You finished this pack. Get the next 10 entities or return Home.
+                        You finished this pack. Get the next 3 entities or return Home.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

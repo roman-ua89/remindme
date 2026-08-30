@@ -63,7 +63,6 @@ function CodeBlockEditorInner({ value, onChange }: CodeBlockEditorInnerProps) {
       <div className="overflow-hidden rounded-md border border-input">
         <CodeMirror
           value={value.value}
-          height="160px"
           extensions={[getLanguageExtension(value.language)]}
           basicSetup={{ lineNumbers: true }}
           onChange={(nextValue) => onChange({ ...value, value: nextValue })}

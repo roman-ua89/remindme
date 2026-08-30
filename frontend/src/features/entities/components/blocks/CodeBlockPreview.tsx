@@ -19,7 +19,6 @@ export function CodeBlockPreview({ contentJson }: CodeBlockPreviewProps) {
       <div className="overflow-hidden rounded-md border border-input">
         <CodeMirror
           value={contentJson.value}
-          height="160px"
           editable={false}
           extensions={[getLanguageExtension(contentJson.language)]}
           basicSetup={{ lineNumbers: true }}
