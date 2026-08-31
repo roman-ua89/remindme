@@ -8,7 +8,6 @@ export type DevPlanTask = {
 export const devPlanTasks: DevPlanTask[] = [
     { id: 'move-constructor', label: 'Move templates on scroll for entity constructor page.', done: false },
     { id: 'list-sort', label: 'Show last add on top of all pages for Categories, Topics and Entities.', done: false },
-    { id: '2', label: 'Change hover on list item.', done: false },
     { id: '3', label: 'Optional mark for list item which indicates something (require review/editing...). On Player and Constructor page', done: false },
     { id: '4', label: 'Create home page. Login form inside the modal window.', done: false },
     { id: '5', label: 'On home page show how many entities were added for the last 7 days.', done: false },

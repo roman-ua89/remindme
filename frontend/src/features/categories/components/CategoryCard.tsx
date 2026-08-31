@@ -36,10 +36,10 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
     }
 
     return (
-        <Card size='sm' className='transition-colors hover:bg-muted/40'>
+        <Card size='sm' className='transition-colors hover:bg-white/60'>
             <CardHeader>
                 <CardTitle>
-                    <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1 hover:text-primary'>
+                    <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1'>
                         {category.name}{' '}
                         <span className="text-stone-300">
                             Topics: {category.topicCount} · Entities: {category.entityCount}

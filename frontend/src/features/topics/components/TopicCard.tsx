@@ -36,13 +36,13 @@ export function TopicCard({ topic, onDelete }: TopicCardProps) {
   }
 
   return (
-    <Card size="sm" className="transition-colors hover:bg-muted/40">
+    <Card size="sm" className="transition-colors hover:bg-white/60">
       <CardHeader>
         <CardTitle>
           <Link
             to="/categories/$categoryId/topics/$topicId"
             params={{ categoryId: topic.categoryId, topicId: topic.id }}
-            className="block w-full py-1 hover:text-primary"
+            className="block w-full py-1"
           >
             {topic.name} <span className="text-stone-300">Entities: {topic.entityCount}</span>
           </Link>
