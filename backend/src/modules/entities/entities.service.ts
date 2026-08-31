@@ -38,6 +38,8 @@ function toEntityListItem(entity: {
     skippedCount: number;
     visibility: EntityVisibility;
     position: number;
+    createdAt: Date;
+    updatedAt: Date;
 }): EntityListItem {
     return {
         id: entity.id,
@@ -47,6 +49,8 @@ function toEntityListItem(entity: {
         skippedCount: entity.skippedCount,
         visibility: entity.visibility,
         position: entity.position,
+        createdAt: entity.createdAt.toISOString(),
+        updatedAt: entity.updatedAt.toISOString(),
     };
 }
 

@@ -17,6 +17,7 @@ import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlayButton } from '@/features/player/components/PlayButton';
 import type { EntityListItem } from '@/features/entities/types';
 import { Link, useParams } from '@tanstack/react-router';
+import { format, parseISO } from 'date-fns';
 
 type EntityCardProps = {
     entity: EntityListItem;
@@ -35,6 +36,9 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
         setRemoveDialogOpen(false);
     }
 
+    const createdAt = parseISO(entity.createdAt);
+    const dateFormat = 'd-MM-yyyy';
+
     return (
         <Card size='sm' className='transition-colors hover:bg-white/60'>
             <CardHeader>
@@ -46,10 +50,13 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
                     >
                         {entity.title}
                     </Link>
+                    <div className='text-gray-400 flex gap-6 text-xs font-light absolute top-7'>
+                        <span>Created: {format(createdAt, dateFormat)}</span>
+                    </div>
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-2'>
-                        <span className='text-sm text-muted-foreground tabular-nums'>{entity.revisedCount} revised</span>
+                        <span className='text-sm tabular-nums text-gray-400'>{entity.revisedCount} revised</span>
                         <PlayButton scope={{ type: 'entity', entityId: entity.id }} ariaLabel='Play entity' />
                         <Button variant='ghost' size='icon-sm' aria-label='Edit entity' onClick={() => onEdit(entity.id)}>
                             <PencilIcon />

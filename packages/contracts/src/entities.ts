@@ -67,6 +67,8 @@ export const entityListItemSchema = z.object({
   skippedCount: z.number().int().nonnegative(),
   visibility: entityVisibilitySchema,
   position: z.number().int().nonnegative(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 })
 
 export const entityBlockResponseSchema = z.discriminatedUnion('blockType', [

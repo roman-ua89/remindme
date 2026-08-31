@@ -28,6 +28,7 @@ This is the technical counterpart to [PRODUCT.md](PRODUCT.md). For folder layout
 | Rich text editor | TipTap (`@tiptap/react`) | Entity constructor **Text** blocks ([PRODUCT.md §3.4](PRODUCT.md)); reusable for other rich-text surfaces |
 | Code block editor | `@uiw/react-codemirror` | Entity constructor **Code** blocks ([PRODUCT.md §3.4](PRODUCT.md)); MVP languages: JavaScript + TypeScript |
 | Image upload | Custom component (`ImageBlockEditor`) | Entity constructor **Image** blocks — centered file picker + drag-drop; upload via `features/media/` |
+| Dates | date-fns | Format and parse dates for display (entity lists, timestamps, relative times) |
 | Toasts | *Unspecified for now* | Mutation/error feedback — library TBD (likely shadcn toast/sonner when chosen) |
 | Lint | ESLint (flat config) | Code quality, React/TS rules |
 | Format | Prettier | Consistent formatting |
@@ -543,6 +544,14 @@ components.json            # shadcn CLI config (aliases, style, Tailwind paths)
 - Use separate **UI/view-model types** only when mapping is non-trivial
 - Path alias: **`@/`** → `src/` (frontend and backend only; contracts uses relative imports or package subpath exports)
 - No `any`; use `unknown` + narrowing for API error payloads
+
+### Dates (date-fns)
+
+**date-fns** is the chosen library for formatting and parsing dates in the UI. Do not use `toLocaleDateString` one-offs or a second date library (Day.js, Moment, Temporal polyfills).
+
+- Import **named functions** (`format`, `formatDistanceToNow`, `parseISO`) so unused helpers tree-shake
+- API timestamps arrive as ISO strings — parse with **`parseISO`** before formatting
+- Keep display formats consistent (e.g. `MMM d, yyyy` for calendar dates; `formatDistanceToNow` for relative times)
 
 ---
 
@@ -1081,6 +1090,7 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 
 | Date | Change |
 |------|--------|
+| 2026-08-31 | Adopt date-fns for date formatting and parsing in the frontend |
 | 2026-08-18 | Player batched session: pack mutation instead of per-entity prefetch; Progress bar |
 | 2026-06-29 | Initial tech stack document |
 | 2026-06-29 | Adopt react-hook-form + Zod for forms |

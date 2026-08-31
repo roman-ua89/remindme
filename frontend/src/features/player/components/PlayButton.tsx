@@ -37,7 +37,7 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
                         navigate({ to: '/player', search: toPlayerSearch(scope) });
                     }}
                 >
-                    {disabled ? <PlayOff /> : <PlayIcon />}
+                    {disabled ? <PlayOff className='text-red-800' /> : <PlayIcon className='text-green-600' />}
                 </Button>
             </TooltipTrigger>
             <TooltipContent>
