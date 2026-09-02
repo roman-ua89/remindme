@@ -392,7 +392,7 @@ Used by `createEntity` and `updateEntity` when blocks are saved. Not a public AP
 | `block_type` | `content_json` | `media_asset_id` |
 |--------------|----------------|------------------|
 | `text` | TipTap/ProseMirror JSON | NULL |
-| `code` | `{ language, value }` | NULL |
+| `code` | `{ language, value, blurredByDefault }` | NULL |
 | `image` | NULL | FK to `media_assets.id` |
 | `list` | `{ blurRightSideByDefault }` | NULL (+ child rows in `list_block_rows`) |
 

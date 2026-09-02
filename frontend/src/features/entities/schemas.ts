@@ -7,6 +7,7 @@ const codeLanguageSchema = z.enum(['javascript', 'typescript'])
 const codeContentJsonSchema = z.object({
   language: codeLanguageSchema,
   value: z.string(),
+  blurredByDefault: z.boolean(),
 })
 
 const listBlockRowSchema = z.object({

@@ -145,11 +145,17 @@ Each entity has its own ordered sequence of blocks. Types can be mixed and order
 | Block type | Purpose | Editor behavior |
 |------------|---------|-----------------|
 | **Text** | Prose / notes | TipTap rich text editor (bold, italic, underline, headings, lists, tables) |
-| **Code** | Code snippet | `@uiw/react-codemirror` editor with language selector; MVP: **JavaScript** and **TypeScript** |
+| **Code** | Code snippet | `@uiw/react-codemirror` editor with language selector; MVP: **JavaScript** and **TypeScript**; optional checkbox: **Blured by default** |
 | **Image** | Visual content | Custom upload container: centered file picker + drag-drop; preview after upload; remove to re-upload |
 | **List** | Key–value pairs | Rows with **left** and **right** columns; **+** adds a row within the block; optional checkbox: **Blur right side by default** |
 
 Additional block types may be added in future versions; v1 supports the four types above.
+
+**Code block options** (checkbox below the editor):
+
+| Option | Default | Behavior |
+|--------|---------|----------|
+| **Blured by default** | off | Code is blurred until the user clicks/taps to reveal (revision-style guess-then-check) |
 
 **List block:** The **+** button adds a row inside that List block (left/right values). It does not add a new top-level constructor block.
 
@@ -187,7 +193,7 @@ The **Player** (`/player`) is where the user revises information. It shows one e
 - The Player deals **packs of up to 10** eligible entities (fewer if the min pool is smaller). The next card is already in the client queue.
 - **Done** — increments `revised_count` for the current entity; advances to the next item in the current pack.
 - **Skip** — increments `skipped_count` only (does not increment `revised_count`); advances to the next item in the current pack. Skip and Done differ only by which counter they update.
-- **Pack complete** — when the current pack is exhausted, a modal offers **Get next 10** or **Go to Home**. The user stays on `/player` (no summary screen, no auto-redirect).
+- **Pack complete** — when the current pack is exhausted, a modal offers **Get next 3** or **Go to Home**. The user stays on `/player` (no summary screen, no auto-redirect).
 - **Round reset** — if the next pack is empty because every eligible entity was already shown this round, shown ids are cleared and a new pack is dealt. Play continues.
 - **Empty scope** — if there are no eligible entities in scope, **Play** is disabled on the list row when possible; navigating to `/player` with an empty scope shows a depleted state (Home only).
 
@@ -250,7 +256,7 @@ Notes:
 2. First pack: up to 10 random entities at minimum `revised_count` in that category (only `visibility = included`)
 3. User reviews the read-only preview
 4. **Done** or **Skip** → matching counter incremented → next entity in the current pack
-5. When the pack is empty → modal: **Get next 10** or **Go to Home**
+5. When the pack is empty → modal: **Get next 3** or **Go to Home**
 6. Continue deals another pack, excluding entities already shown this round
 7. When a pack request is empty, the round resets and play continues from the current min pool
 
@@ -366,6 +372,12 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 | Scheduling | Min revised_count pool, random, once per session | Restored with Done → min pool; Skip → random in scope |
 | Session end | Session summary page | Completion message on `/player` (no summary screen) |
 | Counter mutations | Schema only | Done → `revised_count + 1`; Skip → `skipped_count + 1` |
+
+### Code block blur (2026-08-31)
+
+| Topic | Previous | Updated |
+|-------|----------|---------|
+| Code block options | Language selector + editor only | Optional **Blured by default** checkbox; preview/Player click-to-reveal |
 
 ### Player batches (2026-08-18)
 

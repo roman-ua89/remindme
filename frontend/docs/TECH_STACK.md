@@ -433,12 +433,12 @@ Install extensions incrementally (e.g. `@tiptap/starter-kit`, `@tiptap/extension
 |---------|------------|
 | **Primary use** | Entity constructor **Code** template — `CodeBlockEditor.tsx` in `features/entities/components/blocks/` |
 | **Other uses** | Same CodeMirror setup powers read-only preview in `EntityPreviewPanel.tsx` and **Player** `PlayerPreview.tsx` (`editable={false}`) |
-| **Persistence** | Store `{ language, value }` in `entity_blocks.content_json` (see [DATABASE.md §4](DATABASE.md)) — not HTML |
-| **Form wiring** | `Controller` on the block's `contentJson`; update `value` on `onChange`; update `language` via a shadcn **Select** |
+| **Persistence** | Store `{ language, value, blurredByDefault }` in `entity_blocks.content_json` (see [DATABASE.md §4](DATABASE.md)) — not HTML |
+| **Form wiring** | `Controller` on the block's `contentJson`; update `value` on `onChange`; update `language` via a shadcn **Select**; optional **Blured by default** checkbox on `blurredByDefault` |
 | **MVP languages** | **`javascript`** and **`typescript`** only — map to `@codemirror/lang-javascript` (`javascript()` and `javascript({ typescript: true })`) |
 | **Default language** | `javascript` when a new Code block is inserted |
 | **Basic setup** | `basicSetup={{ lineNumbers: true }}`; language highlighting via `extensions` from `getLanguageExtension(language)` — must support **`javascript`** and **`typescript`** in MVP |
-| **Preview styling** | Reuse the same CodeMirror instance/config with `editable={false}` inside block preview chrome; match editor theme via Tailwind |
+| **Preview styling** | Reuse the same CodeMirror instance/config with `editable={false}` inside block preview chrome; match editor theme via Tailwind; when `blurredByDefault` is true, apply click-to-reveal blur |
 
 Install:
 
@@ -1111,3 +1111,4 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 | 2026-07-13 | Adopt `@uiw/react-codemirror` for Entity constructor Code blocks; MVP languages: JavaScript + TypeScript (§9) |
 | 2026-07-13 | Image blocks: custom `ImageBlockEditor` — file picker + drag-drop; preview with remove (§9) |
 | 2026-07-13 | Drop TanStack Virtual; adopt classic offset pagination for entity lists (§7) |
+| 2026-08-31 | Code blocks: persist `blurredByDefault` in `content_json`; click-to-reveal blur in preview/Player |

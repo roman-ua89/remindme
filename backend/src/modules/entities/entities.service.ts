@@ -1,4 +1,5 @@
 import type {
+    CodeContentJson,
     Entity,
     EntityBlockResponse,
     EntityListItem,
@@ -54,6 +55,15 @@ function toEntityListItem(entity: {
     };
 }
 
+function toCodeBlockContentJson(contentJson: unknown): CodeContentJson {
+    const json = contentJson as Partial<CodeContentJson> | null | undefined;
+    return {
+        language: json?.language === 'typescript' ? 'typescript' : 'javascript',
+        value: typeof json?.value === 'string' ? json.value : '',
+        blurredByDefault: json?.blurredByDefault ?? false,
+    };
+}
+
 function toListBlockContentJson(contentJson: unknown): ListBlockContentJson {
     const json = contentJson as Partial<ListBlockContentJson> | null | undefined;
     return {
@@ -75,7 +85,7 @@ function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
                 id: block.id,
                 blockType: 'code',
                 position: block.position,
-                contentJson: block.contentJson as { language: 'javascript' | 'typescript'; value: string },
+                contentJson: toCodeBlockContentJson(block.contentJson),
             };
         case 'image':
             return {

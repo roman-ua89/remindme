@@ -32,7 +32,7 @@ Think of the Player as dealing cards in **packs of 10**, always preferring “le
 2. Ask the backend for a pack: up to 10 random **full entities** that are still eligible, not already shown this round, and currently at the **lowest `revised_count`** among what’s left.
 3. Show `queue[0]` from memory. The next card is already in `queue[1]` — no extra fetch while playing.
 4. Done or Skip mutates that entity, then drops it from the queue.
-5. When the pack is empty → modal: **Get next 10** or **Go to Home**.
+5. When the pack is empty → modal: **Get next 3** or **Go to Home**.
 6. If a pack request returns nothing because every eligible id was already shown → **round reset** (clear shown ids and deal again). If it is still empty, the scope has zero eligible entities.
 
 Skip does **not** raise `revised_count`, so skipped entities stay in the low pool and **re-enter** on the next round. Done entities move up a tier and appear less often until others catch up.
@@ -79,7 +79,7 @@ While a pack is active, a shadcn `Progress` bar tracks **this pack only** — no
 | Hint | `{queue.length} left` (includes the card on screen) |
 | Bar | `(completedInBatch / batchTotal) * 100` |
 
-After the last Done/Skip, the bar is full and the continue modal opens. **Get next 10** resets `batchTotal`, `completedInBatch`, and `queue`.
+After the last Done/Skip, the bar is full and the continue modal opens. **Get next 3** resets `batchTotal`, `completedInBatch`, and `queue`.
 
 ---
 

@@ -30,6 +30,7 @@ export function createBlock(blockType: BlockType): EntityBlockForm {
         contentJson: {
           language: 'javascript',
           value: '',
+          blurredByDefault: false,
         },
       }
     case 'image':

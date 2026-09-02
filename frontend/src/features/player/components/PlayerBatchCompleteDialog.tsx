@@ -35,7 +35,7 @@ export function PlayerBatchCompleteDialog({
                         Go to Home
                     </Button>
                     <Button type="button" onClick={onNextBatch} disabled={isLoading}>
-                        Get next 10
+                        Get next 3
                     </Button>
                 </DialogFooter>
             </DialogContent>

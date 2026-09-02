@@ -14,7 +14,7 @@ Product behavior lives in [PRODUCT.md](PRODUCT.md). This document describes how 
 | Roles | Extensible RBAC: `roles` + `permissions` + join tables; seed `user` and `admin` |
 | Entity constructor | **No table** — UI only ([PRODUCT.md §3.4](PRODUCT.md)); persist as `entities.title` + ordered `entity_blocks` (0–20 per entity) |
 | Text blocks | TipTap JSON in `content_json` (ProseMirror document shape) |
-| Code blocks | `{ language, value }` in `content_json` — edited via `@uiw/react-codemirror`; v1 languages: `javascript`, `typescript` |
+| Code blocks | `{ language, value, blurredByDefault }` in `content_json` — edited via `@uiw/react-codemirror`; v1 languages: `javascript`, `typescript` |
 | Image blocks | Upload to object storage; DB holds `media_assets` + FK from the block |
 | List blocks | Normalized child rows in `list_block_rows` |
 | Password reset | Dedicated token table (hashed tokens, expiry, single-use) |
@@ -325,7 +325,8 @@ Exact node schema follows the TipTap extension set configured in the app; treat 
 ```json
 {
   "language": "typescript",
-  "value": "const x = 1;"
+  "value": "const x = 1;",
+  "blurredByDefault": false
 }
 ```
 
@@ -333,6 +334,7 @@ Exact node schema follows the TipTap extension set configured in the app; treat 
 |-------|----------|-------|
 | `language` | yes | CodeMirror language id; v1 values: `javascript`, `typescript`; empty string allowed if language is unknown |
 | `value` | yes | Source text |
+| `blurredByDefault` | yes | When `true`, code is blurred until user reveals it; missing values default to `false` on read |
 
 ### Image / List
 

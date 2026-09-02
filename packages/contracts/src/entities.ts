@@ -11,6 +11,7 @@ export const codeLanguageSchema = z.enum(['javascript', 'typescript'])
 export const codeContentJsonSchema = z.object({
   language: codeLanguageSchema,
   value: z.string(),
+  blurredByDefault: z.boolean(),
 })
 
 export const listBlockRowSchema = z.object({
@@ -121,6 +122,7 @@ export const entityByIdParamsSchema = z.object({
 
 export const entityListPageSchema = paginatedResponseSchema(entityListItemSchema)
 
+export type CodeContentJson = z.infer<typeof codeContentJsonSchema>
 export type ListBlockContentJson = z.infer<typeof listBlockContentJsonSchema>
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>

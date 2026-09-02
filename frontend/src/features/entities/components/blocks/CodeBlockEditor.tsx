@@ -2,6 +2,8 @@ import CodeMirror from '@uiw/react-codemirror'
 import type { Control, FieldPath } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -20,6 +22,16 @@ type CodeBlockEditorProps = {
   name: FieldPath<EntityConstructorFormValues>
 }
 
+function toCodeContentJson(value: unknown): CodeContentJson {
+  const json = value as Partial<CodeContentJson> | null | undefined
+
+  return {
+    language: json?.language === 'typescript' ? 'typescript' : 'javascript',
+    value: json?.value ?? '',
+    blurredByDefault: json?.blurredByDefault ?? false,
+  }
+}
+
 export function CodeBlockEditor({ control, name }: CodeBlockEditorProps) {
   return (
     <Controller
@@ -27,7 +39,8 @@ export function CodeBlockEditor({ control, name }: CodeBlockEditorProps) {
       name={name}
       render={({ field }) => (
         <CodeBlockEditorInner
-          value={(field.value as CodeContentJson) ?? { language: 'javascript', value: '' }}
+          idPrefix={name}
+          value={toCodeContentJson(field.value)}
           onChange={field.onChange}
         />
       )}
@@ -36,11 +49,14 @@ export function CodeBlockEditor({ control, name }: CodeBlockEditorProps) {
 }
 
 type CodeBlockEditorInnerProps = {
+  idPrefix: string
   value: CodeContentJson
   onChange: (value: CodeContentJson) => void
 }
 
-function CodeBlockEditorInner({ value, onChange }: CodeBlockEditorInnerProps) {
+function CodeBlockEditorInner({ idPrefix, value, onChange }: CodeBlockEditorInnerProps) {
+  const blurCheckboxId = `${idPrefix}-blurred-by-default`
+
   return (
     <div className="flex flex-col gap-2">
       <Select
@@ -67,6 +83,17 @@ function CodeBlockEditorInner({ value, onChange }: CodeBlockEditorInnerProps) {
           basicSetup={{ lineNumbers: true }}
           onChange={(nextValue) => onChange({ ...value, value: nextValue })}
         />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id={blurCheckboxId}
+          checked={value.blurredByDefault}
+          onCheckedChange={(checked) =>
+            onChange({ ...value, blurredByDefault: checked })
+          }
+        />
+        <Label htmlFor={blurCheckboxId}>Blured by default</Label>
       </div>
     </div>
   )

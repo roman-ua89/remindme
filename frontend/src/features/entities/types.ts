@@ -7,6 +7,7 @@ export type CodeLanguage = 'javascript' | 'typescript'
 export type CodeContentJson = {
   language: CodeLanguage
   value: string
+  blurredByDefault: boolean
 }
 
 export type ListBlockRow = {

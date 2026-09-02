@@ -530,6 +530,7 @@ Uses app header + `PageContainer`. Split layout: **content left**, **templates r
 │  │  └─────────────────────────────────────┘ │                     │ │
 │  │  ┌─ Code ─────────────────────── [≡][×]│                     │ │
 │  │  │ [CodeMirror — JS / TS]                │                     │ │
+│  │  │ ☐ Blured by default                   │                     │ │
 │  │  └─────────────────────────────────────┘ │                     │ │
 │  │                                          │                     │ │
 │  │  Blocks (2/20)                           │                     │ │
@@ -544,7 +545,7 @@ Uses app header + `PageContainer`. Split layout: **content left**, **templates r
 | Template | Block editor (left column, after insert) |
 |----------|------------------------------------------|
 | **Text** | TipTap rich text editor |
-| **Code** | `@uiw/react-codemirror` editor + language selector (JavaScript, TypeScript) |
+| **Code** | `@uiw/react-codemirror` editor + language selector (JavaScript, TypeScript); optional **Blured by default** (see §7.5) |
 | **Image** | Custom `ImageBlockEditor`: centered file picker + drag-drop container; preview after upload; remove to re-upload |
 | **List** | Rows: left + right columns; **+** adds row (see §7.3) |
 
@@ -648,6 +649,27 @@ One Image block in the left column.
 
 ---
 
+### 7.5 Constructor block — Code type (detail)
+
+One Code block in the left column, expanded:
+
+```
+┌─ Code ─────────────────────────────────────────────── [≡] [×] ─┐
+│                                                                 │
+│  [ JavaScript ▼ ]                                               │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ [CodeMirror — JS / TS]                                    │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  ☐ Blured by default                                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Blured by default** blurs the snippet in preview/Player until the user clicks/taps to reveal.
+
+---
+
 ## 8. Player — `/player`
 
 Revision page. Shows one entity at a time as a read-only preview. Uses app layout (header + `PageContainer`) but **no breadcrumbs** — immersive revision mode.
@@ -704,7 +726,7 @@ Search params (one required): `categoryId`, `topicId`, or `entityId`.
 │                    ┌─────────────────────┐                         │
 │                    │  Batch complete     │                         │
 │                    │                     │                         │
-│                    │  [ Get next 10 ]    │                         │
+│                    │  [ Get next 3 ]    │                         │
 │                    │  [ Go to Home ]     │                         │
 │                    └─────────────────────┘                         │
 │                                                                    │
@@ -714,11 +736,11 @@ Search params (one required): `categoryId`, `topicId`, or `entityId`.
 | Element | Behavior |
 |---------|----------|
 | **Batch complete** | Modal after the current pack is exhausted; no per-session statistics |
-| **Get next 10** | Fetches another pack (round reset if the scope was fully shown) |
+| **Get next 3** | Fetches another pack (round reset if the scope was fully shown) |
 | **Go to Home** | → `/` (same destination as **Stop**) |
 | **Stop** | Still available — navigates to Home |
 
-**Depleted** — shown only when the scope has zero eligible entities (`visibility = included` count is 0), on open or after a failed round reset. Home only; no **Get next 10**.
+**Depleted** — shown only when the scope has zero eligible entities (`visibility = included` count is 0), on open or after a failed round reset. Home only; no **Get next 3**.
 
 ---
 
@@ -797,6 +819,7 @@ Suggested Tailwind on app shell outer wrapper:
 
 | Date | Change |
 |------|--------|
+| 2026-08-31 | Code template: **Blured by default** checkbox below the editor (§7.1, §7.5) |
 | 2026-08-18 | Player pack progress bar; batch-complete modal (Next 10 / Home); depleted empty state |
 | 2026-07-13 | Entity list rows show gray `{revised_count} revised` label before Play button |
 | 2026-07-13 | Add Player wireframe (`/player`); Play button on category, topic, and entity list rows; completion state |
