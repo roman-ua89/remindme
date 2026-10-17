@@ -145,7 +145,7 @@ Clear boundaries prevent TanStack Query and Zustand from overlapping.
 
 ### Auth token storage
 
-The backend issues a **JWT in an httpOnly cookie** on login. The frontend Axios client uses **`withCredentials: true`** and does not store tokens in `localStorage`. On 401, clear client auth state and redirect to login.
+The backend issues a **JWT in an httpOnly cookie** on login. The frontend Axios client uses **`withCredentials: true`** and does not store tokens in `localStorage`. On 401, clear client auth state; the route guard sends the visitor to `/?login=true`.
 
 ### Anti-patterns
 
@@ -191,10 +191,11 @@ Routing is **file-based**: URL structure is defined by the filesystem under `src
 Aligned with product pages from [PRODUCT.md §3.1](PRODUCT.md):
 
 ```
-/auth/login
+/auth/login                           → redirects to /?login=true
 /auth/register
 /auth/forgot-password
-/                                    → Home (categories)
+/                                    → Home (public landing; login dialog via ?login=true; stats when logged in)
+/categories                          → Categories list
 /categories/$categoryId              → Category detail (topics list)
 /categories/$categoryId/topics/$topicId
                                      → Topic detail (entities list)
@@ -205,7 +206,7 @@ Aligned with product pages from [PRODUCT.md §3.1](PRODUCT.md):
 /player                              → Player (revision; search: categoryId | topicId | entityId)
 ```
 
-Category creation uses a **popover on Home** — no dedicated route.
+Category creation uses a **popover on the Categories page** (`/categories`) — no dedicated route.
 
 Example file layout (maps 1:1 to the tree above):
 
@@ -214,14 +215,15 @@ src/routes/
   __root.tsx
   auth/
     route.tsx                                  → auth layout (no app chrome)
-    login.tsx                                  → /auth/login
+    login.tsx                                  → /auth/login (redirects to /?login=true)
     register.tsx
     forgot-password.tsx
+  index.tsx                                    → / (public Home)
   _app/
     route.tsx                                  → pathless app layout (nav, header)
-    index.tsx                                  → /
     player.tsx                                 → /player
     categories/
+      index.tsx                                  → /categories
       $categoryId/
         index.tsx                                → /categories/$categoryId
         topics/
@@ -237,13 +239,13 @@ src/routes/
 - **File-based routing only** — add or rename files under `src/routes/` to add routes; avoid a separate manual route tree
 - **`@tanstack/router-plugin`** in `vite.config.ts`; aliases aligned with `tsconfig` (`@/` → `src/`)
 - **Route loaders** prefetch Query data where it reduces waterfall (e.g. entity with blocks on constructor page)
-- **`beforeLoad` guards** on authenticated routes; redirect unauthenticated users to `/auth/login`
+- **`beforeLoad` guards** on authenticated routes; redirect unauthenticated users to `/?login=true` (the Home page opens the login dialog)
 - **Search params** for filters (e.g. `?sort=addedAt`) — shareable URLs
 - **Typed route params** — no stringly-typed `useParams()`
 
 ### Layouts
 
-- **Auth layout:** login, register, forgot password (no app chrome)
+- **Auth layout:** register and forgot password (no app chrome); login is a dialog on Home
 - **App layout:** Home, category/topic/entity browsing (shared nav/header)
 
 ---
@@ -328,7 +330,7 @@ const apiClient = axios.create({
 ### Interceptors
 
 - **Request:** rely on httpOnly cookies (no manual Bearer header in v1)
-- **Response:** normalize errors to a typed `ApiError`; on 401 → clear auth state and redirect to login
+- **Response:** normalize errors to a typed `ApiError`; on 401 → clear auth state; the route guard opens the login dialog (`/?login=true`)
 
 ### Layering
 
@@ -392,7 +394,7 @@ All user input flows use **react-hook-form** for form state and **Zod** for vali
 ### Scope
 
 - Auth: login, register, forgot password
-- Create category (popover on Home — name only; topics are created separately on Category detail)
+- Create category (popover on Categories — name only; topics are created separately on Category detail)
 - Add topic (Category detail)
 - Entity constructor: Title + ordered constructor blocks (Text, Code, Image, List)
 

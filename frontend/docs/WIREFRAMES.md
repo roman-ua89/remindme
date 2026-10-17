@@ -53,8 +53,8 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 
 | Layout | Used on | Shell |
 |--------|---------|-------|
-| **Auth layout** | Login, Register, Forgot password | No app nav; centered card inside viewport |
-| **App layout** | Home, Category detail, Topic detail, Entity constructor (full page), Player | Header + `PageContainer` + page body |
+| **Auth layout** | Register, Forgot password (login is a dialog on Home) | No app nav; centered card inside viewport |
+| **App layout** | Home, Categories, Category detail, Topic detail, Entity constructor (full page), Player | Header + `PageContainer` + page body |
 
 ```mermaid
 flowchart TB
@@ -89,6 +89,7 @@ All authenticated pages share the same header inside `PageContainer`.
 | Element | Behavior |
 |---------|----------|
 | **Logo / app name** | Links to Home (`/`) |
+| **Log in** (guests only) | Opens the sign-in dialog on Home (`/?login=true`); shown instead of the user menu |
 | **User menu** | Logout; profile TBD for v1 |
 
 Auth pages **do not** show this header.
@@ -99,10 +100,11 @@ Every app-layout page shows an **`AppBreadcrumbs`** component directly **under t
 
 | Page | Breadcrumb trail | Link behavior |
 |------|------------------|---------------|
-| Home | `Home` | Current page only |
-| Category detail | `Home` › `Category: English` | Home → `/`; category segment is current |
-| Topic detail | `Home` › `Category: English` › `Topic: Verbs` | Home → `/`; category → category detail; topic segment is current |
-| Entity constructor (full page) | `Home` › `Category: English` › `Topic: Verbs` | Same as topic detail (entity editing stays in topic context) |
+| Home | *(none)* | Public landing page — no breadcrumbs |
+| Categories | `Home` › `Categories` | Home → `/`; Categories is current |
+| Category detail | `Home` › `Categories` › `Category: English` | Home → `/`; Categories → `/categories`; category segment is current |
+| Topic detail | `Home` › `Categories` › `Category: English` › `Topic: Verbs` | Home → `/`; Categories → `/categories`; category → category detail; topic segment is current |
+| Entity constructor (full page) | `Home` › `Categories` › `Category: English` › `Topic: Verbs` | Same as topic detail (entity editing stays in topic context) |
 | Player | *(none)* | Immersive revision mode — no breadcrumbs; **Stop** replaces back navigation |
 
 Label format is fixed: **`Category: <name>`** and **`Topic: <name>`** — include the prefix in the visible text. The current (last) segment uses `BreadcrumbPage` (non-link); ancestors use `BreadcrumbLink`.
@@ -135,40 +137,35 @@ Home › Category: English › Topic: Verbs
 
 Centered card on a full-height viewport. Card is **~400px** wide inside the 1024px column.
 
-### 3.1 Login — `/auth/login`
+### 3.1 Login — dialog on Home (`/?login=true`)
+
+Login is not a separate page. The **Log in** button in the header opens this dialog over the home page, and the URL becomes `/?login=true`. `/auth/login` redirects to the same place, and so does any protected page a guest opens.
 
 ```
-┌──────────────────────────── viewport ────────────────────────────┐
+┌──────────────────────────── Home (dimmed behind) ────────────────┐
+│  RemindMe                                            [ Log in ]  │
 │                                                                  │
-│              ┌────────────── ~400px ──────────────┐              │
-│              │  RemindMe                         │              │
-│              │                                   │              │
-│              │  Sign in                          │              │
-│              │                                   │              │
-│              │  Email                            │              │
-│              │  ┌─────────────────────────────┐  │              │
-│              │  │                             │  │              │
-│              │  └─────────────────────────────┘  │              │
-│              │                                   │              │
-│              │  Password                         │              │
-│              │  ┌─────────────────────────────┐  │              │
-│              │  │                             │  │              │
-│              │  └─────────────────────────────┘  │              │
-│              │                                   │              │
-│              │  [        Sign in        ]        │              │
-│              │                                   │              │
-│              │  Forgot password?                 │              │
-│              │  Don't have an account? Register  │              │
-│              └───────────────────────────────────┘              │
-│                                                                  │
+│              ┌────────────── ~400px ──────────────┐   [ × ]        │
+│              │  Sign in                           │                │
+│              │  Enter your email and password…    │                │
+│              │                                    │                │
+│              │  Email                             │                │
+│              │  ┌─────────────────────────────┐   │                │
+│              │  └─────────────────────────────┘   │                │
+│              │  Password                          │                │
+│              │  ┌─────────────────────────────┐   │                │
+│              │  └─────────────────────────────┘   │                │
+│              │  [          Sign in           ]    │                │
+│              └────────────────────────────────────┘                │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
 | Action | Result |
 |--------|--------|
-| Sign in | Redirect to Home |
-| Forgot password? | → Forgot password page |
-| Register | → Registration page |
+| Sign in | Dialog closes; user stays on Home, which now shows **Open my categories** and the **Your library** section |
+| × / Escape / click outside | Dialog closes; URL returns to `/` |
+
+Forgot password and Register are not in the dialog yet; they remain separate pages (§3.2–3.3).
 
 ---
 
@@ -243,7 +240,53 @@ Centered card on a full-height viewport. Card is **~400px** wide inside the 1024
 
 ## 4. Home — `/`
 
-Lists all categories. **Add category** opens a popover (not a separate page).
+Public landing page for everyone. The slogan is the same for all visitors; the rest depends on sign-in state.
+
+**Guest** — the header shows **Log in** instead of the user menu. No stats.
+
+```
+┌────────────────────────────── 1024px ──────────────────────────────┐
+│  RemindMe                                             [ Log in ]   │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  Revise what you've learned, before you forget it.                 │
+│  RemindMe turns your notes into categories, topics and entities,   │
+│  then brings them back one at a time on a schedule. Built for      │
+│  students, language learners and anyone who needs to keep          │
+│  knowledge sharp.                                                  │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+**Logged in** — user menu in the header; slogan, then **Open my categories**, then the stats.
+
+```
+┌────────────────────────────── 1024px ──────────────────────────────┐
+│  RemindMe                                  [ you@example.com ▾ ]   │
+├────────────────────────────────────────────────────────────────────┤
+│  Revise what you've learned, before you forget it.                 │
+│  (two-line description)                                            │
+│  [ Open my categories ]                                            │
+│                                                                    │
+│  YOUR LIBRARY                                                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
+│  │ Categories   │  │ Topics       │  │ Entities     │              │
+│  │ 4            │  │ 12           │  │ 87           │              │
+│  └──────────────┘  └──────────────┘  └──────────────┘              │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+| Element | Behavior |
+|---------|----------|
+| **Log in** | Guests only. Opens the sign-in dialog (§3.1) |
+| **Open my categories** | Logged in only → `/categories` |
+| **Your library** | Logged in only. Three number cards: categories, topics, entities. Values are placeholders until wired to the API |
+
+---
+
+## 4a. Categories — `/categories`
+
+Lists all categories. **Add category** opens a popover (not a separate page). This used to be the home page.
 
 ```
 ┌────────────────────────────── 1024px ──────────────────────────────┐
@@ -299,7 +342,7 @@ Anchored to **+ Add category** button.
 
 ---
 
-### 4.2 Home — empty state
+### 4.2 Categories — empty state
 
 Shown when the user has no categories yet.
 
@@ -765,7 +808,7 @@ Used for destructive actions: delete category, delete topic, remove entity.
 
 | Wireframe | Route | Layout |
 |-----------|-------|--------|
-| Login | `/auth/login` | Auth |
+| Login (dialog on Home) | `/?login=true` (legacy `/auth/login` redirects) | Auth |
 | Registration | `/auth/register` | Auth |
 | Forgot password | `/auth/forgot-password` | Auth |
 | Home | `/` | App |
@@ -774,7 +817,7 @@ Used for destructive actions: delete category, delete topic, remove entity.
 | Player | `/player` (`?categoryId` \| `?topicId` \| `?entityId`) | App (no breadcrumbs) |
 | Entity constructor (full page) | `/categories/…/topics/…/entities/new` or `…/$entityId` | App |
 | Entity constructor (modal) | — (overlay on Topic detail) | Dialog |
-| Add category popover | — (overlay on Home) | Popover |
+| Add category popover | — (overlay on Categories) | Popover |
 | Add topic dialog | — (overlay on Category detail) | Dialog |
 
 ---

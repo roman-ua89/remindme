@@ -153,28 +153,30 @@ Aligned with [PRODUCT.md §3.1](PRODUCT.md) — Category → Topic → Entity hi
 
 | Page | Route |
 |------|-------|
-| Home | `/` |
+| Home (public landing; login dialog; stats when logged in) | `/` |
+| Category list | `/categories` |
 | Category detail | `/categories/$categoryId` |
 | Topic detail | `/categories/$categoryId/topics/$topicId` |
 | Entity constructor (create) | `/categories/$categoryId/topics/$topicId/entities/new` |
 | Entity constructor (edit) | `/categories/$categoryId/topics/$topicId/entities/$entityId` |
 | Player | `/player` (search params: `categoryId` \| `topicId` \| `entityId`) |
 
-Category creation uses a **popover on Home** — no dedicated route.
+Category creation uses a **popover on the Categories page** (`/categories`) — no dedicated route.
 
 ```
 src/routes/
-  __root.tsx                   # root layout — providers, global outlet, devtools
+  __root.tsx                   # root layout — providers, global outlet, devtools, auth guard
+  index.tsx                    # / — public Home (landing; login dialog via ?login=true; stats when logged in)
   auth/
     route.tsx                  # auth layout (no app chrome)
-    login.tsx                  # /auth/login
+    login.tsx                  # /auth/login — redirects to /?login=true
     register.tsx               # /auth/register
     forgot-password.tsx        # /auth/forgot-password
   _app/
     route.tsx                  # pathless layout — nav, header, outlet
-    index.tsx                  # / — Home (category list)
     player.tsx                 # /player — revision (search: categoryId | topicId | entityId)
     categories/
+      index.tsx              # /categories — category list
       $categoryId/
         index.tsx              # /categories/$categoryId — category detail (topics list)
         topics/
@@ -197,7 +199,7 @@ src/routes/
 
 ### Conventions
 
-- **`beforeLoad`** on `_app/` routes: redirect to `/auth/login` when unauthenticated.
+- **`beforeLoad`** guards: `__root.tsx` sends unauthenticated visitors to `/?login=true` (the Home page opens the login dialog) for every route except `/`; `_app/route.tsx` applies the same rule to app routes.
 - **Loaders** prefetch Query data when it avoids a loading waterfall (e.g. topic name on entity constructor page).
 - **Search params** encode shareable UI state when needed (e.g. Player scope on `/player`, filter flags on topic detail).
 - **Page components** are imported from `features/*/components/*Page.tsx` (or similar), not defined inline in route files.
@@ -341,7 +343,8 @@ features/auth/
     use-logout.ts
   schemas.ts          # loginSchema, registerSchema, forgotPasswordSchema
   components/
-    LoginPage.tsx
+    LoginForm.tsx            # sign-in fields + validation; rendered inside the dialog
+    LoginDialog.tsx          # "Log in" button + shadcn Dialog (used by the header on Home)
     RegisterPage.tsx
     ForgotPasswordPage.tsx
     AuthFormLayout.tsx   # shared wrapper for auth screens (if needed)
@@ -357,7 +360,7 @@ features/auth/
 
 ### 5.2 `features/categories/`
 
-Home page category list, create category via popover, rename/delete via icon-only buttons on each row.
+Categories page (`/categories`): category list, create category via popover, rename/delete via icon-only buttons on each row.
 
 ```
 features/categories/
@@ -369,18 +372,31 @@ features/categories/
     use-delete-category.ts
   schemas.ts          # re-export createCategorySchema from contracts
   components/
-    HomePage.tsx
+    CategoriesPage.tsx
     CategoryList.tsx
     CategoryCard.tsx
-    AddCategoryPopover.tsx   # category name only — on Home
+    AddCategoryPopover.tsx   # category name only — on the Categories page
     EmptyCategoryPrompt.tsx
     # PlayButton imported from features/player — embedded in CategoryCard
 ```
 
 | Component | Used on |
 |-----------|---------|
-| `HomePage.tsx` | `/` |
-| `AddCategoryPopover.tsx` | `/` (embedded in HomePage) |
+| `CategoriesPage.tsx` | `/categories` |
+| `AddCategoryPopover.tsx` | `/categories` (embedded in CategoriesPage) |
+
+---
+
+### 5.2b `features/home/`
+
+Public Home page (`/`). Guests see the slogan and the header's **Log in** button. Logged-in users also see **Open my categories** and the **Your library** section (`LibraryStats`, placeholder numbers until wired to the API).
+
+```
+features/home/
+  components/
+    HomePage.tsx        # slogan; guest vs logged-in variants
+    LibraryStats.tsx    # Categories / Topics / Entities counts (placeholder values)
+```
 
 ---
 
@@ -592,7 +608,7 @@ src/lib/
   query-client.ts     # QueryClient defaults (retry, staleTime)
   query-keys.ts       # centralized query key factory
   utils.ts            # cn() — clsx + tailwind-merge
-  auth.ts             # optional — clear client auth state on 401; redirect helpers for api-client
+  auth.ts             # auth helpers: getAuthRedirect (route guard), getApiErrorMessage, isUnauthorizedError
 ```
 
 | Module | Responsibility |
@@ -753,3 +769,4 @@ Mutations follow the same path; on success, Query invalidates keys from `lib/que
 | 2026-07-13 | Image blocks: custom `ImageBlockEditor` — file picker + drag-drop; preview with remove |
 | 2026-08-18 | Player batched client session: `POST /player/batch`, pack progress, continue modal, round reset |
 | 2026-07-13 | Add `features/player/` and `/player` route; Play button on list rows; replace deferred-revision language |
+| 2026-10-18 | Home `/` is the public landing page; login is a dialog opened from the header (`/?login=true`); category list moved to `/categories`; add `features/home/` |

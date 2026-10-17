@@ -48,7 +48,7 @@ Login code lives in `frontend/src/features/auth/` and follows the hybrid layout 
 ```mermaid
 flowchart TB
     subgraph UI["UI layer"]
-        LoginPage["LoginPage<br/>(react-hook-form + Zod)"]
+        LoginDialog["LoginDialog + LoginForm<br/>(react-hook-form + Zod)"]
         RootGuard["__root beforeLoad<br/>(route guard)"]
     end
 
@@ -66,7 +66,7 @@ flowchart TB
         routes["POST /auth/login"]
     end
 
-    LoginPage --> useLogin
+    LoginDialog --> useLogin
     RootGuard --> currentUser
     useLogin --> api
     currentUser --> api
@@ -78,14 +78,16 @@ flowchart TB
 
 | File | Role |
 |------|------|
-| `routes/auth/login.tsx` | Route `/auth/login` → renders `LoginPage` |
-| `features/auth/components/LoginPage.tsx` | Form UI, client-side validation |
+| `routes/auth/login.tsx` | Legacy route `/auth/login` → redirects to `/?login=true` |
+| `features/auth/components/LoginForm.tsx` | Form fields and client-side validation (rendered inside the dialog) |
+| `features/auth/components/LoginDialog.tsx` | Header **Log in** button and shadcn `Dialog`; open state is the `login` search param on `/` |
+| `routes/index.tsx` | Public Home `/`; validates the `login` search param |
 | `features/auth/schemas.ts` | `loginFormSchema` (Zod) |
 | `features/auth/queries/use-login.ts` | Mutation: call API, cache user, navigate |
 | `features/auth/api.ts` | `login()` → `POST /auth/login` |
 | `lib/api-client.ts` | Axios instance with `withCredentials: true` |
 | `lib/auth.ts` | Error helpers, redirect logic for route guard |
-| `routes/__root.tsx` | Global auth check on every navigation |
+| `routes/__root.tsx` | Global auth check on every navigation; guests are sent to `/?login=true` (except `/`) |
 | `routes/_app/route.tsx` | Extra guard for protected app routes |
 
 ---
@@ -146,16 +148,16 @@ This is the full path when a user submits the sign-in form.
 ```mermaid
 sequenceDiagram
     actor User
-    participant LoginPage
+    participant LoginForm
     participant useLogin
     participant apiClient as api-client
     participant Routes as auth.routes
     participant Service as auth.service
     participant DB as PostgreSQL
 
-    User->>LoginPage: Enter email + password, click Sign in
-    LoginPage->>LoginPage: Zod validation (loginFormSchema)
-    LoginPage->>useLogin: mutate({ email, password })
+    User->>LoginForm: Enter email + password, click Sign in
+    LoginForm->>LoginForm: Zod validation (loginFormSchema)
+    LoginForm->>useLogin: mutate({ email, password })
 
     useLogin->>apiClient: POST /auth/login { email, password }
     Note over apiClient: withCredentials: true
@@ -191,13 +193,13 @@ sequenceDiagram
 
 #### Frontend
 
-1. **Route** — User visits `/auth/login`. The `__root` `beforeLoad` runs first; if already authenticated, they are redirected to `/`.
+1. **Open the dialog** — `/` is public. The header's **Log in** button sets `?login=true`, which opens the dialog. A guest who opens a protected page, or `/auth/login`, is redirected to `/?login=true`. The `__root` `beforeLoad` runs first; if already authenticated, it redirects to `/`.
 
-2. **Form validation** — `LoginPage` uses `react-hook-form` with `zodResolver(loginFormSchema)`. Invalid email or empty password show inline `FieldError` messages — no API call yet.
+2. **Form validation** — `LoginForm` uses `react-hook-form` with `zodResolver(loginFormSchema)`. Invalid email or empty password show inline `FieldError` messages — no API call yet.
 
 3. **Mutation** — On valid submit, `useLogin().mutate(values)` runs:
    - `mutationFn`: `features/auth/api.login()` → `POST /auth/login`
-   - `onSuccess`: cache the returned `User` in React Query (`queryKeys.auth.currentUser`), then `navigate({ to: '/' })`
+   - `onSuccess`: cache the returned `User` in React Query (`queryKeys.auth.currentUser`), then `navigate({ to: '/' })`, which drops the `login` param and closes the dialog
    - `onError`: show a Sonner toast via `getApiErrorMessage(error)`
 
 4. **HTTP client** — `apiClient` sends JSON with `withCredentials: true`, so the browser includes (and later stores) cookies for the API origin.
@@ -247,22 +249,24 @@ flowchart TD
     CheckAuthRoute -->|Yes| RedirectHome["redirect to /"]
     CheckAuthRoute -->|No| ShowPage([Render page])
 
-    CheckAppRoute -->|Yes| RedirectLogin["redirect to /auth/login"]
+    CheckAppRoute -->|Yes| RedirectLogin["redirect to /?login=true"]
     CheckAppRoute -->|No| ShowPage
 
     subgraph AppRoutes["_app beforeLoad (protected routes)"]
         AppFetch["fetchQuery GET /auth/me"]
         AppFetch --> AppAuthed{Authenticated?}
-        AppAuthed -->|No| AppRedirect["redirect to /auth/login"]
+        AppAuthed -->|No| AppRedirect["redirect to /?login=true"]
         AppAuthed -->|Yes| AppShow([Render app layout])
     end
 ```
 
 | Guard | Location | Behavior |
 |-------|----------|----------|
-| Global | `routes/__root.tsx` | Fetches current user; redirects logged-in users away from `/auth/*`, guests away from app routes |
-| App shell | `routes/_app/route.tsx` | Ensures authenticated user before any child route (`/`, `/player`, etc.) |
+| Global | `routes/__root.tsx` | Fetches current user; redirects logged-in users away from `/auth/*`, guests away from every route except `/` (which opens the login dialog) |
+| App shell | `routes/_app/route.tsx` | Ensures authenticated user before any child route (`/categories`, `/player`, etc.) |
 | API | `middleware/auth.ts` | Protected backend routes read cookie, verify JWT, set `req.user` |
+
+Logout (`use-logout.ts`) resets the `currentUser` query, so mounted components (header, Home stats) re-render as a guest, then navigates to `/`.
 
 `GET /auth/me` uses the `auth` middleware: reads `req.cookies.remindme_token`, verifies JWT, loads fresh user profile from DB.
 
@@ -319,7 +323,7 @@ flowchart LR
 | Invalid email format / empty password | — (client) | Red text under field |
 | Wrong credentials | 401 | Toast: "Invalid email or password" |
 | Validation error (malformed body) | 422 | Toast with validation message |
-| Expired / tampered session on `/auth/me` | 401 | Silent redirect to `/auth/login` (route guard) |
+| Expired / tampered session on `/auth/me` | 401 | Silent redirect to `/?login=true` (route guard) |
 | Network / server error | 5xx | Toast: generic error message |
 
 Login intentionally uses the **same error message** for unknown email and wrong password (`AUTH_INVALID_CREDENTIALS`) to avoid leaking which emails are registered.

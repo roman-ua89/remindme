@@ -102,7 +102,7 @@ Add `lastRevisedAt` (and optionally `lastSkippedAt`) on entities:
 | Metric | Use |
 |--------|-----|
 | **Not revised in 14/30 days** | "Getting stale" nudge |
-| **Last active** per category | "English — 3 days ago" on Home |
+| **Last active** per category | "English — 3 days ago" on Categories |
 | **Freshness score** — % revised in last N days | Better than lifetime count alone |
 
 ---

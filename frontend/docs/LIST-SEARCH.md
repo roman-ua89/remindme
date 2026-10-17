@@ -1,6 +1,6 @@
 # List Search
 
-Reusable search pattern for paginated list pages. **Entities** is the reference implementation; **Categories** (`HomePage`) and **Topics** (`TopicsPage`) can adopt the same building blocks with minimal page-specific wiring.
+Reusable search pattern for paginated list pages. **Entities** is the reference implementation; **Categories** (`CategoriesPage`) and **Topics** (`TopicsPage`) can adopt the same building blocks with minimal page-specific wiring.
 
 Search state lives in **local component state** (not in the URL). Pagination stays in the URL via `page` (see [list-page-search.ts](../src/lib/list-page-search.ts)).
 
@@ -21,7 +21,7 @@ Search state lives in **local component state** (not in the URL). Pagination sta
 | Resource | Page | DB / contract field | Backend filter |
 |----------|------|---------------------|----------------|
 | Entities | `EntitiesPage` | `title` | `textContainsFilter('title', query.search)` |
-| Categories | `HomePage` | `name` | `textContainsFilter('name', query.search)` |
+| Categories | `CategoriesPage` | `name` | `textContainsFilter('name', query.search)` |
 | Topics | `TopicsPage` | `name` | `textContainsFilter('name', query.search)` |
 
 Do **not** add per-resource query schemas (`entityListQuerySchema`, etc.) — use `ListSearchQuery` everywhere.
@@ -166,7 +166,7 @@ const [totalItems, items] = await Promise.all([
 
 ---
 
-## Rollout: Categories (HomePage)
+## Rollout: Categories (CategoriesPage)
 
 ### Backend
 
@@ -189,7 +189,7 @@ const [totalItems, items] = await Promise.all([
 
 5. **`frontend/src/features/categories/queries/use-categories.ts`** — add optional `search?: string`; build `{ page, pageSize, search? }` for key + API.
 
-6. **`frontend/src/features/categories/components/HomePage.tsx`**:
+6. **`frontend/src/features/categories/components/CategoriesPage.tsx`**:
    - Add `useListSearch` + `ListSearchInput` (copy pattern from `EntitiesPage`).
    - Pass `searchQuery` to `useCategories(page, searchQuery)`.
    - Empty-state guard: `categoryCount > 0 || isSearchActive`.

@@ -37,7 +37,7 @@ flowchart TD
 
 ### Clarifications
 
-- **Category creation:** Required **category name** only in the Home popover (not a separate page). Topics are added later from Category detail.
+- **Category creation:** Required **category name** only in the Categories popover (not a separate page). Topics are added later from Category detail.
 - **Category metadata:** Icon, color, and description are optional future fields (TBD, not required for v1).
 - **Empty states:** A category may have zero topics; a topic may have zero entities.
 - **Entity list identity:** The entity **Title** (required field on the constructor page) is shown as the row label on Topic detail.
@@ -52,9 +52,10 @@ flowchart TD
 | Page | Purpose |
 |------|---------|
 | **Registration** | Create account |
-| **Login** | Sign in |
+| **Login** | Sign-in dialog on Home (`/?login=true`), opened from **Log in** or when a guest opens a protected page; not a separate page |
 | **Forgot password** | Password recovery |
-| **Home** | List categories; add category via popover |
+| **Home** | Public landing page: slogan and **Log in** for guests; logged-in users also see **Open my categories** and **Your library** counts |
+| **Categories** | List categories; add category via popover |
 | **Category detail** | List topics in a category; **Add topic**; open a topic |
 | **Topic detail** | List entities in a topic; **Add entity** (modal); edit or remove each entity |
 | **Entity** | Constructor — split preview (left) and block editor (right); opened as modal from Topic detail; required Title + up to 20 constructor blocks (see §3.4) |
@@ -86,7 +87,12 @@ flowchart LR
 
 ### 3.3 Page-specific notes
 
-**Home**
+**Home** (`/`)
+
+- Public landing page: slogan plus **Log in** for guests.
+- Logged in: also **Open my categories** (→ `/categories`) and the **Your library** counts (categories, topics, entities; placeholder values until wired to the API).
+
+**Categories** (`/categories`)
 
 - Lists all created categories.
 - **Add category** button opens a **popover** (not a new page).
@@ -201,7 +207,7 @@ The **Player** (`/player`) is where the user revises information. It shows one e
 
 | Page | Play button | Session scope |
 |------|-------------|---------------|
-| Home (categories list) | Each category row | All entities in that category (across topics) |
+| Categories list | Each category row | All entities in that category (across topics) |
 | Category detail (topics list) | Each topic row | All entities in that topic |
 | Topic detail (entities list) | Each entity row | That entity only (packs of 1; continues after a round reset) |
 
@@ -219,9 +225,9 @@ Tapping a row name still navigates to detail; **Play** navigates to `/player` wi
 
 ## 4. User Flows
 
-### 4.1 New category (popover on Home)
+### 4.1 New category (popover on Categories)
 
-1. Home → **Add category**
+1. Categories → **Add category**
 2. Popover: enter **category name** (required) — the only field
 3. Tap **Save** (below the field) → category created
 4. User is redirected to **Category detail** (empty category page)
@@ -232,7 +238,7 @@ Notes:
 
 ### 4.2 Existing category (browse topics)
 
-1. Home → tap category → **Category detail**
+1. Categories → tap category → **Category detail**
 2. **Add topic** button at the top; list of previously created topics below
 3. Tap a topic → **Topic detail**
 
@@ -250,9 +256,9 @@ Notes:
 
 ### 4.5 Revision flow (Player)
 
-**Start from a category (Home)**
+**Start from a category (Categories)**
 
-1. Home → **Play** on a category row → **Player** (`/player?categoryId=…`)
+1. Categories → **Play** on a category row → **Player** (`/player?categoryId=…`)
 2. First pack: up to 10 random entities at minimum `revised_count` in that category (only `visibility = included`)
 3. User reviews the read-only preview
 4. **Done** or **Skip** → matching counter incremented → next entity in the current pack
@@ -316,7 +322,7 @@ Minimal structure — no technical detail:
 | Flow | Behavior |
 |------|----------|
 | **Registration** | Email + password (assumed); success → Home |
-| **Login** | Credentials → Home |
+| **Login** | Credentials in the sign-in dialog on Home → Home (dialog closes) |
 | **Forgot password** | Email → reset link flow → Login |
 
 Users have roles (`user`, `admin`; extensible). Regular users see only their own categories, topics, and entities. Schema details: [DATABASE.md](DATABASE.md). Multi-device sync is an implicit benefit of accounts, not a separate feature spec.
@@ -356,7 +362,7 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 | Topic | Previous | Updated |
 |-------|----------|---------|
 | Content hierarchy | Category → Entity | Category → Topic → Entity |
-| Category creation | Dedicated Create category page | Home popover (name only) → redirect to Category detail |
+| Category creation | Dedicated Create category page | Categories page popover (name only) → redirect to Category detail |
 | Entity model | Template-bound fields | User-configured constructor: Title + ordered blocks (Text, Code, Image, List) |
 | Entity constructor | Elements TBD | Split layout (preview left, editor right); max 20 blocks per entity |
 | Statistics page | Global chart page | **Removed** from product spec |
