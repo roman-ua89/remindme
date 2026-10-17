@@ -23,5 +23,10 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: '16', label: 'External link on Entity Constructor. Show the link in Player and preview.', done: false },
     { id: '17', label: '12 items per page', done: false },
     { id: '18', label: 'Notes for next entities. Bottom right corner.', done: false },
+    { id: '19', label: 'When new Entity added: it must have (view_count - 1) from highest among existing items.', done: false },
+    { id: '20', label: 'Entity constructor - page has no fixed width with Code block.', done: false },
+    { id: '21', label: 'Italic style does not work in text editor.', done: false },
+    { id: '22', label: 'Increase font size in player everywhere.', done: false },
+    { id: '23', label: 'When called run player on a single entity, when pressed Done - ask for next 3 from same Topic or Close player. ', done: false },
     // { id: '', label: '', done: false },
 ];

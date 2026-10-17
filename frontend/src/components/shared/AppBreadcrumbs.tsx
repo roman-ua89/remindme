@@ -22,7 +22,15 @@ export function AppBreadcrumbs({ category, topic, entity }: AppBreadcrumbsProps)
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    {category ? <BreadcrumbLink render={<Link to='/' />}>Home</BreadcrumbLink> : <BreadcrumbPage>Home</BreadcrumbPage>}
+                    <BreadcrumbLink render={<Link to='/' />}>Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    {category ? (
+                        <BreadcrumbLink render={<Link to='/categories' />}>Categories</BreadcrumbLink>
+                    ) : (
+                        <BreadcrumbPage>Categories</BreadcrumbPage>
+                    )}
                 </BreadcrumbItem>
 
                 {category ? (

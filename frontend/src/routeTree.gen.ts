@@ -11,11 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
-import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AppPlayerRouteImport } from './routes/_app/player'
 import { Route as AppFrontendRouteImport } from './routes/_app/frontend'
+import { Route as AppCategoriesIndexRouteImport } from './routes/_app/categories/index'
 import { Route as AppCategoriesCategoryIdIndexRouteImport } from './routes/_app/categories/$categoryId/index'
 import { Route as AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/index'
 import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/new'
@@ -30,15 +31,15 @@ const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthRouteRoute,
-} as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRouteRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
@@ -53,6 +54,11 @@ const AppPlayerRoute = AppPlayerRouteImport.update({
 const AppFrontendRoute = AppFrontendRouteImport.update({
   id: '/frontend',
   path: '/frontend',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppCategoriesCategoryIdIndexRoute =
@@ -81,23 +87,25 @@ const AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AppIndexRoute
+  '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/frontend': typeof AppFrontendRoute
   '/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/': typeof AuthIndexRoute
+  '/categories/': typeof AppCategoriesIndexRoute
   '/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute
   '/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
   '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
   '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/frontend': typeof AppFrontendRoute
   '/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
-  '/': typeof AppIndexRoute
   '/auth': typeof AuthIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
   '/categories/$categoryId': typeof AppCategoriesCategoryIdIndexRoute
   '/categories/$categoryId/topics/$topicId': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
   '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
@@ -105,13 +113,14 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/frontend': typeof AppFrontendRoute
   '/_app/player': typeof AppPlayerRoute
   '/auth/login': typeof AuthLoginRoute
-  '/_app/': typeof AppIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute
   '/_app/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
   '/_app/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
@@ -126,30 +135,33 @@ export interface FileRouteTypes {
     | '/player'
     | '/auth/login'
     | '/auth/'
+    | '/categories/'
     | '/categories/$categoryId/'
     | '/categories/$categoryId/topics/$topicId/'
     | '/categories/$categoryId/topics/$topicId/entities/$entityId'
     | '/categories/$categoryId/topics/$topicId/entities/new'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/frontend'
     | '/player'
     | '/auth/login'
-    | '/'
     | '/auth'
+    | '/categories'
     | '/categories/$categoryId'
     | '/categories/$categoryId/topics/$topicId'
     | '/categories/$categoryId/topics/$topicId/entities/$entityId'
     | '/categories/$categoryId/topics/$topicId/entities/new'
   id:
     | '__root__'
+    | '/'
     | '/_app'
     | '/auth'
     | '/_app/frontend'
     | '/_app/player'
     | '/auth/login'
-    | '/_app/'
     | '/auth/'
+    | '/_app/categories/'
     | '/_app/categories/$categoryId/'
     | '/_app/categories/$categoryId/topics/$topicId/'
     | '/_app/categories/$categoryId/topics/$topicId/entities/$entityId'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
@@ -177,19 +190,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/': {
       id: '/auth/'
       path: '/'
       fullPath: '/auth/'
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRouteRoute
-    }
-    '/_app/': {
-      id: '/_app/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRouteRoute
     }
     '/auth/login': {
       id: '/auth/login'
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       path: '/frontend'
       fullPath: '/frontend'
       preLoaderRoute: typeof AppFrontendRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/categories/': {
+      id: '/_app/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof AppCategoriesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/categories/$categoryId/': {
@@ -246,7 +266,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppFrontendRoute: typeof AppFrontendRoute
   AppPlayerRoute: typeof AppPlayerRoute
-  AppIndexRoute: typeof AppIndexRoute
+  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
   AppCategoriesCategoryIdIndexRoute: typeof AppCategoriesCategoryIdIndexRoute
   AppCategoriesCategoryIdTopicsTopicIdIndexRoute: typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
   AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
@@ -256,7 +276,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppFrontendRoute: AppFrontendRoute,
   AppPlayerRoute: AppPlayerRoute,
-  AppIndexRoute: AppIndexRoute,
+  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
   AppCategoriesCategoryIdIndexRoute: AppCategoriesCategoryIdIndexRoute,
   AppCategoriesCategoryIdTopicsTopicIdIndexRoute:
     AppCategoriesCategoryIdTopicsTopicIdIndexRoute,
@@ -285,6 +305,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
 }

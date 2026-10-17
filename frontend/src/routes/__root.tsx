@@ -6,7 +6,7 @@ import type { QueryClient } from '@tanstack/react-query';
 
 import { Toaster } from '@/components/ui/sonner';
 import { currentUserQueryOptions } from '@/features/auth/queries/current-user-query';
-import { getAuthRedirectTarget, isUnauthorizedError } from '@/lib/auth';
+import { getAuthRedirect, isUnauthorizedError } from '@/lib/auth';
 import { queryClient } from '@/lib/query-client';
 
 import '../index.css';
@@ -23,12 +23,12 @@ export const Route = createRootRouteWithContext<{
             if (!isUnauthorizedError(error)) throw error;
         }
 
-        const redirectTo = getAuthRedirectTarget({
+        const authRedirect = getAuthRedirect({
             isAuthenticated,
             pathname: location.pathname,
         });
 
-        if (redirectTo) throw redirect({ to: redirectTo });
+        if (authRedirect) throw redirect({ to: '/', search: authRedirect.openLogin ? { login: true } : {} });
     },
     component: RootComponent,
 });

@@ -59,7 +59,7 @@ export function TopicsPage() {
     }
 
     const goBack = () => {
-        navigate({ to: '/' });
+        navigate({ to: '/categories' });
     };
 
     if (isLoading) {

@@ -45,15 +45,10 @@ function PlayerRoute() {
     const scope = toPlayerScope(search);
 
     if (!scope) {
-        throw redirect({ to: '/' });
+        throw redirect({ to: '/categories' });
     }
 
-    const scopeKey =
-        scope.type === 'category'
-            ? scope.categoryId
-            : scope.type === 'topic'
-              ? scope.topicId
-              : scope.entityId;
+    const scopeKey = scope.type === 'category' ? scope.categoryId : scope.type === 'topic' ? scope.topicId : scope.entityId;
 
     return <PlayerPage key={scopeKey} scope={scope} />;
 }
