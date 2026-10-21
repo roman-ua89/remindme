@@ -16,5 +16,8 @@
     "db:migrate": "npm run db:migrate -w backend",
     "db:seed": "npm run db:seed -w backend",
     "db:studio": "npm run db:studio -w backend"
+  },
+  "devDependencies": {
+    "shadcn": "^4.22.1"
   }
 }

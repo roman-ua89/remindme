@@ -36,7 +36,7 @@ export function EntityTemplatesPanel({
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
-        <div className='flex flex-col gap-3 flex-grow-0 shrink-0 basis-2xs'>
+        <div className='flex flex-col gap-3 flex-grow-0 shrink-0 basis-2xs sticky top-4 self-start max-h-[calc(100vh-2rem)] overflow-y-auto'>
             <h2 className='text-sm font-medium'>Templates</h2>
             <div className='flex flex-col gap-2'>
                 {templates.map(({ type, label, icon: Icon }) => (
