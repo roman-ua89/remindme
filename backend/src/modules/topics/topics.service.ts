@@ -36,7 +36,7 @@ export async function listTopics(
     prisma.topic.count({ where }),
     prisma.topic.findMany({
       where,
-      orderBy: { position: 'asc' },
+      orderBy: { position: 'desc' },
       skip: getPaginationSkip(pagination),
       take: pagination.pageSize,
       include: {

@@ -229,7 +229,7 @@ export async function listEntities(
         prisma.entity.count({ where }),
         prisma.entity.findMany({
             where,
-            orderBy: { position: 'asc' },
+            orderBy: { position: 'desc' },
             skip: getPaginationSkip(query),
             take: query.pageSize,
         }),

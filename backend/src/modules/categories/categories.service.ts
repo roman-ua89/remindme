@@ -72,7 +72,7 @@ export async function listCategories(user: AuthUser, pagination: PaginationQuery
         prisma.category.count({ where }),
         prisma.category.findMany({
             where,
-            orderBy: { position: 'asc' },
+            orderBy: { position: 'desc' },
             skip: getPaginationSkip(pagination),
             take: pagination.pageSize,
             include: {
