@@ -206,7 +206,8 @@ May exist with zero entities.
 | `visibility` | enum / text | no | `included` \| `excluded`; default `included` |
 | `marker` | smallint | yes | `NULL` = none, `1` = needs edit (blue dot), `2` = to remove (red dot); set from the Constructor or Player toggle; values mirror `ENTITY_MARKER` in contracts |
 | `created_at` | timestamptz | no | |
-| `updated_at` | timestamptz | no | |
+| `updated_at` | timestamptz | no | Bumped on any UPDATE (incl. Done/Skip/marker) |
+| `edited_at` | timestamptz | yes | `NULL` until saved from Constructor edit mode; shown as "Edited" on the Topic page; not touched by Done/Skip/marker |
 
 **Indexes:** `(topic_id, position)`; partial or composite index on `(topic_id, visibility, revised_count)` for Player queue queries
 

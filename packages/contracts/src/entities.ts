@@ -85,6 +85,8 @@ export const entityListItemSchema = z.object({
   position: z.number().int().nonnegative(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  /** Set only when saved from Constructor edit mode; null = never edited */
+  editedAt: z.string().nullable(),
 })
 
 export const entityBlockResponseSchema = z.discriminatedUnion('blockType', [

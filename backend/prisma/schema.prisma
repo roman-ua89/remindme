@@ -156,8 +156,10 @@ model Entity {
   marker        Int?             @db.SmallInt
   createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  /// Set only when saved from Constructor edit mode (PATCH entity); null = never edited
+  editedAt      DateTime?        @map("edited_at") @db.Timestamptz(6)
 
-  topic  Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topic  Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
   blocks EntityBlock[]
 
   @@index([topicId, position])

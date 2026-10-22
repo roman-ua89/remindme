@@ -30,6 +30,7 @@ Operation-centric reference for how PostgreSQL data changes when the RemindMe ba
 | `id` | UUID generated on INSERT |
 | `created_at` | DB default `CURRENT_TIMESTAMP` on INSERT |
 | `updated_at` | Prisma `@updatedAt` on UPDATE (tables: `users`, `categories`, `topics`, `entities`, `entity_blocks`) |
+| `entities.edited_at` | `NULL` on INSERT; set to `now()` only by Update entity (Constructor edit) — not by revise/skip/marker |
 | `is_active` | Default `true` on `users` INSERT |
 | `revised_count`, `skipped_count` | Default `0` on `entities` INSERT |
 | `visibility` | Default `'included'` on `entities` INSERT |
@@ -311,7 +312,7 @@ VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, 'included', now()
 
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
-| `entities` | UPDATE | `title`, `visibility` (when provided) |
+| `entities` | UPDATE | `title`, `visibility` (when provided); `edited_at = now()` always |
 | *(via `replaceBlocks`, optional)* | see §3.5 | when `blocks` is in request body |
 
 ---

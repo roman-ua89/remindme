@@ -44,6 +44,7 @@ function toEntityListItem(entity: {
     position: number;
     createdAt: Date;
     updatedAt: Date;
+    editedAt: Date | null;
 }): EntityListItem {
     return {
         id: entity.id,
@@ -56,6 +57,7 @@ function toEntityListItem(entity: {
         position: entity.position,
         createdAt: entity.createdAt.toISOString(),
         updatedAt: entity.updatedAt.toISOString(),
+        editedAt: entity.editedAt?.toISOString() ?? null,
     };
 }
 
@@ -310,6 +312,7 @@ export async function updateEntity(
             data: {
                 ...(input.title !== undefined ? { title: input.title } : {}),
                 ...(input.visibility !== undefined ? { visibility: input.visibility } : {}),
+                editedAt: new Date(),
             },
         });
 

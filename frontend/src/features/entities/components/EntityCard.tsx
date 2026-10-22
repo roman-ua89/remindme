@@ -53,8 +53,9 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
                     >
                         {entity.title}
                     </Link>
-                    <div className='text-gray-400 flex gap-6 text-xs font-light absolute top-7'>
+                    <div className='text-gray-400 flex gap-4 text-xs font-light absolute top-7'>
                         <span>Created: {format(createdAt, dateFormat)}</span>
+                        {entity.editedAt ? <span>Edited: {format(parseISO(entity.editedAt), dateFormat)}</span> : null}
                     </div>
                 </CardTitle>
                 <CardAction>
