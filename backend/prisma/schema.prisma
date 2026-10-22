@@ -33,8 +33,25 @@ model User {
   passwordResetTokens  PasswordResetToken[]
   categories           Category[]
   mediaAssets          MediaAsset[]
+  dailyActivity        UserDailyActivity[]
 
   @@map("users")
+}
+
+/// Per-user, per-local-day revision counters. Incremented only by Player Done/Skip;
+/// add new counter columns here for future daily metrics.
+model UserDailyActivity {
+  userId       String   @map("user_id") @db.Uuid
+  /// User's local calendar day (timezone from the X-Timezone request header)
+  activityDate DateTime @map("activity_date") @db.Date
+  revisedCount Int      @default(0) @map("revised_count")
+  skippedCount Int      @default(0) @map("skipped_count")
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, activityDate])
+  @@map("user_daily_activity")
 }
 
 model Role {

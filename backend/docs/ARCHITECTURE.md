@@ -255,6 +255,7 @@ flowchart LR
 | `features/entities/` | `modules/entities/` | `entities.ts` | `…/topics/:topicId/entities` |
 | `features/media/` | `modules/media/` | `media.ts` | `/api/v1/media` |
 | `features/player/` | `modules/player/` + `modules/entities/` | `player.ts`, `entities.ts` | `/api/v1/player/batch`, `…/entities/:entityId/revise` |
+| `features/activity/` (Home chart) | `modules/activity/` (read) + `modules/entities/` (write via `lib/daily-activity.ts`) | `activity.ts` | `/api/v1/activity/daily` |
 | Admin users | `modules/users/` | `users.ts` | `/api/v1/users` |
 
 ### Content hierarchy (database + URLs)

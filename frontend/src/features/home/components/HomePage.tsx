@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
+import { DailyActivityChart } from '@/features/activity/components/DailyActivityChart';
 import { useCurrentUser } from '@/features/auth/queries/use-current-user';
 import { LibraryStats } from '@/features/home/components/LibraryStats';
 import { cn } from '@/lib/utils';
@@ -32,6 +33,7 @@ export const HomePage = () => {
                 </section>
 
                 {isLoggedIn ? <LibraryStats /> : null}
+                {isLoggedIn ? <DailyActivityChart /> : null}
             </PageContainer>
         </div>
     );

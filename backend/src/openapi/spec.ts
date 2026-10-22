@@ -65,10 +65,22 @@ export const openApiSpec = {
       get: { tags: ['entities'], summary: 'Get entity with blocks by entity ID only' },
     },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/revise': {
-      patch: { tags: ['entities'], summary: 'Mark entity as revised (Player Done)' },
+      patch: {
+        tags: ['entities'],
+        summary: 'Mark entity as revised (Player Done); also increments user_daily_activity for the X-Timezone local day',
+      },
     },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/skip': {
-      patch: { tags: ['entities'], summary: 'Mark entity as skipped (Player Skip)' },
+      patch: {
+        tags: ['entities'],
+        summary: 'Mark entity as skipped (Player Skip); also increments user_daily_activity for the X-Timezone local day',
+      },
+    },
+    '/activity/daily': {
+      get: {
+        tags: ['activity'],
+        summary: 'Daily revised/skipped counters for the current user (query: month=YYYY-MM; sparse days) + firstActivityDate',
+      },
     },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/marker': {
       patch: { tags: ['entities'], summary: 'Set entity marker (body: { marker: 1 | 2 | null })' },

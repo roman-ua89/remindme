@@ -24,8 +24,9 @@ RemindMe is a **revision** tool (not a learning platform). Metrics should reinfo
 |------|--------|
 | `revisedCount` per entity | Stored in DB; shown on entity rows as `{count} revised` |
 | `skippedCount` per entity | Stored in DB; **not shown in UI** |
+| Daily activity | `user_daily_activity`: revised/skipped per user per local day; shown as the **Daily activity** stacked bar chart on Home (month view) |
 | Session history / event log | **None** — Player session queue is client-side only |
-| Global aggregates | **None** — only entity-level counters |
+| Global aggregates | Only the daily rollup above; otherwise entity-level counters |
 | Statistics page | **Removed** from product spec (see PRODUCT.md changelog) |
 
 Player scheduling already favors entities at **minimum** `revisedCount` in scope. Metrics about coverage and balance align naturally with this behavior.
@@ -192,7 +193,7 @@ This set gives progress tracking, habit reinforcement, and clear "what next?" �
 | `createdAt` / `updatedAt` | Rough recency (weaker than explicit last-revised) |
 | — | `lastRevisedAt` / `lastSkippedAt` on `entities` |
 | — | `revision_events` or `player_sessions` table |
-| — | Daily rollup for streaks (or compute from events) |
+| `user_daily_activity` (per-day revised/skipped) | Streaks, "this week" totals, daily chart (implemented) |
 
 ### Suggested trackable events (not persisted today)
 

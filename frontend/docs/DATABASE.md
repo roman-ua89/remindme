@@ -18,14 +18,14 @@ Product behavior lives in [PRODUCT.md](PRODUCT.md). This document describes how 
 | Image blocks | Upload to object storage; DB holds `media_assets` + FK from the block |
 | List blocks | Normalized child rows in `list_block_rows` |
 | Password reset | Dedicated token table (hashed tokens, expiry, single-use) |
-| Revision counters | Stored on `entities` (`revised_count`, `skipped_count`) — updated by **Player** UI; no session tables |
+| Revision counters | Lifetime totals on `entities` (`revised_count`, `skipped_count`) plus a per-user, per-local-day rollup in `user_daily_activity` — both updated only by **Player** Done/Skip; no session tables |
 | Revision eligibility | `entities.visibility` gates whether an entity can enter a Player pack |
 | Scope | v1 includes **Player** at `/player`; session queue is a client-held pack (see [PLAYER.md](PLAYER.md)); no statistics page or session summary tables |
 
 ### Explicit non-tables
 
 - No `entity_constructors` / templates table — the constructor is a page, not a domain entity.
-- No revision-session or statistics aggregate tables (counters live on `entities`; the Player holds the current pack and per-round shown ids on the client — [PLAYER.md](PLAYER.md)).
+- No revision-session tables (counters live on `entities`; the Player holds the current pack and per-round shown ids on the client — [PLAYER.md](PLAYER.md)). The only aggregate is `user_daily_activity` (§3.5).
 
 ---
 
@@ -296,6 +296,26 @@ Metadata for uploaded files. Binary data lives in object storage; the DB stores 
 **Indexes:** `(user_id)`
 
 Image blocks reference a row via `entity_blocks.media_asset_id`. Orphan cleanup (unused assets) is an application concern.
+
+---
+
+### 3.5 Activity
+
+#### `user_daily_activity`
+
+Per-user, per-day revision counters for the Home **Daily activity** chart. Written in the same transaction as the entity counter on Player **Done** / **Skip** (upsert + increment); read by month. Never recomputed from `entities`.
+
+| Field | Type | Null | Notes |
+|-------|------|------|-------|
+| `user_id` | UUID | no | PK part; FK → `users.id` (CASCADE); the user who pressed Done/Skip |
+| `activity_date` | date | no | PK part; the user's **local** calendar day (from the `X-Timezone` header the frontend sends; UTC fallback) |
+| `revised_count` | integer | no | Default `0`; +1 per Done that day |
+| `skipped_count` | integer | no | Default `0`; +1 per Skip that day |
+| `updated_at` | timestamptz | no | |
+
+**Keys:** PK `(user_id, activity_date)` — also serves the month range read.
+
+**Extending:** new daily metrics (e.g. sessions completed) are added as counter columns with default `0`. History is per user, so deleting entities/topics/categories does not change it. Lifetime counters that existed before this table are not backfilled.
 
 ---
 

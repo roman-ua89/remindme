@@ -398,6 +398,26 @@ features/home/
     LibraryStats.tsx    # Categories / Topics / Entities counts (placeholder values)
 ```
 
+### 5.2c `features/activity/`
+
+Daily revised/skipped counts for the Home chart (`GET /activity/daily?month=YYYY-MM`, contracts `@remindme/contracts/activity`).
+
+```
+features/activity/
+  api.ts                        # getDailyActivity(month)
+  types.ts                      # re-exports DailyActivityDay / DailyActivityResponse
+  queries/
+    use-daily-activity.ts       # useQuery, staleTime 1 day, keepPreviousData between months
+  components/
+    DailyActivityChart.tsx      # shadcn Chart (recharts) stacked bars + Prev month / Next; zero-fills the month
+```
+
+- The API is sparse (only days with activity); the component fills every day of the month with zeros.
+- The response also carries `firstActivityDate`; **Prev month** is disabled once the shown month reaches that month (or the current month when it is `null`), and while the previous month is still loading.
+- `lib/api-client.ts` sends `X-Timezone` (browser IANA zone) on every request so the backend buckets Done/Skip into the user's local day.
+- Cache: `queryKeys.activity.all` is invalidated by `use-mark-done` / `use-mark-skip`, so Home refetches on the next visit after any Player click; otherwise data stays fresh for a day.
+- Colors: `--chart-revised` / `--chart-skipped` tokens in `src/index.css` (light + dark).
+
 ---
 
 ### 5.3 `features/topics/`
@@ -503,8 +523,8 @@ features/player/
   types.ts                    # PlayerScope, PlayerSessionState, PlayerBatchItem
   queries/
     use-player-batch.ts       # fetch / refill pack (includes round-reset)
-    use-mark-done.ts          # useMutation — revised_count + 1
-    use-mark-skip.ts          # useMutation — skipped_count + 1
+    use-mark-done.ts          # useMutation — revised_count + 1; invalidates activity
+    use-mark-skip.ts          # useMutation — skipped_count + 1; invalidates activity
   components/
     PlayerPage.tsx
     PlayerProgress.tsx        # pack-only Progress bar

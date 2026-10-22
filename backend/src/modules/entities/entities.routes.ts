@@ -13,6 +13,7 @@ import {
   type ListSearchQuery,
 } from '@remindme/contracts/common/pagination'
 
+import { TIMEZONE_HEADER } from '../../lib/daily-activity.js'
 import { auth } from '../../middleware/auth.js'
 import { requirePermission } from '../../middleware/require-permission.js'
 import { validate } from '../../middleware/validate.js'
@@ -130,6 +131,7 @@ router.patch(
         categoryId,
         topicId,
         entityId,
+        req.get(TIMEZONE_HEADER),
       )
       res.json(entity)
     } catch (error) {
@@ -149,6 +151,7 @@ router.patch(
         categoryId,
         topicId,
         entityId,
+        req.get(TIMEZONE_HEADER),
       )
       res.json(entity)
     } catch (error) {

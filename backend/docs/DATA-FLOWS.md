@@ -48,6 +48,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Topics | createTopic, updateTopic, deleteTopic | listTopics, getTopic |
 | Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker | listEntities, getEntity |
 | Player | — | getPlayerBatch |
+| Activity | (written by reviseEntity / skipEntity) | getDailyActivity |
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
 
@@ -335,15 +336,22 @@ VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, 'included', now()
 
 - **Service:** `reviseEntity()` — [entities.service.ts](../src/modules/entities/entities.service.ts)
 - **Route:** `PATCH /api/v1/categories/:categoryId/topics/:topicId/entities/:entityId/revise`
-- **Transaction:** no
+- **Header:** `X-Timezone` (IANA, e.g. `Europe/Kyiv`; set by the frontend Axios client). Missing/invalid → UTC.
+- **Transaction:** yes (`prisma.$transaction`)
 
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
 | `entities` | UPDATE | `revised_count` (increment by 1) |
+| `user_daily_activity` | UPSERT | `revised_count` (increment by 1) for (`req.user.id`, user's local date) — [lib/daily-activity.ts](../src/lib/daily-activity.ts) |
 
 ```sql
 UPDATE entities SET revised_count = revised_count + 1, updated_at = now()
 WHERE id = '<entity_id>';
+
+INSERT INTO user_daily_activity (user_id, activity_date, revised_count, updated_at)
+VALUES ('<user_id>', '<local_yyyy_mm_dd>', 1, now())
+ON CONFLICT (user_id, activity_date)
+DO UPDATE SET revised_count = user_daily_activity.revised_count + 1, updated_at = now();
 ```
 
 ---
@@ -352,11 +360,13 @@ WHERE id = '<entity_id>';
 
 - **Service:** `skipEntity()` — [entities.service.ts](../src/modules/entities/entities.service.ts)
 - **Route:** `PATCH /api/v1/categories/:categoryId/topics/:topicId/entities/:entityId/skip`
-- **Transaction:** no
+- **Header:** `X-Timezone` (same as revise)
+- **Transaction:** yes (`prisma.$transaction`)
 
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
 | `entities` | UPDATE | `skipped_count` (increment by 1) |
+| `user_daily_activity` | UPSERT | `skipped_count` (increment by 1) for (`req.user.id`, user's local date) |
 
 ---
 
@@ -386,6 +396,31 @@ UPDATE entities SET marker = $1, updated_at = now() WHERE id = $2;
 | Table | Operation | Notes |
 |-------|-----------|-------|
 | `entities` (+ `topics`, `entity_blocks`, `list_block_rows`, `media_assets`) | READ | Min-pool sample, then full entity load |
+
+---
+
+### 3.4.1 Activity
+
+#### Get daily activity (Home chart)
+
+- **Service:** `getDailyActivity()` — [activity.service.ts](../src/modules/activity/activity.service.ts)
+- **Route:** `GET /api/v1/activity/daily?month=YYYY-MM`
+- **Transaction:** no
+- **Behavior:** returns only days that have a row (sparse); the frontend zero-fills the month. Never recomputed from `entities` — the table is the source of truth for per-day history (lifetime counters predating it are not backfilled).
+
+| Table | Operation | Notes |
+|-------|-----------|-------|
+| `user_daily_activity` | READ | PK range scan on (`user_id`, `activity_date`) for one month |
+| `user_daily_activity` | READ | Earliest row for the user → `firstActivityDate` (lower bound for month paging; `null` if none) |
+
+```sql
+SELECT activity_date, revised_count, skipped_count FROM user_daily_activity
+WHERE user_id = '<user_id>' AND activity_date >= '2026-10-01' AND activity_date < '2026-11-01'
+ORDER BY activity_date;
+
+SELECT activity_date FROM user_daily_activity
+WHERE user_id = '<user_id>' ORDER BY activity_date LIMIT 1;  -- firstActivityDate
+```
 
 ---
 
@@ -482,6 +517,7 @@ flowchart TD
     categories["DELETE categories CASCADE"]
     mediaAssets["DELETE media_assets CASCADE"]
     resetTokens["DELETE password_reset_tokens CASCADE"]
+    dailyActivity["DELETE user_daily_activity CASCADE"]
 
     deleteCategory -->|"topics.category_id ON DELETE RESTRICT"| stopCategory
     deleteTopic --> deleteEntity
@@ -491,15 +527,17 @@ flowchart TD
     deleteUser --> categories
     deleteUser --> mediaAssets
     deleteUser --> resetTokens
+    deleteUser --> dailyActivity
 ```
 
 | Parent DELETE | Child effect | FK rule |
 |---------------|--------------|---------|
-| `users` | `user_roles`, `password_reset_tokens`, `categories`, `media_assets` | CASCADE |
+| `users` | `user_roles`, `password_reset_tokens`, `categories`, `media_assets`, `user_daily_activity` | CASCADE |
 | `categories` | `topics` | **RESTRICT** (app also blocks if topics exist) |
 | `topics` | `entities` → `entity_blocks` → `list_block_rows` | CASCADE chain |
 | `entities` | `entity_blocks` → `list_block_rows` | CASCADE chain |
 | `entity_blocks` | `list_block_rows` | CASCADE |
+| `entities` / `topics` / `categories` | `user_daily_activity` is **not** affected — history is per user, not per entity | — |
 | `media_assets` | `entity_blocks.media_asset_id` | SET NULL (block kept, reference cleared) |
 
 ---
@@ -605,6 +643,18 @@ Every column across all 12 tables, and how the application uses it today.
 | `created_at` | ⚙ 👁 | |
 | `updated_at` | ⚙ | Auto on UPDATE |
 
+### `user_daily_activity`
+
+| Column | Usage | Notes |
+|--------|-------|-------|
+| `user_id` | ✅ 👁 | PK part; acting user (`req.user.id`); CASCADE on user delete |
+| `activity_date` | ✅ 👁 | PK part; `DATE` in the user's local timezone (`X-Timezone`) |
+| `revised_count` | ⬆ 👁 | reviseEntity only |
+| `skipped_count` | ⬆ 👁 | skipEntity only |
+| `updated_at` | ⚙ | Auto on UPSERT |
+
+Future per-day metrics: add counter columns (default `0`) and increment them in `recordDailyActivity`.
+
 ### `entity_blocks`
 
 | Column | Usage | Notes |
@@ -648,7 +698,7 @@ Every column across all 12 tables, and how the application uses it today.
 
 | Operation | Relevant columns/tables |
 |-----------|-------------------------|
-| Delete user | `users` + CASCADE to `user_roles`, `categories`, `media_assets`, `password_reset_tokens` |
+| Delete user | `users` + CASCADE to `user_roles`, `categories`, `media_assets`, `password_reset_tokens`, `user_daily_activity` |
 | Create user (admin) | `users`, `user_roles` |
 | Change email | `users.email` |
 | Verify email | `users.email_verified_at` |

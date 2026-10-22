@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/error-handler.js';
+import { activityRoutes } from './modules/activity/activity.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { categoriesRoutes } from './modules/categories/categories.routes.js';
 import { entitiesFlatRoutes } from './modules/entities/entities-flat.routes.js';
@@ -49,6 +50,7 @@ export async function createApp() {
     }
 
     const api = express.Router();
+    api.use('/activity', activityRoutes);
     api.use('/auth', authRoutes);
     api.use('/categories', categoriesRoutes);
     api.use('/categories/:categoryId/topics', topicsRoutes);

@@ -54,7 +54,7 @@ flowchart TD
 | **Registration** | Create account |
 | **Login** | Sign-in dialog on Home (`/?login=true`), opened from **Log in** or when a guest opens a protected page; not a separate page |
 | **Forgot password** | Password recovery |
-| **Home** | Public landing page: slogan and **Log in** for guests; logged-in users also see **Open my categories** and **Your library** counts |
+| **Home** | Public landing page: slogan and **Log in** for guests; logged-in users also see **Open my categories**, **Your library** counts and the **Daily activity** chart |
 | **Categories** | List categories; add category via popover |
 | **Category detail** | List topics in a category; **Add topic**; open a topic |
 | **Topic detail** | List entities in a topic; **Add entity** (modal); edit or remove each entity |
@@ -91,6 +91,7 @@ flowchart LR
 
 - Public landing page: slogan plus **Log in** for guests.
 - Logged in: also **Open my categories** (→ `/categories`) and the **Your library** counts (categories, topics, entities; placeholder values until wired to the API).
+- Logged in: **Daily activity** — full-width stacked bar chart, one bar per day of the selected month: **Skipped** (red) at the bottom, **Revised** (green) on top. Defaults to the current month; **Prev month** / **Next** (top-left) page through months: Next is disabled on the current month, Prev is disabled on the first month that has any activity (or on the current month if there is none yet). Empty months in between (e.g. a long break) stay reachable. Days are the user's local calendar days. Counts come only from Player **Done** / **Skip** clicks from the moment the feature shipped. Data is cached for a day and refreshed after any Done/Skip.
 
 **Categories** (`/categories`)
 

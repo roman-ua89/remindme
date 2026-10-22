@@ -12,6 +12,7 @@
     "./player": "./src/player.ts",
     "./media": "./src/media.ts",
     "./users": "./src/users.ts",
+    "./activity": "./src/activity.ts",
     "./common/errors": "./src/common/errors.ts",
     "./common/pagination": "./src/common/pagination.ts",
     "./messages": "./src/messages.ts"

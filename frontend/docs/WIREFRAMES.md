@@ -273,6 +273,16 @@ Public landing page for everyone. The slogan is the same for all visitors; the r
 │  │ Categories   │  │ Topics       │  │ Entities     │              │
 │  │ 4            │  │ 12           │  │ 87           │              │
 │  └──────────────┘  └──────────────┘  └──────────────┘              │
+│                                                                    │
+│  DAILY ACTIVITY                                                    │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ [‹ Prev month] [Next ›]  October 2026                        │  │
+│  │  4 ┤                                                         │  │
+│  │  2 ┤        ▓              ▓                ▓ revised (green)│  │
+│  │  0 ┼▁▁▁▁▁▁▁▁░▁▁▁▁▁▁▁▁▁▁▁▁▁▁░▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁░ skipped (red)  │  │
+│  │     1  2  3 …                                   … 30 31      │  │
+│  │              ■ Revised  ■ Skipped                            │  │
+│  └──────────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -281,6 +291,7 @@ Public landing page for everyone. The slogan is the same for all visitors; the r
 | **Log in** | Guests only. Opens the sign-in dialog (§3.1) |
 | **Open my categories** | Logged in only → `/categories` |
 | **Your library** | Logged in only. Three number cards: categories, topics, entities. Values are placeholders until wired to the API |
+| **Daily activity** | Logged in only. Full-width stacked bar chart, one bar per day of the month: skipped (red, bottom) + revised (green, top); tooltip shows the date and both counts. **Prev month** / **Next** page through months; Next is disabled on the current month, Prev on the user's first month with activity (empty months in between remain reachable) |
 
 ---
 

@@ -15,6 +15,7 @@ import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/c
 
 import type { AuthUser } from '../../middleware/auth.js';
 import { getEntityByIdForUser, getEntityForUser, getTopicForUser } from '../../lib/ownership.js';
+import { recordDailyActivity, resolveActivityDate } from '../../lib/daily-activity.js';
 import { badRequest } from '../../lib/errors.js';
 import { mediaUrl } from '../../lib/media-url.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
@@ -344,12 +345,18 @@ export async function reviseEntity(
     categoryId: string,
     topicId: string,
     entityId: string,
+    timeZone?: string,
 ): Promise<EntityListItem> {
     await getEntityForUser(categoryId, topicId, entityId, user);
+    const activityDate = resolveActivityDate(timeZone);
 
-    const entity = await prisma.entity.update({
-        where: { id: entityId },
-        data: { revisedCount: { increment: 1 } },
+    const entity = await prisma.$transaction(async (tx) => {
+        const updated = await tx.entity.update({
+            where: { id: entityId },
+            data: { revisedCount: { increment: 1 } },
+        });
+        await recordDailyActivity(tx, user.id, activityDate, 'revised');
+        return updated;
     });
 
     return toEntityListItem(entity);
@@ -360,12 +367,18 @@ export async function skipEntity(
     categoryId: string,
     topicId: string,
     entityId: string,
+    timeZone?: string,
 ): Promise<EntityListItem> {
     await getEntityForUser(categoryId, topicId, entityId, user);
+    const activityDate = resolveActivityDate(timeZone);
 
-    const entity = await prisma.entity.update({
-        where: { id: entityId },
-        data: { skippedCount: { increment: 1 } },
+    const entity = await prisma.$transaction(async (tx) => {
+        const updated = await tx.entity.update({
+            where: { id: entityId },
+            data: { skippedCount: { increment: 1 } },
+        });
+        await recordDailyActivity(tx, user.id, activityDate, 'skipped');
+        return updated;
     });
 
     return toEntityListItem(entity);
