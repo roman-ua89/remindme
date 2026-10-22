@@ -204,6 +204,7 @@ May exist with zero entities.
 | `revised_count` | integer | no | Default `0`; incremented when user presses **Done** in the Player; shown on Topic detail entity rows as gray `{count} revised` before the Play button |
 | `skipped_count` | integer | no | Default `0`; incremented when user presses **Skip** in the Player; does not increment `revised_count` |
 | `visibility` | enum / text | no | `included` \| `excluded`; default `included` |
+| `marker` | smallint | yes | `NULL` = none, `1` = needs edit (blue dot), `2` = to remove (red dot); set from the Constructor or Player toggle; values mirror `ENTITY_MARKER` in contracts |
 | `created_at` | timestamptz | no | |
 | `updated_at` | timestamptz | no | |
 

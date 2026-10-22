@@ -8,7 +8,8 @@ import { Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BlockEditorRouter } from '@/features/entities/components/BlockEditorRouter';
-import type { BlockType, EntityBlockForm, EntityConstructorFormValues } from '@/features/entities/types';
+import { EntityMarkerToggle } from '@/features/entities/components/EntityMarkerToggle';
+import type { BlockType, EntityBlockForm, EntityConstructorFormValues, EntityMarker } from '@/features/entities/types';
 import { cn } from '@/lib/utils';
 import { constants } from '#/lib/constants.ts';
 
@@ -18,6 +19,9 @@ type EntityContentPanelProps = {
     hoveredTemplate: BlockType | null;
     onRemoveBlock: UseFieldArrayRemove;
     onReorderBlocks: (from: number, to: number) => void;
+    marker: EntityMarker | null;
+    onMarkerChange: (marker: EntityMarker | null) => Promise<unknown>;
+    markerDisabled: boolean;
 };
 
 type SortableBlockItemProps = {
@@ -42,7 +46,16 @@ function SortableBlockItem({ control, index, block, onRemove }: SortableBlockIte
     );
 }
 
-export function EntityContentPanel({ control, blocks, hoveredTemplate, onRemoveBlock, onReorderBlocks }: EntityContentPanelProps) {
+export function EntityContentPanel({
+    control,
+    blocks,
+    hoveredTemplate,
+    onRemoveBlock,
+    onReorderBlocks,
+    marker,
+    onMarkerChange,
+    markerDisabled,
+}: EntityContentPanelProps) {
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -73,13 +86,17 @@ export function EntityContentPanel({ control, blocks, hoveredTemplate, onRemoveB
                     name='title'
                     render={({ field, fieldState }) => (
                         <>
-                            <Input
-                                id='entity-title'
-                                maxLength={constants.maxTitleSymbols}
-                                placeholder='Entity title'
-                                aria-invalid={fieldState.invalid}
-                                {...field}
-                            />
+                            <div className='flex items-center gap-3'>
+                                <Input
+                                    id='entity-title'
+                                    maxLength={constants.maxTitleSymbols}
+                                    placeholder='Entity title'
+                                    aria-invalid={fieldState.invalid}
+                                    className='flex-1'
+                                    {...field}
+                                />
+                                <EntityMarkerToggle value={marker} onChange={onMarkerChange} disabled={markerDisabled} />
+                            </div>
                             {fieldState.error ? <p className='text-sm text-destructive'>{fieldState.error.message}</p> : null}
                         </>
                     )}

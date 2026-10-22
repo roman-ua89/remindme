@@ -12,9 +12,10 @@ import { EntityContentPanel } from '@/features/entities/components/EntityContent
 import { EntityTemplatesPanel } from '@/features/entities/components/EntityTemplatesPanel';
 import { useCreateEntity } from '@/features/entities/queries/use-create-entity';
 import { useEntity } from '@/features/entities/queries/use-entity';
+import { useSetEntityMarker } from '@/features/entities/queries/use-set-entity-marker';
 import { useUpdateEntity } from '@/features/entities/queries/use-update-entity';
 import { entityConstructorFormSchema } from '@/features/entities/schemas';
-import type { BlockType, EntityConstructorFormValues } from '@/features/entities/types';
+import type { BlockType, EntityConstructorFormValues, EntityMarker } from '@/features/entities/types';
 import { createBlock } from '@/features/entities/utils/block-factory';
 import { toEntityFormValues } from '@/features/entities/utils/to-form-values';
 import { toSaveEntityPayload } from '@/features/entities/utils/to-save-payload';
@@ -45,10 +46,16 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     const { data: entity, isLoading: isEntityLoading, isError: isEntityError } = useEntity({ categoryId, topicId, entityId });
     const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId ?? '');
     const { mutate: deleteEntity, isPending: isDeleting } = useDeleteEntity(categoryId, topicId);
+    const { mutateAsync: setEntityMarker } = useSetEntityMarker();
 
     const isEditMode = Boolean(entityId);
     const isLoading = isCategoryLoading || isTopicLoading || (isEditMode && isEntityLoading);
     const isSaving = isCreating || isUpdating;
+
+    function handleMarkerChange(marker: EntityMarker | null) {
+        if (!entityId) return Promise.resolve();
+        return setEntityMarker({ categoryId, topicId, entityId, marker });
+    }
 
     const form = useForm<EntityConstructorFormValues>({
         resolver: zodResolver(entityConstructorFormSchema),
@@ -198,6 +205,9 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                             hoveredTemplate={hoveredTemplate}
                             onRemoveBlock={remove}
                             onReorderBlocks={handleReorderBlocks}
+                            marker={entity?.marker ?? null}
+                            onMarkerChange={handleMarkerChange}
+                            markerDisabled={!isEditMode}
                         />
 
                         <EntityTemplatesPanel

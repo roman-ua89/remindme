@@ -4,6 +4,7 @@ import type {
     EntityBlockResponse,
     EntityListItem,
     EntityListPage,
+    EntityMarker,
     ListBlockContentJson,
     SaveEntityInput,
     UpdateEntityInput,
@@ -38,6 +39,7 @@ function toEntityListItem(entity: {
     revisedCount: number;
     skippedCount: number;
     visibility: EntityVisibility;
+    marker: number | null;
     position: number;
     createdAt: Date;
     updatedAt: Date;
@@ -49,6 +51,7 @@ function toEntityListItem(entity: {
         revisedCount: entity.revisedCount,
         skippedCount: entity.skippedCount,
         visibility: entity.visibility,
+        marker: entity.marker as EntityMarker | null,
         position: entity.position,
         createdAt: entity.createdAt.toISOString(),
         updatedAt: entity.updatedAt.toISOString(),
@@ -369,3 +372,20 @@ export async function skipEntity(
 }
 
 export { mediaUrl } from '../../lib/media-url.js';
+
+export async function setEntityMarker(
+    user: AuthUser,
+    categoryId: string,
+    topicId: string,
+    entityId: string,
+    marker: EntityMarker | null,
+): Promise<EntityListItem> {
+    await getEntityForUser(categoryId, topicId, entityId, user);
+
+    const entity = await prisma.entity.update({
+        where: { id: entityId },
+        data: { marker },
+    });
+
+    return toEntityListItem(entity);
+}

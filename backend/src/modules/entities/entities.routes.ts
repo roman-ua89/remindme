@@ -3,6 +3,7 @@ import { Router } from 'express'
 import {
   entityIdParamsSchema,
   saveEntitySchema,
+  setEntityMarkerSchema,
   updateEntitySchema,
   type EntityIdParams,
 } from '@remindme/contracts/entities'
@@ -148,6 +149,26 @@ router.patch(
         categoryId,
         topicId,
         entityId,
+      )
+      res.json(entity)
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
+router.patch(
+  '/:entityId/marker',
+  validate({ params: entityIdParamsSchema, body: setEntityMarkerSchema }),
+  async (req, res, next) => {
+    try {
+      const { categoryId, topicId, entityId } = req.params as EntityIdParams
+      const entity = await entitiesService.setEntityMarker(
+        req.user!,
+        categoryId,
+        topicId,
+        entityId,
+        req.body.marker,
       )
       res.json(entity)
     } catch (error) {

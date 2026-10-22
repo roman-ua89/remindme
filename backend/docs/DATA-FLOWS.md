@@ -46,7 +46,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Users (admin) | updateUser | listUsers, getUser |
 | Categories | createCategory, updateCategory, deleteCategory | listCategories, getCategory |
 | Topics | createTopic, updateTopic, deleteTopic | listTopics, getTopic |
-| Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity | listEntities, getEntity |
+| Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker | listEntities, getEntity |
 | Player | — | getPlayerBatch |
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
@@ -357,6 +357,22 @@ WHERE id = '<entity_id>';
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
 | `entities` | UPDATE | `skipped_count` (increment by 1) |
+
+---
+
+#### Set entity marker (Constructor / Player)
+
+- **Service:** `setEntityMarker()` — [entities.service.ts](../src/modules/entities/entities.service.ts)
+- **Route:** `PATCH /api/v1/categories/:categoryId/topics/:topicId/entities/:entityId/marker` — body `{ "marker": 1 | 2 | null }`
+- **Transaction:** no
+
+| Table | Operation | Columns set |
+|-------|-----------|-------------|
+| `entities` | UPDATE | `marker` (`1` = needs edit, `2` = to remove, `NULL` = none; DB CHECK constraint) |
+
+```sql
+UPDATE entities SET marker = $1, updated_at = now() WHERE id = $2;
+```
 
 ---
 

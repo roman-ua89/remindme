@@ -4,6 +4,8 @@ import { useNavigate } from '@tanstack/react-router';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useSetEntityMarker } from '@/features/entities/queries/use-set-entity-marker';
+import type { EntityMarker } from '@/features/entities/types';
 import { PlayerActions } from '@/features/player/components/PlayerActions';
 import { PlayerBatchCompleteDialog } from '@/features/player/components/PlayerBatchCompleteDialog';
 import { PlayerDepleted } from '@/features/player/components/PlayerDepleted';
@@ -25,6 +27,7 @@ export function PlayerPage({ scope }: PlayerPageProps) {
     const fetchBatch = usePlayerBatch();
     const markDone = useMarkDone();
     const markSkip = useMarkSkip();
+    const setEntityMarker = useSetEntityMarker();
 
     const currentEntity = session.queue[0];
     const isMutating = markDone.isPending || markSkip.isPending;
@@ -73,6 +76,19 @@ export function PlayerPage({ scope }: PlayerPageProps) {
                 },
             },
         );
+    }
+
+    async function handleMarkerChange(marker: EntityMarker | null) {
+        if (!currentEntity) {
+            return;
+        }
+
+        const { id: entityId, categoryId, topicId } = currentEntity;
+        const updated = await setEntityMarker.mutateAsync({ categoryId, topicId, entityId, marker });
+        setSession((current) => ({
+            ...current,
+            queue: current.queue.map((item) => (item.id === entityId ? { ...item, marker: updated.marker } : item)),
+        }));
     }
 
     function handleSkip() {
@@ -129,7 +145,7 @@ export function PlayerPage({ scope }: PlayerPageProps) {
 
             {session.status === 'playing' && currentEntity ? (
                 <div className='flex flex-col gap-8'>
-                    <PlayerPreview entity={currentEntity} />
+                    <PlayerPreview key={currentEntity.id} entity={currentEntity} onMarkerChange={handleMarkerChange} />
                     <PlayerActions disabled={isMutating} onDone={handleDone} onSkip={handleSkip} />
                 </div>
             ) : null}

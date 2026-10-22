@@ -135,6 +135,8 @@ model Entity {
   revisedCount  Int              @default(0) @map("revised_count")
   skippedCount  Int              @default(0) @map("skipped_count")
   visibility    EntityVisibility @default(included)
+  /// null = no marker; 1 = needs edit; 2 = to remove (see ENTITY_MARKER in @remindme/contracts/entities)
+  marker        Int?             @db.SmallInt
   createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
 

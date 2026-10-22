@@ -15,7 +15,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlayButton } from '@/features/player/components/PlayButton';
+import { getEntityMarkerOption } from '@/features/entities/markers';
 import type { EntityListItem } from '@/features/entities/types';
+import { cn } from '@/lib/utils';
 import { Link, useParams } from '@tanstack/react-router';
 import { format, parseISO } from 'date-fns';
 
@@ -36,6 +38,7 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
         setRemoveDialogOpen(false);
     }
 
+    const markerOption = getEntityMarkerOption(entity.marker);
     const createdAt = parseISO(entity.createdAt);
     const dateFormat = 'd-MM-yyyy';
 
@@ -56,6 +59,14 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-2'>
+                        {markerOption ? (
+                            <span
+                                role='img'
+                                className={cn('size-2.5 shrink-0 rounded-full', markerOption.dotClassName)}
+                                title={markerOption.label}
+                                aria-label={markerOption.label}
+                            />
+                        ) : null}
                         <span className='text-sm tabular-nums text-gray-400'>{entity.revisedCount} revised</span>
                         <PlayButton scope={{ type: 'entity', entityId: entity.id }} ariaLabel='Play entity' />
                         <Button variant='ghost' size='icon-sm' aria-label='Edit entity' onClick={() => onEdit(entity.id)}>

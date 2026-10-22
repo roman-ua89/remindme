@@ -6,7 +6,6 @@ export type DevPlanTask = {
 
 /** Edit this list manually during MVP development. Set `done: true` when complete. */
 export const devPlanTasks: DevPlanTask[] = [
-    { id: '3', label: 'Optional mark for list item which indicates something (require review/editing...). On Player and Constructor page', done: false },
     { id: '5', label: 'On home page show how many entities were added for the last 7 days.', done: false },
     { id: '6', label: 'On home page show how many entities were revised for the last 7 days.', done: false },
     { id: '7', label: 'On home page show how many entities were skipped for the last 7 days.', done: false },

@@ -8,6 +8,16 @@ export const blockTypeSchema = z.enum(['text', 'code', 'image', 'list'])
 export const entityVisibilitySchema = z.enum(['included', 'excluded'])
 export const codeLanguageSchema = z.enum(['javascript', 'typescript'])
 
+export const ENTITY_MARKER = {
+  needsEdit: 1,
+  toRemove: 2,
+} as const
+
+export const entityMarkerSchema = z.union([
+  z.literal(ENTITY_MARKER.needsEdit),
+  z.literal(ENTITY_MARKER.toRemove),
+])
+
 export const codeContentJsonSchema = z.object({
   language: codeLanguageSchema,
   value: z.string(),
@@ -60,6 +70,10 @@ export const updateEntitySchema = z.object({
   visibility: entityVisibilitySchema.optional(),
 })
 
+export const setEntityMarkerSchema = z.object({
+  marker: entityMarkerSchema.nullable(),
+})
+
 export const entityListItemSchema = z.object({
   id: z.string().uuid(),
   topicId: z.string().uuid(),
@@ -67,6 +81,7 @@ export const entityListItemSchema = z.object({
   revisedCount: z.number().int().nonnegative(),
   skippedCount: z.number().int().nonnegative(),
   visibility: entityVisibilitySchema,
+  marker: entityMarkerSchema.nullable(),
   position: z.number().int().nonnegative(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -126,6 +141,8 @@ export type CodeContentJson = z.infer<typeof codeContentJsonSchema>
 export type ListBlockContentJson = z.infer<typeof listBlockContentJsonSchema>
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
+export type EntityMarker = z.infer<typeof entityMarkerSchema>
+export type SetEntityMarkerInput = z.infer<typeof setEntityMarkerSchema>
 export type SaveEntityBlock = z.infer<typeof saveEntityBlockSchema>
 export type SaveEntityInput = z.infer<typeof saveEntitySchema>
 export type UpdateEntityInput = z.infer<typeof updateEntitySchema>

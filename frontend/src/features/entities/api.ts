@@ -1,22 +1,18 @@
 import type { ListSearchQuery } from '@remindme/contracts/common/pagination';
 import type {
     Entity,
+    EntityListItem,
     EntityListPage,
+    EntityMarker,
     SaveEntityInput,
+    SetEntityMarkerInput,
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
 
 import { apiClient } from '@/lib/api-client';
 
-export async function getEntities(
-    categoryId: string,
-    topicId: string,
-    query: ListSearchQuery,
-): Promise<EntityListPage> {
-    const { data } = await apiClient.get<EntityListPage>(
-        `/categories/${categoryId}/topics/${topicId}/entities`,
-        { params: query },
-    );
+export async function getEntities(categoryId: string, topicId: string, query: ListSearchQuery): Promise<EntityListPage> {
+    const { data } = await apiClient.get<EntityListPage>(`/categories/${categoryId}/topics/${topicId}/entities`, { params: query });
     return data;
 }
 
@@ -42,4 +38,10 @@ export async function updateEntity(categoryId: string, topicId: string, entityId
 
 export async function deleteEntity(categoryId: string, topicId: string, entityId: string): Promise<void> {
     await apiClient.delete(`/categories/${categoryId}/topics/${topicId}/entities/${entityId}`);
+}
+
+export async function setEntityMarker(categoryId: string, topicId: string, entityId: string, marker: EntityMarker | null): Promise<EntityListItem> {
+    const payload: SetEntityMarkerInput = { marker };
+    const { data } = await apiClient.patch<EntityListItem>(`/categories/${categoryId}/topics/${topicId}/entities/${entityId}/marker`, payload);
+    return data;
 }

@@ -70,6 +70,9 @@ export const openApiSpec = {
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/skip': {
       patch: { tags: ['entities'], summary: 'Mark entity as skipped (Player Skip)' },
     },
+    '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/marker': {
+      patch: { tags: ['entities'], summary: 'Set entity marker (body: { marker: 1 | 2 | null })' },
+    },
     '/player/batch': {
       post: {
         tags: ['player'],
