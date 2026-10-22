@@ -71,9 +71,7 @@ export function AppBreadcrumbs({ category, topic, entity }: AppBreadcrumbsProps)
                     <>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>
-                                <span className='font-medium truncate max-w-[300px] inline-block'>Entity: {entity.name}</span>
-                            </BreadcrumbPage>
+                            <BreadcrumbPage className='font-medium truncate max-w-[300px]'>Entity: {entity.name}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </>
                 ) : null}

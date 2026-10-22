@@ -179,8 +179,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
             <PageContainer className={`py-8 ${isPreviewMode ? 'hidden' : ''}`}>
                 <form className='flex flex-col gap-6 mb-6' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex items-start justify-between gap-4'>
-                        <div className='flex flex-col gap-1 mb-6'>
-                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>{isEditMode ? 'Edit entity' : 'New entity'}</h1>
+                        <div className='flex flex-col gap-1 mb-2'>
                             <AppBreadcrumbs
                                 category={{ id: categoryId, name: category.name }}
                                 topic={{ id: topicId, name: topic.name }}

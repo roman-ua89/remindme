@@ -7,7 +7,6 @@ export type DevPlanTask = {
 /** Edit this list manually during MVP development. Set `done: true` when complete. */
 export const devPlanTasks: DevPlanTask[] = [
     { id: '5', label: 'On home page show how many entities were added for the last 7 days.', done: false },
-    { id: '8', label: 'For list item: added date + last edited.', done: false },
     { id: '10', label: 'List item visibility: icon on list page + icon on constructor page', done: false },
     { id: '11', label: 'Stay on the page where Player was triggered.', done: false },
     { id: '13', label: 'Calculate how much time Player was opened and save this data per week.', done: false },
