@@ -1,6 +1,7 @@
 import { EntityReadOnlyContent } from '@/features/entities/components/EntityReadOnlyContent';
 import type { EntityMarker } from '@/features/entities/types';
 import { toEntityFormValues } from '@/features/entities/utils/to-form-values';
+import { PlayerEntityBreadcrumb } from '@/features/player/components/PlayerEntityBreadcrumb';
 import type { PlayerBatchItem } from '@/features/player/types';
 
 type PlayerPreviewProps = {
@@ -13,7 +14,13 @@ export function PlayerPreview({ entity, onMarkerChange }: PlayerPreviewProps) {
 
     return (
         <div className='rounded-lg border border-border bg-card p-6'>
-            <EntityReadOnlyContent title={title} blocks={blocks} marker={entity.marker} onMarkerChange={onMarkerChange} />
+            <EntityReadOnlyContent
+                header={<PlayerEntityBreadcrumb categoryName={entity.categoryName} topicName={entity.topicName} />}
+                title={title}
+                blocks={blocks}
+                marker={entity.marker}
+                onMarkerChange={onMarkerChange}
+            />
         </div>
     );
 }

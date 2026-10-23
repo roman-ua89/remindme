@@ -25,6 +25,8 @@ export const playerBatchRequestSchema = z.object({
 
 export const playerBatchItemSchema = entitySchema.extend({
   categoryId: z.string().uuid(),
+  categoryName: z.string(),
+  topicName: z.string(),
 })
 
 export const playerBatchResponseSchema = z.object({

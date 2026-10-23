@@ -10,7 +10,6 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: '10', label: 'List item visibility: icon on list page + icon on constructor page', done: false },
     { id: '13', label: 'Calculate how much time Player was opened and save this data per week.', done: false },
     { id: '14', label: 'User revise score logic. Increase score for every day activity.', done: false },
-    { id: '15', label: 'On player page show Topic and Category the entity had been taken from.', done: false },
     { id: '18', label: 'Notes for next entities. Bottom right corner.', done: false },
     { id: '19', label: 'When new Entity added: it must have (view_count - 1) from highest among existing items.', done: false },
     { id: '20', label: 'Entity constructor - page has no fixed width with Code block.', done: false },

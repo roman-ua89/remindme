@@ -11,6 +11,7 @@ import type {
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
 import { MAX_ENTITY_BLOCKS } from '@remindme/contracts/entities';
+import type { PlayerBatchItem } from '@remindme/contracts/player';
 import type { ListSearchQuery } from '@remindme/contracts/common/pagination';
 import type { BlockType, EntityBlock, EntityVisibility, Prisma } from '@prisma/client';
 
@@ -161,7 +162,7 @@ async function loadEntityWithBlocks(entityId: string): Promise<Entity> {
     };
 }
 
-export async function loadEntitiesWithCategory(entityIds: string[]): Promise<Array<Entity & { categoryId: string }>> {
+export async function loadEntitiesWithCategory(entityIds: string[]): Promise<PlayerBatchItem[]> {
     if (entityIds.length === 0) {
         return [];
     }
@@ -171,7 +172,7 @@ export async function loadEntitiesWithCategory(entityIds: string[]): Promise<Arr
         include: {
             ...entityBlocksInclude,
             topic: {
-                select: { categoryId: true },
+                select: { categoryId: true, name: true, category: { select: { name: true } } },
             },
         },
     });
@@ -188,6 +189,8 @@ export async function loadEntitiesWithCategory(entityIds: string[]): Promise<Arr
             {
                 ...toEntityListItem(entity),
                 categoryId: entity.topic.categoryId,
+                categoryName: entity.topic.category.name,
+                topicName: entity.topic.name,
                 blocks: entity.blocks.map((block) => toBlockResponse(block as BlockWithRows)),
             },
         ];
