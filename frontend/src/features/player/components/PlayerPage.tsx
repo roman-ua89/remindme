@@ -19,9 +19,16 @@ import { advanceAfterAction, applyBatch, createEmptySession, getBatchProgress } 
 
 type PlayerPageProps = {
     scope: PlayerScope;
+    /** In-app path the Player was opened from; used when leaving the Player. */
+    returnTo?: string;
 };
 
-export function PlayerPage({ scope }: PlayerPageProps) {
+// Only same-origin absolute paths; rejects protocol-relative `//host` URLs.
+function isInternalPath(path: string | undefined): path is string {
+    return !!path && path.startsWith('/') && !path.startsWith('//') && !path.startsWith('/player');
+}
+
+export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
     const navigate = useNavigate();
     const [session, setSession] = useState(createEmptySession);
     const fetchBatch = usePlayerBatch();
@@ -35,6 +42,10 @@ export function PlayerPage({ scope }: PlayerPageProps) {
     const showProgress = session.status === 'playing' || session.status === 'batchComplete';
 
     function goHome() {
+        if (isInternalPath(returnTo)) {
+            navigate({ href: returnTo });
+            return;
+        }
         navigate({ to: '/categories' });
     }
 

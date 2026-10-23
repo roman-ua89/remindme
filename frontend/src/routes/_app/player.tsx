@@ -10,6 +10,7 @@ const playerSearchSchema = z
         topicId: z.string().optional(),
         entityId: z.string().optional(),
         preview: z.string().optional(),
+        returnTo: z.string().optional(),
     })
     .refine(
         (search) => {
@@ -50,5 +51,5 @@ function PlayerRoute() {
 
     const scopeKey = scope.type === 'category' ? scope.categoryId : scope.type === 'topic' ? scope.topicId : scope.entityId;
 
-    return <PlayerPage key={scopeKey} scope={scope} />;
+    return <PlayerPage key={scopeKey} scope={scope} returnTo={search.returnTo} />;
 }

@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { PlayIcon, PlayOff } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ function toPlayerSearch(scope: PlayerScope) {
 
 export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonProps) {
     const navigate = useNavigate();
+    const returnTo = useLocation({ select: (location) => location.href });
 
     return (
         <Tooltip>
@@ -34,7 +35,7 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
                     aria-label={ariaLabel}
                     disabled={disabled}
                     onClick={() => {
-                        navigate({ to: '/player', search: toPlayerSearch(scope) });
+                        navigate({ to: '/player', search: { ...toPlayerSearch(scope), returnTo } });
                     }}
                 >
                     {disabled ? <PlayOff className='text-red-800' /> : <PlayIcon className='text-green-600' />}
