@@ -17,6 +17,7 @@ Product behavior lives in [PRODUCT.md](PRODUCT.md). This document describes how 
 | Code blocks | `{ language, value, blurredByDefault }` in `content_json` — edited via `@uiw/react-codemirror`; v1 languages: `javascript`, `typescript` |
 | Image blocks | Upload to object storage; DB holds `media_assets` + FK from the block |
 | List blocks | Normalized child rows in `list_block_rows` |
+| Link blocks | `{ title, url }` in `content_json` |
 | Password reset | Dedicated token table (hashed tokens, expiry, single-use) |
 | Revision counters | Lifetime totals on `entities` (`revised_count`, `skipped_count`) plus a per-user, per-local-day rollup in `user_daily_activity` — both updated only by **Player** Done/Skip; no session tables |
 | Revision eligibility | `entities.visibility` gates whether an entity can enter a Player pack |
@@ -238,7 +239,7 @@ Ordered content units for one entity. There is **no** separate constructor table
 |-------|------|------|-------|
 | `id` | UUID | no | PK |
 | `entity_id` | UUID | no | FK → `entities.id` (`ON DELETE CASCADE`) |
-| `block_type` | enum / text | no | `text` \| `code` \| `image` \| `list` |
+| `block_type` | enum / text | no | `text` \| `code` \| `image` \| `list` \| `link` |
 | `position` | integer | no | `0`–`19`; unique per entity |
 | `content_json` | jsonb | yes | Used by `text` and `code` (see §4) |
 | `media_asset_id` | UUID | yes | FK → `media_assets.id`; used by `image` |
@@ -257,6 +258,7 @@ Ordered content units for one entity. There is **no** separate constructor table
 | `code` | required | null | none |
 | `image` | null | required | none |
 | `list` | options JSON (see §4) | null | `list_block_rows` |
+| `link` | required (see §4) | null | none |
 
 ---
 
@@ -373,6 +375,20 @@ Image blocks use `media_asset_id` only (no `content_json`). List blocks use `lis
 | Field | Required | Notes |
 |-------|----------|-------|
 | `blurRightSideByDefault` | yes | When `true`, right column is blurred until user reveals it |
+
+### Link (`block_type = link`)
+
+```json
+{
+  "title": "React docs",
+  "url": "https://react.dev/reference/react"
+}
+```
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `title` | yes (may be empty string) | Optional label shown above the link; max 75 characters |
+| `url` | yes | Must be a valid `http://` or `https://` URL (max 2000 characters); opened in a new tab |
 
 ---
 

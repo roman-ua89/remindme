@@ -2,6 +2,7 @@ import type { Control } from 'react-hook-form';
 
 import { BlockChrome } from '@/features/entities/components/BlockChrome';
 import { CodeBlockEditor } from '@/features/entities/components/blocks/CodeBlockEditor';
+import { LinkBlockEditor } from '@/features/entities/components/blocks/LinkBlockEditor';
 import { ImageBlockEditor } from '@/features/entities/components/blocks/ImageBlockEditor';
 import { ListBlockEditor } from '@/features/entities/components/blocks/ListBlockEditor';
 import { TextBlockEditor } from '@/features/entities/components/blocks/TextBlockEditor';
@@ -27,6 +28,8 @@ export function BlockEditorRouter({ control, index, block, dragHandleProps, onRe
             {block.blockType === 'image' ? <ImageBlockEditor control={control} name={baseName} /> : null}
 
             {block.blockType === 'list' ? <ListBlockEditor control={control} name={baseName} /> : null}
+
+            {block.blockType === 'link' ? <LinkBlockEditor control={control} name={baseName} /> : null}
         </BlockChrome>
     );
 }

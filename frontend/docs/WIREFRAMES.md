@@ -594,7 +594,7 @@ Uses app header + `PageContainer`. Split layout: **content left**, **templates r
 | Panel | Contents |
 |-------|----------|
 | **Left — Content** | Required **Title** field (always visible) + ordered block editors below; starts with Title only |
-| **Right — Templates** | Always-visible list of all block Templates: Text, Code, Image, List |
+| **Right — Templates** | Always-visible list of all block Templates: Text, Code, Image, List, Link |
 
 | Template | Block editor (left column, after insert) |
 |----------|------------------------------------------|
@@ -602,6 +602,7 @@ Uses app header + `PageContainer`. Split layout: **content left**, **templates r
 | **Code** | `@uiw/react-codemirror` editor + language selector (JavaScript, TypeScript); optional **Blured by default** (see §7.5) |
 | **Image** | Custom `ImageBlockEditor`: centered file picker + drag-drop container; preview after upload; remove to re-upload |
 | **List** | Rows: left + right columns; **+** adds row (see §7.3) |
+| **Link** | Title (optional) + URL (required) inputs (see §7.6) |
 
 | Interaction | Behavior |
 |-------------|----------|
@@ -721,6 +722,33 @@ One Code block in the left column, expanded:
 ```
 
 **Blured by default** blurs the snippet in preview/Player until the user clicks/taps to reveal.
+
+---
+
+### 7.6 Constructor block — Link type (detail)
+
+One Link block in the left column (same white card as other blocks):
+
+```
+┌─ Link ─────────────────────────────────────────────── [≡] [×] ─┐
+│                                                                 │
+│  Title (max 75 symbols)                                         │
+│  [ Link title                                               ]   │
+│  URL *                                                          │
+│  [ https://example.com                                      ]   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Preview / Player rendering:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  React docs                                                     │
+│  https://react.dev/reference/react ↗                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Title is optional (hidden when empty). The URL opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`); `↗` is the external-link icon.
 
 ---
 
@@ -884,3 +912,4 @@ Suggested Tailwind on app shell outer wrapper:
 | 2026-07-13 | Text template: TipTap rich text editor |
 | 2026-07-13 | Code template: `@uiw/react-codemirror` (JavaScript + TypeScript) |
 | 2026-07-13 | Image template: custom `ImageBlockEditor` — file picker + drag-drop; preview with remove |
+| 2026-10-23 | Link template: optional title + required URL; preview/Player opens URL in new tab with external-link icon (§7.6) |

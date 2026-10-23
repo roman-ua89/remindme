@@ -1,26 +1,27 @@
-import { BlockPreviewChrome } from '@/features/entities/components/BlockPreviewChrome'
-import { CodeBlockPreview } from '@/features/entities/components/blocks/CodeBlockPreview'
-import { ImageBlockPreview } from '@/features/entities/components/blocks/ImageBlockPreview'
-import { ListBlockPreview } from '@/features/entities/components/blocks/ListBlockPreview'
-import { TextBlockPreview } from '@/features/entities/components/blocks/TextBlockPreview'
-import type { EntityBlockForm } from '@/features/entities/types'
+import { BlockPreviewChrome } from '@/features/entities/components/BlockPreviewChrome';
+import { CodeBlockPreview } from '@/features/entities/components/blocks/CodeBlockPreview';
+import { ImageBlockPreview } from '@/features/entities/components/blocks/ImageBlockPreview';
+import { LinkBlockPreview } from '@/features/entities/components/blocks/LinkBlockPreview';
+import { ListBlockPreview } from '@/features/entities/components/blocks/ListBlockPreview';
+import { TextBlockPreview } from '@/features/entities/components/blocks/TextBlockPreview';
+import type { EntityBlockForm } from '@/features/entities/types';
 
 type BlockPreviewRouterProps = {
-  block: EntityBlockForm
-}
+    block: EntityBlockForm;
+};
 
 export function BlockPreviewRouter({ block }: BlockPreviewRouterProps) {
-  return (
-    <BlockPreviewChrome blockType={block.blockType}>
-      {block.blockType === 'text' ? <TextBlockPreview contentJson={block.contentJson} /> : null}
+    return (
+        <BlockPreviewChrome blockType={block.blockType}>
+            {block.blockType === 'text' ? <TextBlockPreview contentJson={block.contentJson} /> : null}
 
-      {block.blockType === 'code' ? <CodeBlockPreview contentJson={block.contentJson} /> : null}
+            {block.blockType === 'code' ? <CodeBlockPreview contentJson={block.contentJson} /> : null}
 
-      {block.blockType === 'image' ? <ImageBlockPreview previewUrl={block.previewUrl} /> : null}
+            {block.blockType === 'image' ? <ImageBlockPreview previewUrl={block.previewUrl} /> : null}
 
-      {block.blockType === 'list' ? (
-        <ListBlockPreview rows={block.rows} contentJson={block.contentJson} />
-      ) : null}
-    </BlockPreviewChrome>
-  )
+            {block.blockType === 'list' ? <ListBlockPreview rows={block.rows} contentJson={block.contentJson} /> : null}
+
+            {block.blockType === 'link' ? <LinkBlockPreview contentJson={block.contentJson} /> : null}
+        </BlockPreviewChrome>
+    );
 }

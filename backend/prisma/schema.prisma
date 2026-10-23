@@ -12,6 +12,7 @@ enum BlockType {
   code
   image
   list
+  link
 }
 
 enum EntityVisibility {

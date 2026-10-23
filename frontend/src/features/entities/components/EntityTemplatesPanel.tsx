@@ -1,4 +1,4 @@
-import { Code2, FileText, Image, Layers2, List, Plus } from 'lucide-react';
+import { Code2, FileText, Image, Layers2, Link2, List, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { BlockType, EntityBlockForm } from '@/features/entities/types';
@@ -14,6 +14,7 @@ const templates: Array<{
     { type: 'code', label: 'Code', icon: Code2 },
     { type: 'image', label: 'Image', icon: Image },
     { type: 'list', label: 'List', icon: List },
+    { type: 'link', label: 'Link', icon: Link2 },
 ];
 
 type EntityTemplatesPanelProps = {

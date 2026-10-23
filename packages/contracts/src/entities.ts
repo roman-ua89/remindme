@@ -4,7 +4,7 @@ import { paginatedResponseSchema } from './common/pagination.js'
 
 export const MAX_ENTITY_BLOCKS = 20
 
-export const blockTypeSchema = z.enum(['text', 'code', 'image', 'list'])
+export const blockTypeSchema = z.enum(['text', 'code', 'image', 'list', 'link'])
 export const entityVisibilitySchema = z.enum(['included', 'excluded'])
 export const codeLanguageSchema = z.enum(['javascript', 'typescript'])
 
@@ -33,6 +33,18 @@ export const listBlockContentJsonSchema = z.object({
   blurRightSideByDefault: z.boolean(),
 })
 
+export const MAX_LINK_TITLE_LENGTH = 75
+
+export const linkContentJsonSchema = z.object({
+  title: z.string().trim().max(MAX_LINK_TITLE_LENGTH),
+  url: z
+    .string()
+    .trim()
+    .max(2000)
+    .url()
+    .refine((value) => /^https?:\/\//i.test(value), 'URL must start with http:// or https://'),
+})
+
 const positionSchema = z.number().int().min(0).max(MAX_ENTITY_BLOCKS - 1)
 
 export const saveEntityBlockSchema = z.discriminatedUnion('blockType', [
@@ -56,6 +68,11 @@ export const saveEntityBlockSchema = z.discriminatedUnion('blockType', [
     position: positionSchema,
     contentJson: listBlockContentJsonSchema,
     rows: z.array(listBlockRowSchema).min(1),
+  }),
+  z.object({
+    blockType: z.literal('link'),
+    position: positionSchema,
+    contentJson: linkContentJsonSchema,
   }),
 ])
 
@@ -121,6 +138,12 @@ export const entityBlockResponseSchema = z.discriminatedUnion('blockType', [
       }),
     ),
   }),
+  z.object({
+    id: z.string().uuid(),
+    blockType: z.literal('link'),
+    position: positionSchema,
+    contentJson: z.object({ title: z.string(), url: z.string() }),
+  }),
 ])
 
 export const entitySchema = entityListItemSchema.extend({
@@ -141,6 +164,7 @@ export const entityListPageSchema = paginatedResponseSchema(entityListItemSchema
 
 export type CodeContentJson = z.infer<typeof codeContentJsonSchema>
 export type ListBlockContentJson = z.infer<typeof listBlockContentJsonSchema>
+export type LinkContentJson = z.infer<typeof linkContentJsonSchema>
 export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
 export type EntityMarker = z.infer<typeof entityMarkerSchema>

@@ -5,6 +5,7 @@ import type {
     EntityListItem,
     EntityListPage,
     EntityMarker,
+    LinkContentJson,
     ListBlockContentJson,
     SaveEntityInput,
     UpdateEntityInput,
@@ -77,6 +78,14 @@ function toListBlockContentJson(contentJson: unknown): ListBlockContentJson {
     };
 }
 
+function toLinkBlockContentJson(contentJson: unknown): LinkContentJson {
+    const json = contentJson as Partial<LinkContentJson> | null | undefined;
+    return {
+        title: typeof json?.title === 'string' ? json.title : '',
+        url: typeof json?.url === 'string' ? json.url : '',
+    };
+}
+
 function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
     switch (block.blockType) {
         case 'text':
@@ -113,6 +122,13 @@ function toBlockResponse(block: BlockWithRows): EntityBlockResponse {
                     leftValue: row.leftValue,
                     rightValue: row.rightValue,
                 })),
+            };
+        case 'link':
+            return {
+                id: block.id,
+                blockType: 'link',
+                position: block.position,
+                contentJson: toLinkBlockContentJson(block.contentJson),
             };
         default:
             throw badRequest('Unsupported block type');
@@ -202,7 +218,10 @@ async function replaceBlocks(tx: Prisma.TransactionClient, entityId: string, blo
                 blockType: block.blockType as BlockType,
                 position: block.position,
                 contentJson:
-                    block.blockType === 'text' || block.blockType === 'code' || block.blockType === 'list'
+                    block.blockType === 'text' ||
+                    block.blockType === 'code' ||
+                    block.blockType === 'list' ||
+                    block.blockType === 'link'
                         ? (block.contentJson as Prisma.InputJsonValue)
                         : undefined,
                 mediaAssetId: block.blockType === 'image' ? block.mediaAssetId : undefined,

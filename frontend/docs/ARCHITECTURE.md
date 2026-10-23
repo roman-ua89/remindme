@@ -451,7 +451,7 @@ features/topics/
 
 ### 5.4 `features/entities/`
 
-Entity constructor (create + edit), block editors, preview panel. An **entity** is one piece of revisable information inside a topic ([PRODUCT.md §2](PRODUCT.md)) — configured with a required **Title** and 0–20 **constructor blocks** (Text, Code, Image, List).
+Entity constructor (create + edit), block editors, preview panel. An **entity** is one piece of revisable information inside a topic ([PRODUCT.md §2](PRODUCT.md)) — configured with a required **Title** and 0–20 **constructor blocks** (Text, Code, Image, List, Link).
 
 ```
 features/entities/
@@ -481,7 +481,7 @@ features/entities/
 | Concern | Owner |
 |---------|--------|
 | Entity constructor UI | `EntityConstructorPage.tsx` + panels |
-| Block type editors | `components/blocks/*` — **Text** uses TipTap (`TextBlockEditor.tsx`); **Code** uses `@uiw/react-codemirror` (`CodeBlockEditor.tsx`); **Image** uses custom `ImageBlockEditor.tsx` (file picker + drag-drop); shared helpers in `lib/tiptap/` and `lib/codemirror/` |
+| Block type editors | `components/blocks/*` — **Text** uses TipTap (`TextBlockEditor.tsx`); **Code** uses `@uiw/react-codemirror` (`CodeBlockEditor.tsx`); **Image** uses custom `ImageBlockEditor.tsx` (file picker + drag-drop); **Link** uses `LinkBlockEditor.tsx` (title + URL inputs); shared helpers in `lib/tiptap/` and `lib/codemirror/` |
 | Zod validation | Re-export/extend `@remindme/contracts/entities` schemas (static block types) |
 | Topic detail entity list | `EntitiesPage.tsx` / `EntityCard.tsx` — Title, gray `{revisedCount} revised` label, Play/Edit/Remove |
 | In-form draft state | react-hook-form local state — not Zustand |
@@ -544,7 +544,7 @@ features/player/
 
 | Concern | Owner |
 |---------|--------|
-| Read-only entity render | `PlayerPreview.tsx` — same block renderers as entity preview (TipTap HTML, CodeMirror read-only, Image, List) |
+| Read-only entity render | `PlayerPreview.tsx` — same block renderers as entity preview (TipTap HTML, CodeMirror read-only, Image, List, Link) |
 | Pack + scheduling | `POST /api/v1/player/batch` (min `revised_count` sample) + `utils/session.ts` queue ([PLAYER.md](PLAYER.md)) |
 | Counter mutations | `use-mark-done.ts` / `use-mark-skip.ts`; invalidate `queryKeys.entities.*` and topic/category list keys |
 | Next-entity ready | Head of the in-memory pack (`queue[1]`) — no per-entity GET or prefetch hook |

@@ -28,6 +28,12 @@ function toSaveBlock(block: EntityBlockForm, position: number): SaveEntityBlock 
                 contentJson: block.contentJson,
                 rows: block.rows,
             };
+        case 'link':
+            return {
+                blockType: 'link',
+                position,
+                contentJson: block.contentJson,
+            };
     }
 }
 

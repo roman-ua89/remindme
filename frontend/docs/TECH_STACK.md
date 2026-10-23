@@ -396,7 +396,7 @@ All user input flows use **react-hook-form** for form state and **Zod** for vali
 - Auth: login, register, forgot password
 - Create category (popover on Categories — name only; topics are created separately on Category detail)
 - Add topic (Category detail)
-- Entity constructor: Title + ordered constructor blocks (Text, Code, Image, List)
+- Entity constructor: Title + ordered constructor blocks (Text, Code, Image, List, Link)
 
 ### Conventions
 
@@ -928,7 +928,7 @@ Prisma maps [DATABASE.md](DATABASE.md) tables 1:1:
 | `EntityBlock`, `ListBlockRow` | Constructor blocks; max 20 blocks per entity |
 | `MediaAsset` | Upload metadata; binary in object storage |
 
-**Enums:** `BlockType` (`text`, `code`, `image`, `list`), `EntityVisibility` (`included`, `excluded`).
+**Enums:** `BlockType` (`text`, `code`, `image`, `list`, `link`), `EntityVisibility` (`included`, `excluded`).
 
 **Key relations:**
 
@@ -1114,3 +1114,4 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 | 2026-07-13 | Image blocks: custom `ImageBlockEditor` — file picker + drag-drop; preview with remove (§9) |
 | 2026-07-13 | Drop TanStack Virtual; adopt classic offset pagination for entity lists (§7) |
 | 2026-08-31 | Code blocks: persist `blurredByDefault` in `content_json`; click-to-reveal blur in preview/Player |
+| 2026-10-23 | Link blocks: `{ title, url }` in `content_json`; `LinkBlockEditor` / `LinkBlockPreview` (new tab + external-link icon) |

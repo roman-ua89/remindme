@@ -1,6 +1,6 @@
 export type { EntityListItem, EntityListPage, EntityMarker } from '@remindme/contracts/entities';
 
-export type BlockType = 'text' | 'code' | 'image' | 'list';
+export type BlockType = 'text' | 'code' | 'image' | 'list' | 'link';
 
 export type CodeLanguage = 'javascript' | 'typescript';
 
@@ -17,6 +17,11 @@ export type ListBlockRow = {
 
 export type ListBlockContentJson = {
     blurRightSideByDefault: boolean;
+};
+
+export type LinkContentJson = {
+    title: string;
+    url: string;
 };
 
 export type EntityBlockFormBase = {
@@ -46,7 +51,12 @@ export type ListBlockForm = EntityBlockFormBase & {
     rows: ListBlockRow[];
 };
 
-export type EntityBlockForm = TextBlockForm | CodeBlockForm | ImageBlockForm | ListBlockForm;
+export type LinkBlockForm = EntityBlockFormBase & {
+    blockType: 'link';
+    contentJson: LinkContentJson;
+};
+
+export type EntityBlockForm = TextBlockForm | CodeBlockForm | ImageBlockForm | ListBlockForm | LinkBlockForm;
 
 export type EntityConstructorFormValues = {
     title: string;
@@ -78,7 +88,13 @@ export type SaveEntityListBlock = {
     rows: ListBlockRow[];
 };
 
-export type SaveEntityBlock = SaveEntityTextBlock | SaveEntityCodeBlock | SaveEntityImageBlock | SaveEntityListBlock;
+export type SaveEntityLinkBlock = {
+    blockType: 'link';
+    position: number;
+    contentJson: LinkContentJson;
+};
+
+export type SaveEntityBlock = SaveEntityTextBlock | SaveEntityCodeBlock | SaveEntityImageBlock | SaveEntityListBlock | SaveEntityLinkBlock;
 
 export type SaveEntityPayload = {
     title: string;

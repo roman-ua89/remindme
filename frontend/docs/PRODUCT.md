@@ -155,8 +155,9 @@ Each entity has its own ordered sequence of blocks. Types can be mixed and order
 | **Code** | Code snippet | `@uiw/react-codemirror` editor with language selector; MVP: **JavaScript** and **TypeScript**; optional checkbox: **Blured by default** |
 | **Image** | Visual content | Custom upload container: centered file picker + drag-drop; preview after upload; remove to re-upload |
 | **List** | Key–value pairs | Rows with **left** and **right** columns; **+** adds a row within the block; optional checkbox: **Blur right side by default** |
+| **Link** | External resource | **Title** (optional, max 75 symbols) + **URL** (required, `http://` or `https://`) |
 
-Additional block types may be added in future versions; v1 supports the four types above.
+Additional block types may be added in future versions; v1 supports the five types above.
 
 **Code block options** (checkbox below the editor):
 
@@ -171,6 +172,8 @@ Additional block types may be added in future versions; v1 supports the four typ
 | Option | Default | Behavior |
 |--------|---------|----------|
 | **Blur right side by default** | off | Right column text is blurred until the user clicks/taps to reveal (revision-style guess-then-check) |
+
+**Link block:** In preview and the Player the title (if set) is shown above the URL; the URL is a link that opens in a new tab, with an external-link icon to its right.
 
 **Image block:** Empty state shows a drop zone with a centered **Choose image** button. Drag-and-drop onto the container triggers the same upload flow. Once uploaded, the image preview fills the container. A remove control clears the image and returns to the empty state so the user can upload again.
 
@@ -364,7 +367,7 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 |-------|----------|---------|
 | Content hierarchy | Category → Entity | Category → Topic → Entity |
 | Category creation | Dedicated Create category page | Categories page popover (name only) → redirect to Category detail |
-| Entity model | Template-bound fields | User-configured constructor: Title + ordered blocks (Text, Code, Image, List) |
+| Entity model | Template-bound fields | User-configured constructor: Title + ordered blocks (Text, Code, Image, List, Link) |
 | Entity constructor | Elements TBD | Split layout (preview left, editor right); max 20 blocks per entity |
 | Statistics page | Global chart page | **Removed** from product spec |
 | Revision / Templates | Full session + template flows | **Player** page at `/player` replaces session/summary pages; template flows removed |
@@ -379,6 +382,12 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 | Scheduling | Min revised_count pool, random, once per session | Restored with Done → min pool; Skip → random in scope |
 | Session end | Session summary page | Completion message on `/player` (no summary screen) |
 | Counter mutations | Schema only | Done → `revised_count + 1`; Skip → `skipped_count + 1` |
+
+### Link block (2026-10-23)
+
+| Topic | Previous | Updated |
+|-------|----------|---------|
+| Block types | Text, Code, Image, List | Added **Link**: optional title (≤75 symbols) + required http(s) URL; opens in a new tab with an external-link icon |
 
 ### Code block blur (2026-08-31)
 

@@ -436,7 +436,7 @@ Used by `createEntity` and `updateEntity` when blocks are saved. Not a public AP
 |------|-------|-----------|-------------|
 | 1 | `list_block_rows` | DELETE | rows linked to entity's blocks |
 | 2 | `entity_blocks` | DELETE | all rows where `entity_id` matches |
-| 3 | `entity_blocks` | INSERT | `entity_id`, `block_type`, `position`, `content_json` (text/code/list), `media_asset_id` (image) |
+| 3 | `entity_blocks` | INSERT | `entity_id`, `block_type`, `position`, `content_json` (text/code/list/link), `media_asset_id` (image) |
 | 4 | `list_block_rows` | INSERT | `block_id`, `position`, `left_value`, `right_value` (list blocks only) |
 
 **Block type → columns:**
@@ -447,6 +447,7 @@ Used by `createEntity` and `updateEntity` when blocks are saved. Not a public AP
 | `code` | `{ language, value, blurredByDefault }` | NULL |
 | `image` | NULL | FK to `media_assets.id` |
 | `list` | `{ blurRightSideByDefault }` | NULL (+ child rows in `list_block_rows`) |
+| `link` | `{ title, url }` | NULL |
 
 ```sql
 DELETE FROM list_block_rows
@@ -662,9 +663,9 @@ Future per-day metrics: add counter columns (default `0`) and increment them in 
 |--------|-------|-------|
 | `id` | ⚙ 👁 | |
 | `entity_id` | ✅ 👁 | replaceBlocks |
-| `block_type` | ✅ 👁 | replaceBlocks (`text`, `code`, `image`, `list`) |
+| `block_type` | ✅ 👁 | replaceBlocks (`text`, `code`, `image`, `list`, `link`) |
 | `position` | ✅ 👁 | replaceBlocks (0–19 per entity) |
-| `content_json` | ✅ 👁 | text/code blocks in replaceBlocks |
+| `content_json` | ✅ 👁 | text/code/list/link blocks in replaceBlocks |
 | `media_asset_id` | ✅ 👁 | image blocks in replaceBlocks |
 | `created_at` | ⚙ 👁 | |
 | `updated_at` | ⚙ | Auto on block INSERT (replaceBlocks) |
