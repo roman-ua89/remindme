@@ -1,24 +1,24 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-import { createTopic } from '@/features/topics/api'
-import type { CreateTopicFormValues } from '@/features/topics/schemas'
-import { getApiErrorMessage } from '@/lib/auth'
-import { queryKeys } from '@/lib/query-keys'
+import { createTopic } from '@/features/topics/api';
+import type { CreateTopicFormValues } from '@/features/topics/schemas';
+import { getApiErrorMessage } from '@/lib/auth';
+import { queryKeys } from '@/lib/query-keys';
 
 export function useCreateTopic(categoryId: string) {
-  const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ name }: CreateTopicFormValues) =>
-      createTopic(categoryId, { name }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.topics.all(categoryId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.categories.detail(categoryId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all })
-    },
-    onError: (error) => {
-      toast.error(getApiErrorMessage(error))
-    },
-  })
+    return useMutation({
+        mutationFn: ({ name }: CreateTopicFormValues) => createTopic(categoryId, { name }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.topics.all(categoryId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.detail(categoryId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.stats.library });
+        },
+        onError: (error) => {
+            toast.error(getApiErrorMessage(error));
+        },
+    });
 }

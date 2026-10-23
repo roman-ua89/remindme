@@ -82,6 +82,12 @@ export const openApiSpec = {
         summary: 'Daily revised/skipped counters for the current user (query: month=YYYY-MM; sparse days) + firstActivityDate',
       },
     },
+    '/stats/library': {
+      get: {
+        tags: ['stats'],
+        summary: 'Library totals for the current user: categoriesCount, topicsCount, entitiesCount',
+      },
+    },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/marker': {
       patch: { tags: ['entities'], summary: 'Set entity marker (body: { marker: 1 | 2 | null })' },
     },

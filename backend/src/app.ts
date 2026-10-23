@@ -15,6 +15,7 @@ import { entitiesFlatRoutes } from './modules/entities/entities-flat.routes.js';
 import { entitiesRoutes } from './modules/entities/entities.routes.js';
 import { mediaRoutes } from './modules/media/media.routes.js';
 import { playerRoutes } from './modules/player/player.routes.js';
+import { statsRoutes } from './modules/stats/stats.routes.js';
 import { topicsRoutes } from './modules/topics/topics.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
 import { openApiSpec } from './openapi/spec.js';
@@ -58,6 +59,7 @@ export async function createApp() {
     api.use('/entities', entitiesFlatRoutes);
     api.use('/media', mediaRoutes);
     api.use('/player', playerRoutes);
+    api.use('/stats', statsRoutes);
     api.use('/users', usersRoutes);
 
     app.use('/api/v1', api);

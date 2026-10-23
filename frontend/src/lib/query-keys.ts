@@ -25,6 +25,10 @@ export const queryKeys = {
         all: ['activity'] as const,
         daily: (month: string) => ['activity', 'daily', month] as const,
     },
+    stats: {
+        all: ['stats'] as const,
+        library: ['stats', 'library'] as const,
+    },
     player: {
         all: ['player'] as const,
         batch: (scopeKey: string) => ['player', 'batch', scopeKey] as const,
