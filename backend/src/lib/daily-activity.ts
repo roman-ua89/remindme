@@ -39,3 +39,18 @@ export async function recordDailyActivity(
         update: { [field]: { increment: 1 } },
     });
 }
+
+/** Adds Player time to the day's row; increments (never overwrites) so concurrent tabs can't clobber each other. */
+export async function recordPlayerSeconds(
+    client: Prisma.TransactionClient,
+    userId: string,
+    activityDate: Date,
+    seconds: number,
+): Promise<{ activityDate: Date; revisedCount: number; skippedCount: number; playerSeconds: number }> {
+    return client.userDailyActivity.upsert({
+        where: { userId_activityDate: { userId, activityDate } },
+        create: { userId, activityDate, playerSeconds: seconds },
+        update: { playerSeconds: { increment: seconds } },
+        select: { activityDate: true, revisedCount: true, skippedCount: true, playerSeconds: true },
+    });
+}

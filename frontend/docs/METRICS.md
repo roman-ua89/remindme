@@ -25,6 +25,7 @@ RemindMe is a **revision** tool (not a learning platform). Metrics should reinfo
 | `revisedCount` per entity | Stored in DB; shown on entity rows as `{count} revised` |
 | `skippedCount` per entity | Stored in DB; **not shown in UI** |
 | Daily activity | `user_daily_activity`: revised/skipped per user per local day; shown as the **Daily activity** stacked bar chart on Home (month view) |
+| Time in Player | `user_daily_activity.player_seconds` per local day; live timer in the Player header vs a daily goal (15/30/60 min, default 30), and the **Time in Player** area chart on Home (month view). See [PLAYER.md](PLAYER.md#71-daily-timer) |
 | Library totals | Categories / topics / entities counted live by `GET /stats/library`; shown as **Your library** on Home (cached 1 day, invalidated by create/delete) |
 | Session history / event log | **None** — Player session queue is client-side only |
 | Global aggregates | Only the daily rollup above; otherwise entity-level counters |

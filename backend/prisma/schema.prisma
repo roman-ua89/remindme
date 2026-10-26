@@ -47,6 +47,8 @@ model UserDailyActivity {
   activityDate DateTime @map("activity_date") @db.Date
   revisedCount Int      @default(0) @map("revised_count")
   skippedCount Int      @default(0) @map("skipped_count")
+  /// Seconds the Player page was open on this day
+  playerSeconds Int     @default(0) @map("player_seconds")
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

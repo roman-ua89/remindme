@@ -24,6 +24,7 @@ export const queryKeys = {
     activity: {
         all: ['activity'] as const,
         daily: (month: string) => ['activity', 'daily', month] as const,
+        today: ['activity', 'today'] as const,
     },
     stats: {
         all: ['stats'] as const,

@@ -11,6 +11,9 @@ import { PlayerBatchCompleteDialog } from '@/features/player/components/PlayerBa
 import { PlayerDepleted } from '@/features/player/components/PlayerDepleted';
 import { PlayerPreview } from '@/features/player/components/PlayerPreview';
 import { PlayerProgress } from '@/features/player/components/PlayerProgress';
+import { PlayerTimer } from '@/features/player/components/PlayerTimer';
+import { PLAYER_DAILY_GOAL_MINUTES } from '@/features/player/constants';
+import { usePlayerTimer } from '@/features/player/hooks/use-player-timer';
 import { useMarkDone } from '@/features/player/queries/use-mark-done';
 import { useMarkSkip } from '@/features/player/queries/use-mark-skip';
 import { usePlayerBatch } from '@/features/player/queries/use-player-batch';
@@ -35,6 +38,7 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
     const markDone = useMarkDone();
     const markSkip = useMarkSkip();
     const setEntityMarker = useSetEntityMarker();
+    const playerSeconds = usePlayerTimer();
 
     const currentEntity = session.queue[0];
     const isMutating = markDone.isPending || markSkip.isPending;
@@ -125,9 +129,12 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
         <PageContainer className='py-8'>
             <div className='mb-6 flex items-center justify-between gap-4'>
                 <h1 className='text-2xl font-semibold tracking-tight'>Player</h1>
-                <Button type='button' variant='outline' onClick={goHome}>
-                    Stop
-                </Button>
+                <div className='flex items-center gap-4'>
+                    <PlayerTimer seconds={playerSeconds} goalMinutes={PLAYER_DAILY_GOAL_MINUTES} />
+                    <Button type='button' variant='outline' onClick={goHome}>
+                        Stop
+                    </Button>
+                </div>
             </div>
 
             {showProgress ? (

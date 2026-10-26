@@ -1,1 +1,1 @@
-export type { DailyActivityDay, DailyActivityResponse } from '@remindme/contracts/activity';
+export type { DailyActivityDay, DailyActivityResponse, TodayActivityResponse } from '@remindme/contracts/activity';

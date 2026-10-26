@@ -39,7 +39,10 @@ function normalizeError(error: unknown): ApiClientError {
     return new ApiClientError('Something went wrong');
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
+
+/** Client IANA timezone, sent as `X-Timezone`. */
+export const CLIENT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -47,7 +50,7 @@ export const apiClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
         // Lets the API bucket Player Done/Skip into the user's local day (daily activity chart)
-        'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+        'X-Timezone': CLIENT_TIME_ZONE,
     },
 });
 

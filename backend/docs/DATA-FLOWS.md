@@ -49,7 +49,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Topics | createTopic, updateTopic, deleteTopic | listTopics, getTopic |
 | Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker | listEntities, getEntity |
 | Player | — | getPlayerBatch |
-| Activity | (written by reviseEntity / skipEntity) | getDailyActivity |
+| Activity | recordPlayerTime (+ written by reviseEntity / skipEntity) | getDailyActivity, getTodayActivity |
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
 
@@ -415,12 +415,41 @@ UPDATE entities SET marker = $1, updated_at = now() WHERE id = $2;
 | `user_daily_activity` | READ | Earliest row for the user → `firstActivityDate` (lower bound for month paging; `null` if none) |
 
 ```sql
-SELECT activity_date, revised_count, skipped_count FROM user_daily_activity
+SELECT activity_date, revised_count, skipped_count, player_seconds FROM user_daily_activity
 WHERE user_id = '<user_id>' AND activity_date >= '2026-10-01' AND activity_date < '2026-11-01'
 ORDER BY activity_date;
 
 SELECT activity_date FROM user_daily_activity
 WHERE user_id = '<user_id>' ORDER BY activity_date LIMIT 1;  -- firstActivityDate
+```
+
+#### Get today's activity (Player timer start value)
+
+- **Service:** `getTodayActivity()` — [activity.service.ts](../src/modules/activity/activity.service.ts)
+- **Route:** `GET /api/v1/activity/today`
+- **Transaction:** no
+- **Behavior:** reads the row for the user's local day (`X-Timezone`); returns zeros when there is none (nothing is created).
+
+| Table | Operation | Notes |
+|-------|-----------|-------|
+| `user_daily_activity` | READ | PK lookup (`user_id`, local `activity_date`) |
+
+#### Record Player time
+
+- **Service:** `recordPlayerTime()` — [activity.service.ts](../src/modules/activity/activity.service.ts) → `recordPlayerSeconds()` in [lib/daily-activity.ts](../src/lib/daily-activity.ts)
+- **Route:** `POST /api/v1/activity/player-time` — body `{ seconds: 1..300 }`
+- **Transaction:** no (single upsert)
+- **Behavior:** the Player reports elapsed seconds every ~30s, on leaving and on `pagehide` (`fetch` keepalive). Values are **added**, never set, so concurrent tabs or overlapping reports can't overwrite each other. Returns today's row.
+
+| Table | Operation | Notes |
+|-------|-----------|-------|
+| `user_daily_activity` | UPSERT | `player_seconds` (increment by `seconds`) for (`req.user.id`, user's local date) |
+
+```sql
+INSERT INTO user_daily_activity (user_id, activity_date, player_seconds, updated_at)
+VALUES ('<user_id>', '2026-10-26', 30, now())
+ON CONFLICT (user_id, activity_date)
+DO UPDATE SET player_seconds = user_daily_activity.player_seconds + 30, updated_at = now();
 ```
 
 ---

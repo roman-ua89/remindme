@@ -1,13 +1,12 @@
-import { useMemo, useState } from 'react';
-import { addMonths, eachDayOfInterval, endOfMonth, format, isAfter, isSameMonth, parseISO, startOfMonth } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useMemo } from 'react';
+import { format } from 'date-fns';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { Spinner } from '@/components/ui/spinner';
-import { useDailyActivity } from '@/features/activity/queries/use-daily-activity';
+import { ActivityMonthNav } from '@/features/activity/components/ActivityMonthNav';
+import { useActivityMonth } from '@/features/activity/hooks/use-activity-month';
 
 const chartConfig = {
     revised: { label: 'Revised', color: 'var(--chart-revised)' },
@@ -17,23 +16,13 @@ const chartConfig = {
 type ChartRow = { date: string; day: number; revised: number; skipped: number };
 
 export const DailyActivityChart = () => {
-    const [month, setMonth] = useState(() => startOfMonth(new Date()));
-    const monthKey = format(month, 'yyyy-MM');
-    const isCurrentMonth = isSameMonth(month, new Date());
-    const { data, isPending, isError, isPlaceholderData } = useDailyActivity(monthKey);
-    // Paging stops at the first month with any activity (empty months in between stay reachable).
-    const earliestMonth = data?.firstActivityDate ? startOfMonth(parseISO(data.firstActivityDate)) : startOfMonth(new Date());
-    const isEarliestMonth = !isAfter(month, earliestMonth);
+    const { month, rows: monthRows, query, canGoPrev, canGoNext, goPrev, goNext } = useActivityMonth();
+    const { isPending, isError } = query;
 
-    // API returns only days with activity; zero-fill the rest so every day gets a slot.
-    const rows = useMemo<Array<ChartRow>>(() => {
-        const byDate = new Map((data?.month === monthKey ? data.days : []).map((day) => [day.date, day]));
-        return eachDayOfInterval({ start: month, end: endOfMonth(month) }).map((date) => {
-            const key = format(date, 'yyyy-MM-dd');
-            const day = byDate.get(key);
-            return { date: key, day: date.getDate(), revised: day?.revisedCount ?? 0, skipped: day?.skippedCount ?? 0 };
-        });
-    }, [data, month, monthKey]);
+    const rows = useMemo<Array<ChartRow>>(
+        () => monthRows.map(({ date, day, revisedCount, skippedCount }) => ({ date, day, revised: revisedCount, skipped: skippedCount })),
+        [monthRows],
+    );
 
     return (
         <section aria-labelledby='daily-activity-title' className='flex flex-col gap-3'>
@@ -41,22 +30,7 @@ export const DailyActivityChart = () => {
                 Daily activity
             </h2>
             <div className='flex flex-col gap-4 rounded-xl border border-border bg-card p-6'>
-                <div className='flex items-center gap-2'>
-                    <Button
-                        variant='outline'
-                        size='sm'
-                        disabled={isEarliestMonth || isPlaceholderData}
-                        onClick={() => setMonth((current) => addMonths(current, -1))}
-                    >
-                        <ChevronLeft />
-                        Prev month
-                    </Button>
-                    <Button variant='outline' size='sm' disabled={isCurrentMonth} onClick={() => setMonth((current) => addMonths(current, 1))}>
-                        Next
-                        <ChevronRight />
-                    </Button>
-                    <span className='ml-2 text-sm font-medium'>{format(month, 'LLLL yyyy')}</span>
-                </div>
+                <ActivityMonthNav month={month} canGoPrev={canGoPrev} canGoNext={canGoNext} onPrev={goPrev} onNext={goNext} />
 
                 {isPending ? (
                     <div className='flex h-[260px] items-center justify-center'>

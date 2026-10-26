@@ -4,6 +4,7 @@ import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import { DailyActivityChart } from '@/features/activity/components/DailyActivityChart';
+import { PlayerTimeChart } from '@/features/activity/components/PlayerTimeChart';
 import { useCurrentUser } from '@/features/auth/queries/use-current-user';
 import { LibraryStats } from '@/features/home/components/LibraryStats';
 import { cn } from '@/lib/utils';
@@ -34,6 +35,7 @@ export const HomePage = () => {
 
                 {isLoggedIn ? <LibraryStats /> : null}
                 {isLoggedIn ? <DailyActivityChart /> : null}
+                {isLoggedIn ? <PlayerTimeChart /> : null}
             </PageContainer>
         </div>
     );

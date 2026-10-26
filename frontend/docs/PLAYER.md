@@ -176,6 +176,18 @@ flowchart TD
 
 ---
 
+## 7.1 Daily timer
+
+The header shows today's time in the Player (`MM:SS`, `H:MM:SS` from 1 h) against a daily goal (`PLAYER_DAILY_GOAL_MINUTES`, 15/30/60, default 30; later a user setting). The timer turns green when the goal is reached; the Player keeps working.
+
+- **Start value:** `GET /activity/today` → `playerSeconds` for the user's local day (`X-Timezone`). Always refetched on mount; shows `--:--` until it loads (a failed load starts from 0).
+- **Counting:** wall-clock time while `/player` is mounted, also in a background tab. Uses `Date.now()` deltas (background tabs throttle intervals). Gaps over 2 min between ticks are treated as sleep / bfcache and not counted.
+- **Saving:** elapsed seconds are **added** server-side via `POST /activity/player-time` (`{ seconds: 1..300 }`) every 30 s, on unmount (Stop / navigation), and on `pagehide` (reload, tab close) using `fetch` keepalive. Worst-case loss is one interval (e.g. a browser crash). Several tabs add up instead of overwriting.
+- **Midnight:** when the local day changes the timer restarts from 0; up to one interval of pre-midnight time lands on the new day.
+- Home shows the history as the **Time in Player** area chart (`features/activity/components/PlayerTimeChart.tsx`).
+
+---
+
 ## 8. Frontend files
 
 ```
@@ -187,6 +199,8 @@ features/player/
   queries/use-player-batch.ts       # fetch / refill pack
   queries/use-mark-done.ts          # revised_count + 1
   queries/use-mark-skip.ts          # skipped_count + 1
+  hooks/use-player-timer.ts         # daily Player time: counts, reports to POST /activity/player-time
+  utils/format-duration.ts          # MM:SS / H:MM:SS
   components/
     PlayerPage.tsx                  # session orchestration
     PlayerProgress.tsx              # pack Progress bar
@@ -195,6 +209,7 @@ features/player/
     PlayerBatchCompleteDialog.tsx   # Next 10 / Home
     PlayerDepleted.tsx              # empty scope
     PlayButton.tsx                  # list-row entry
+    PlayerTimer.tsx                 # header timer + daily goal
 ```
 
 Route `src/routes/_app/player.tsx` stays thin: validate search params and render `PlayerPage`.

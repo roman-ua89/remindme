@@ -79,7 +79,20 @@ export const openApiSpec = {
     '/activity/daily': {
       get: {
         tags: ['activity'],
-        summary: 'Daily revised/skipped counters for the current user (query: month=YYYY-MM; sparse days) + firstActivityDate',
+        summary:
+          'Daily revised/skipped counters and playerSeconds for the current user (query: month=YYYY-MM; sparse days) + firstActivityDate',
+      },
+    },
+    '/activity/today': {
+      get: {
+        tags: ['activity'],
+        summary: "Today's counters (revisedCount, skippedCount, playerSeconds) for the X-Timezone local day; zeros if none",
+      },
+    },
+    '/activity/player-time': {
+      post: {
+        tags: ['activity'],
+        summary: "Add Player time (body: { seconds: 1..300 }) to the X-Timezone local day; returns today's counters",
       },
     },
     '/stats/library': {
