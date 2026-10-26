@@ -154,6 +154,8 @@ model Entity {
   position      Int
   revisedCount  Int              @default(0) @map("revised_count")
   skippedCount  Int              @default(0) @map("skipped_count")
+  /// Player ordering: revisedCount + offset set at creation (min of topic, else category), so new entities join the current tier
+  scheduleCount Int              @default(0) @map("schedule_count")
   visibility    EntityVisibility @default(included)
   /// null = no marker; 1 = needs edit; 2 = to remove (see ENTITY_MARKER in @remindme/contracts/entities)
   marker        Int?             @db.SmallInt
@@ -166,7 +168,7 @@ model Entity {
   blocks EntityBlock[]
 
   @@index([topicId, position])
-  @@index([topicId, visibility, revisedCount])
+  @@index([topicId, visibility, scheduleCount])
   @@map("entities")
 }
 

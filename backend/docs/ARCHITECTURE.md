@@ -292,6 +292,7 @@ erDiagram
         uuid topicId
         string title
         int revisedCount
+        int scheduleCount
     }
     EntityBlock {
         uuid id
@@ -647,7 +648,7 @@ backend/
       categories/         # CRUD root of content tree
       topics/             # nested under category
       entities/           # nested under topic; blocks; revise/skip
-      player/             # POST /player/batch — min revised_count sample
+      player/             # POST /player/batch — min schedule_count sample
       media/              # upload + serve files
       users/              # admin user management
     openapi/spec.ts       # Swagger UI at /api/docs (dev only)

@@ -33,6 +33,7 @@ Operation-centric reference for how PostgreSQL data changes when the RemindMe ba
 | `entities.edited_at` | `NULL` on INSERT; set to `now()` only by Update entity (Constructor edit) — not by revise/skip/marker |
 | `is_active` | Default `true` on `users` INSERT |
 | `revised_count`, `skipped_count` | Default `0` on `entities` INSERT |
+| `schedule_count` | On `entities` INSERT: `MIN(schedule_count)` of included entities in the topic, else in the category, else `0` (createEntity) |
 | `visibility` | Default `'included'` on `entities` INSERT |
 
 All database writes go through **Prisma ORM** — there is no raw SQL in application code.
@@ -297,8 +298,8 @@ DELETE FROM topics WHERE id = '<topic_id>';
 **Logic:** `position = MAX(position) + 1` within the topic. Then all blocks are inserted via `replaceBlocks`.
 
 ```sql
-INSERT INTO entities (id, topic_id, title, position, revised_count, skipped_count, visibility, created_at, updated_at)
-VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, 'included', now(), now());
+INSERT INTO entities (id, topic_id, title, position, revised_count, skipped_count, schedule_count, visibility, created_at, updated_at)
+VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, <min_schedule_count>, 'included', now(), now());
 -- followed by replaceBlocks (§3.5)
 ```
 
@@ -342,11 +343,11 @@ VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, 'included', now()
 
 | Table | Operation | Columns set |
 |-------|-----------|-------------|
-| `entities` | UPDATE | `revised_count` (increment by 1) |
+| `entities` | UPDATE | `revised_count`, `schedule_count` (increment by 1) |
 | `user_daily_activity` | UPSERT | `revised_count` (increment by 1) for (`req.user.id`, user's local date) — [lib/daily-activity.ts](../src/lib/daily-activity.ts) |
 
 ```sql
-UPDATE entities SET revised_count = revised_count + 1, updated_at = now()
+UPDATE entities SET revised_count = revised_count + 1, schedule_count = schedule_count + 1, updated_at = now()
 WHERE id = '<entity_id>';
 
 INSERT INTO user_daily_activity (user_id, activity_date, revised_count, updated_at)
@@ -392,7 +393,7 @@ UPDATE entities SET marker = $1, updated_at = now() WHERE id = $2;
 - **Service:** `getPlayerBatch()` — [player.service.ts](../src/modules/player/player.service.ts)
 - **Route:** `POST /api/v1/player/batch`
 - **Transaction:** no
-- **Behavior:** ownership check on scope; eligible rows (`visibility = included`, not in `excludeEntityIds`); sample up to `limit` ids from the minimum `revised_count` pool (shuffled); load full entities with blocks + `categoryId`. See [PLAYER.md](../../frontend/docs/PLAYER.md).
+- **Behavior:** ownership check on scope; eligible rows (`visibility = included`, not in `excludeEntityIds`); sample up to `limit` ids from the minimum `schedule_count` pool (shuffled); load full entities with blocks + `categoryId`. See [PLAYER.md](../../frontend/docs/PLAYER.md).
 
 | Table | Operation | Notes |
 |-------|-----------|-------|
@@ -670,6 +671,7 @@ Every column across all 12 tables, and how the application uses it today.
 | `position` | ✅ ➕ 👁 | Set on create; no reorder API |
 | `revised_count` | ⬆ 👁 | reviseEntity only |
 | `skipped_count` | ⬆ 👁 | skipEntity only |
+| `schedule_count` | ✅ ⬆ | Initial value on createEntity; +1 in reviseEntity; Player min-pool ordering, not exposed in DTOs |
 | `visibility` | ✅ 👁 | updateEntity; default `included` on create |
 | `created_at` | ⚙ 👁 | |
 | `updated_at` | ⚙ | Auto on UPDATE |

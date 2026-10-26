@@ -29,7 +29,7 @@ There is **no server session table**. The frontend holds the current pack and th
 Think of the Player as dealing cards in **packs of 10**, always preferring “least revised.”
 
 1. Open Player with a **scope** (category, topic, or single entity) from a Play button.
-2. Ask the backend for a pack: up to 10 random **full entities** that are still eligible, not already shown this round, and currently at the **lowest `revised_count`** among what’s left.
+2. Ask the backend for a pack: up to 10 random **full entities** that are still eligible, not already shown this round, and currently at the **lowest `schedule_count`** among what’s left (`revised_count` plus an offset set at creation — see below).
 3. Show `queue[0]` from memory. The next card is already in `queue[1]` — no extra fetch while playing.
 4. Done or Skip mutates that entity, then drops it from the queue.
 5. When the pack is empty → modal: **Get next 3** or **Go to Home**.
@@ -111,9 +111,11 @@ Each item is a full entity (title + blocks) plus `categoryId` so Done/Skip can c
 
 1. Resolve ownership of the scope (category / topic / entity belongs to the user).
 2. Filter eligible rows: in scope, `visibility = included`, id not in `excludeEntityIds`.
-3. Compute `minCount = MIN(revised_count)` on that set.
-4. Take rows with `revised_count = minCount`, shuffle, take up to `limit` ids.
+3. Compute `minCount = MIN(schedule_count)` on that set.
+4. Take rows with `schedule_count = minCount`, shuffle, take up to `limit` ids.
 5. Load those ids with blocks (same shape as get-entity) and attach `categoryId` from the topic.
+
+New entities are created with `schedule_count = MIN(schedule_count)` of included entities in their topic (falling back to the category, then `0`), so they join the next pack mixed with existing items instead of being served alone until they catch up. Done increments both `revised_count` and `schedule_count`; `revised_count` stays the true lifetime stat shown in the UI.
 
 Done and Skip reuse existing endpoints:
 

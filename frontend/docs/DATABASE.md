@@ -204,13 +204,14 @@ May exist with zero entities.
 | `position` | integer | no | Order within the topic |
 | `revised_count` | integer | no | Default `0`; incremented when user presses **Done** in the Player; shown on Topic detail entity rows as gray `{count} revised` before the Play button |
 | `skipped_count` | integer | no | Default `0`; incremented when user presses **Skip** in the Player; does not increment `revised_count` |
+| `schedule_count` | integer | no | Player ordering only (not in API DTOs). On create: min `schedule_count` of included entities in the topic, else category, else `0`; +1 on **Done** together with `revised_count` |
 | `visibility` | enum / text | no | `included` \| `excluded`; default `included` |
 | `marker` | smallint | yes | `NULL` = none, `1` = needs edit (blue dot), `2` = to remove (red dot); set from the Constructor or Player toggle; values mirror `ENTITY_MARKER` in contracts |
 | `created_at` | timestamptz | no | |
 | `updated_at` | timestamptz | no | Bumped on any UPDATE (incl. Done/Skip/marker) |
 | `edited_at` | timestamptz | yes | `NULL` until saved from Constructor edit mode; shown as "Edited" on the Topic page; not touched by Done/Skip/marker |
 
-**Indexes:** `(topic_id, position)`; partial or composite index on `(topic_id, visibility, revised_count)` for Player queue queries
+**Indexes:** `(topic_id, position)`; partial or composite index on `(topic_id, visibility, schedule_count)` for Player queue queries
 
 Belongs to exactly one topic. Title is not a constructor block and does not count toward the block limit.
 
@@ -219,13 +220,13 @@ Belongs to exactly one topic. Title is not a constructor block and does not coun
 Player scheduling ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)) uses these fields within a scope (category, topic, or single entity):
 
 - **Eligibility:** only `visibility = included` entities enter a Player pack.
-- **Pack contents:** random sample (up to 10) from entities at the **minimum** `revised_count` among eligible rows not in the client’s `shownEntityIds` for the current round.
-- **After Done:** increment `revised_count`; the next card is the next item already in the client pack. The following pack re-queries the min pool.
+- **Pack contents:** random sample (up to 10) from entities at the **minimum** `schedule_count` among eligible rows not in the client’s `shownEntityIds` for the current round.
+- **After Done:** increment `revised_count` and `schedule_count`; the next card is the next item already in the client pack. The following pack re-queries the min pool.
 - **After Skip:** increment `skipped_count` only; navigation is the same as Done. The entity stays in the low pool and can re-enter after a **round reset**.
 - **Once per round:** each entity in scope is shown at most once per round (`shownEntityIds` on the client; no session table). When a pack request returns empty, shown ids are cleared and a new round starts.
 - **Single-entity scope:** Play on one entity row deals a pack of 1; continue after Done/Skip resets the round and can show the same entity again.
 - `visibility = excluded` removes the entity from the Player candidate set (still editable on Topic detail / constructor).
-- Index `(topic_id, visibility, revised_count)` supports the min-pool pack query.
+- Index `(topic_id, visibility, schedule_count)` supports the min-pool pack query.
 
 ---
 

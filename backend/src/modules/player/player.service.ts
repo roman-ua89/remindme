@@ -95,17 +95,17 @@ export async function getPlayerBatch(
 
     const minResult = await prisma.entity.aggregate({
         where,
-        _min: { revisedCount: true },
+        _min: { scheduleCount: true },
     });
 
-    if (minResult._min.revisedCount === null) {
+    if (minResult._min.scheduleCount === null) {
         return { items: [] };
     }
 
     const candidates = await prisma.entity.findMany({
         where: {
             ...where,
-            revisedCount: minResult._min.revisedCount,
+            scheduleCount: minResult._min.scheduleCount,
         },
         select: { id: true },
     });

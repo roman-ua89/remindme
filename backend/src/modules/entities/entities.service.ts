@@ -281,6 +281,26 @@ export async function getEntityById(user: AuthUser, entityId: string): Promise<E
     return loadEntityWithBlocks(entityId);
 }
 
+/**
+ * New entities start at the lowest Player tier of their topic (or category if the topic has none),
+ * so they are mixed into the next pack instead of being served alone until they catch up.
+ */
+async function getInitialScheduleCount(categoryId: string, topicId: string): Promise<number> {
+    const inTopic = await prisma.entity.aggregate({
+        where: { topicId, visibility: 'included' },
+        _min: { scheduleCount: true },
+    });
+    if (inTopic._min.scheduleCount !== null) {
+        return inTopic._min.scheduleCount;
+    }
+
+    const inCategory = await prisma.entity.aggregate({
+        where: { topic: { categoryId }, visibility: 'included' },
+        _min: { scheduleCount: true },
+    });
+    return inCategory._min.scheduleCount ?? 0;
+}
+
 export async function createEntity(
     user: AuthUser,
     categoryId: string,
@@ -295,6 +315,7 @@ export async function createEntity(
         _max: { position: true },
     });
     const position = (maxPosition._max.position ?? -1) + 1;
+    const scheduleCount = await getInitialScheduleCount(categoryId, topicId);
 
     const entity = await prisma.$transaction(async (tx) => {
         const created = await tx.entity.create({
@@ -302,6 +323,7 @@ export async function createEntity(
                 topicId,
                 title: input.title,
                 position,
+                scheduleCount,
             },
         });
 
@@ -378,7 +400,7 @@ export async function reviseEntity(
     const entity = await prisma.$transaction(async (tx) => {
         const updated = await tx.entity.update({
             where: { id: entityId },
-            data: { revisedCount: { increment: 1 } },
+            data: { revisedCount: { increment: 1 }, scheduleCount: { increment: 1 } },
         });
         await recordDailyActivity(tx, user.id, activityDate, 'revised');
         return updated;
