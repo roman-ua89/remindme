@@ -186,6 +186,7 @@ The header shows today's time in the Player (`MM:SS`, `H:MM:SS` from 1 h) agains
 - **Counting:** wall-clock time while `/player` is mounted, also in a background tab. Uses `Date.now()` deltas (background tabs throttle intervals). Gaps over 2 min between ticks are treated as sleep / bfcache and not counted.
 - **Saving:** elapsed seconds are **added** server-side via `POST /activity/player-time` (`{ seconds: 1..300 }`) every 30 s, on unmount (Stop / navigation), and on `pagehide` (reload, tab close) using `fetch` keepalive. Worst-case loss is one interval (e.g. a browser crash). Several tabs add up instead of overwriting.
 - **Midnight:** when the local day changes the timer restarts from 0; up to one interval of pre-midnight time lands on the new day.
+- The app header (`AppHeader` → `TodayPlayerTime`) shows today's saved total with the same look (static; refetched on each page mount, invalidated when leaving the Player). Markup is shared via `PlayerTimeDisplay`.
 - Home shows the history as the **Time in Player** area chart (`features/activity/components/PlayerTimeChart.tsx`).
 
 ---
@@ -211,7 +212,9 @@ features/player/
     PlayerBatchCompleteDialog.tsx   # Next 10 / Home
     PlayerDepleted.tsx              # empty scope
     PlayButton.tsx                  # list-row entry
-    PlayerTimer.tsx                 # header timer + daily goal
+    PlayerTimer.tsx                 # Player header timer (owns the ticking state)
+    PlayerTimeDisplay.tsx           # shared timer markup: icon, time, goal, green when reached
+    TodayPlayerTime.tsx             # static today's total for AppHeader
 ```
 
 Route `src/routes/_app/player.tsx` stays thin: validate search params and render `PlayerPage`.

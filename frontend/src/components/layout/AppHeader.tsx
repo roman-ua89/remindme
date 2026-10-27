@@ -7,6 +7,7 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { useCurrentUser } from '@/features/auth/queries/use-current-user';
 import { useLogout } from '@/features/auth/queries/use-logout';
 import { LoginDialog } from '@/features/auth/components/LoginDialog';
+import { TodayPlayerTime } from '@/features/player/components/TodayPlayerTime';
 
 export const AppHeader = () => {
     const { data: user, isPending: isUserPending } = useCurrentUser();
@@ -17,9 +18,12 @@ export const AppHeader = () => {
     return (
         <header className='border-b border-border'>
             <PageContainer className='flex h-14 items-center justify-between'>
-                <Link to='/' className='font-heading text-lg font-semibold tracking-tight hover:text-primary'>
-                    RemindMe
-                </Link>
+                <div className='flex items-center gap-4'>
+                    <Link to='/' className='font-heading text-lg font-semibold tracking-tight hover:text-primary'>
+                        RemindMe
+                    </Link>
+                    {user ? <TodayPlayerTime /> : null}
+                </div>
 
                 {user ? (
                     <DropdownMenu>
