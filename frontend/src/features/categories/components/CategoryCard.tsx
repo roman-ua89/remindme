@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Trash2Icon } from 'lucide-react';
+import { ListTodo, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -41,13 +41,19 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
                 <CardTitle>
                     <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1'>
                         {category.name}{' '}
-                        <span className="text-stone-300">
+                        <span className='text-stone-300'>
                             Topics: {category.topicCount} · Entities: {category.entityCount}
                         </span>
                     </Link>
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-1'>
+                        {canPlay && (
+                            <span className='mr-1 text-base text-stone-300 flex gap-2 w-16'>
+                                <ListTodo width={20} />
+                                <span className='text-green-600/50'>{category.completion}%</span>
+                            </span>
+                        )}
                         <PlayButton scope={{ type: 'category', categoryId: category.id }} disabled={!canPlay} ariaLabel='Play category' />
                         <EditCategoryPopover category={category} />
                         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

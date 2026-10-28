@@ -11,59 +11,103 @@ import { conflict } from '../../lib/errors.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
 import { prisma } from '../../lib/prisma.js';
 
-function toCategoryDto(
-    category: { id: string; name: string },
-    topicCount: number,
-    entityCount: number,
-): Category {
+type CategoryStats = { entityCount: number; completion: number };
+
+const EMPTY_STATS: CategoryStats = { entityCount: 0, completion: 0 };
+
+function toCategoryDto(category: { id: string; name: string }, topicCount: number, stats: CategoryStats): Category {
     return {
         id: category.id,
         name: category.name,
         topicCount,
-        entityCount,
+        entityCount: stats.entityCount,
+        completion: stats.completion,
     };
 }
 
-async function countEntitiesInCategory(categoryId: string): Promise<number> {
-    return prisma.entity.count({
-        where: { topic: { categoryId } },
-    });
-}
-
-async function countEntitiesByCategoryIds(categoryIds: string[]): Promise<Map<string, number>> {
-    const counts = new Map<string, number>(categoryIds.map((id) => [id, 0]));
+/**
+ * entityCount counts all entities; completion is the share of included entities already past the
+ * category's lowest scheduleCount, i.e. progress through the current Player round.
+ */
+async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string, CategoryStats>> {
+    const stats = new Map<string, CategoryStats>(categoryIds.map((id) => [id, { ...EMPTY_STATS }]));
 
     if (categoryIds.length === 0) {
-        return counts;
+        return stats;
     }
 
-    const topics = await prisma.topic.findMany({
-        where: { categoryId: { in: categoryIds } },
-        select: {
-            categoryId: true,
-            _count: { select: { entities: true } },
-        },
-    });
+    const [topics, tiers] = await Promise.all([
+        prisma.topic.findMany({
+            where: { categoryId: { in: categoryIds } },
+            select: {
+                id: true,
+                categoryId: true,
+                _count: { select: { entities: true } },
+            },
+        }),
+        prisma.entity.groupBy({
+            by: ['topicId', 'scheduleCount'],
+            where: { topic: { categoryId: { in: categoryIds } }, visibility: 'included' },
+            _count: { _all: true },
+        }),
+    ]);
 
+    const categoryByTopicId = new Map<string, string>();
     for (const topic of topics) {
-        counts.set(topic.categoryId, (counts.get(topic.categoryId) ?? 0) + topic._count.entities);
+        categoryByTopicId.set(topic.id, topic.categoryId);
+        const current = stats.get(topic.categoryId);
+        if (current) {
+            current.entityCount += topic._count.entities;
+        }
     }
 
-    return counts;
+    const tiersByCategory = new Map<string, { scheduleCount: number; count: number }[]>();
+    for (const tier of tiers) {
+        const categoryId = categoryByTopicId.get(tier.topicId);
+        if (!categoryId) {
+            continue;
+        }
+        const list = tiersByCategory.get(categoryId) ?? [];
+        list.push({ scheduleCount: tier.scheduleCount, count: tier._count._all });
+        tiersByCategory.set(categoryId, list);
+    }
+
+    for (const [categoryId, list] of tiersByCategory) {
+        const min = Math.min(...list.map((tier) => tier.scheduleCount));
+        let total = 0;
+        let ahead = 0;
+        for (const tier of list) {
+            total += tier.count;
+            if (tier.scheduleCount > min) {
+                ahead += tier.count;
+            }
+        }
+        const current = stats.get(categoryId);
+        if (current && total > 0) {
+            current.completion = Math.floor((ahead / total) * 100);
+        }
+    }
+
+    return stats;
+}
+
+async function getCategoryStats(categoryId: string): Promise<CategoryStats> {
+    const stats = await getCategoryStatsByIds([categoryId]);
+    return stats.get(categoryId) ?? EMPTY_STATS;
 }
 
 export async function getCategory(user: AuthUser, categoryId: string): Promise<Category> {
     const { getCategoryForUser } = await import('../../lib/ownership.js');
     const category = await getCategoryForUser(categoryId, user);
 
-    const [topicCount, entityCount] = await Promise.all([
+    const [topicCount, stats] = await Promise.all([
         prisma.topic.count({
             where: { categoryId: category.id },
         }),
-        countEntitiesInCategory(category.id),
+        getCategoryStats(category.id),
     ]);
 
-    return toCategoryDto(category, topicCount, entityCount);
+    return toCategoryDto(category, topicCount, stats);
 }
 
 export async function listCategories(user: AuthUser, pagination: PaginationQuery): Promise<CategoryListPage> {
@@ -81,11 +125,11 @@ export async function listCategories(user: AuthUser, pagination: PaginationQuery
         }),
     ]);
 
-    const entityCounts = await countEntitiesByCategoryIds(categories.map((category) => category.id));
+    const stats = await getCategoryStatsByIds(categories.map((category) => category.id));
 
     return toPaginatedResponse(
         categories.map((category) =>
-            toCategoryDto(category, category._count.topics, entityCounts.get(category.id) ?? 0),
+            toCategoryDto(category, category._count.topics, stats.get(category.id) ?? EMPTY_STATS),
         ),
         totalItems,
         pagination,
@@ -108,7 +152,7 @@ export async function createCategory(user: AuthUser, input: CreateCategoryInput)
         },
     });
 
-    return toCategoryDto(category, 0, 0);
+    return toCategoryDto(category, 0, EMPTY_STATS);
 }
 
 export async function updateCategory(
@@ -127,9 +171,9 @@ export async function updateCategory(
         },
     });
 
-    const entityCount = await countEntitiesInCategory(category.id);
+    const stats = await getCategoryStats(category.id);
 
-    return toCategoryDto(category, category._count.topics, entityCount);
+    return toCategoryDto(category, category._count.topics, stats);
 }
 
 export async function deleteCategory(user: AuthUser, categoryId: string): Promise<void> {

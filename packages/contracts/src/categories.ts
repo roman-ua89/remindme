@@ -7,6 +7,8 @@ export const categorySchema = z.object({
   name: z.string(),
   topicCount: z.number().int().nonnegative(),
   entityCount: z.number().int().nonnegative(),
+  /** % of included entities already revised in the current Player round (scheduleCount above the category min) */
+  completion: z.number().int().min(0).max(100),
 })
 
 export const createCategorySchema = z.object({
