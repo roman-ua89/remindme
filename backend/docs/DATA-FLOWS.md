@@ -386,6 +386,13 @@ DO UPDATE SET revised_count = user_daily_activity.revised_count + 1, updated_at 
 UPDATE entities SET marker = $1, updated_at = now() WHERE id = $2;
 ```
 
+Read side: category and topic responses carry `markers`, the distinct non-null `entities.marker` values below them in ascending order (`[]` when none; excluded entities count).
+
+```sql
+SELECT topic_id, marker FROM entities WHERE topic_id = ANY($1) AND marker IS NOT NULL
+GROUP BY topic_id, marker ORDER BY marker;
+```
+
 ---
 
 #### Get Player batch

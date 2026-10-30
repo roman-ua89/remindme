@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { paginatedResponseSchema } from './common/pagination.js'
+import { entityMarkerSchema } from './entities.js'
 
 export const categorySchema = z.object({
   id: z.string().uuid(),
@@ -9,6 +10,8 @@ export const categorySchema = z.object({
   entityCount: z.number().int().nonnegative(),
   /** % of included entities already revised in the current Player round (scheduleCount above the category min) */
   completion: z.number().int().min(0).max(100),
+  /** Distinct markers across the category's entities, ascending */
+  markers: z.array(entityMarkerSchema),
 })
 
 export const createCategorySchema = z.object({

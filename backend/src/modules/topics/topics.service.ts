@@ -1,5 +1,6 @@
 import type { AuthUser } from '../../middleware/auth.js'
 import type { PaginationQuery } from '@remindme/contracts/common/pagination'
+import type { EntityMarker } from '@remindme/contracts/entities'
 import type {
   CreateTopicInput,
   Topic,
@@ -7,6 +8,7 @@ import type {
   UpdateTopicInput,
 } from '@remindme/contracts/topics'
 
+import { findTopicMarkers } from '../../lib/entity-markers.js'
 import { conflict } from '../../lib/errors.js'
 import { getCategoryForUser } from '../../lib/ownership.js'
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js'
@@ -15,13 +17,33 @@ import { prisma } from '../../lib/prisma.js'
 function toTopicDto(
   topic: { id: string; name: string; categoryId: string },
   entityCount: number,
+  markers: EntityMarker[],
 ): Topic {
   return {
     id: topic.id,
     name: topic.name,
     categoryId: topic.categoryId,
     entityCount,
+    markers,
   }
+}
+
+async function getMarkersByTopicIds(topicIds: string[]): Promise<Map<string, EntityMarker[]>> {
+  const rows = await findTopicMarkers({ topicId: { in: topicIds } })
+
+  const markersByTopic = new Map<string, EntityMarker[]>()
+  for (const { topicId, marker } of rows) {
+    const markers = markersByTopic.get(topicId) ?? []
+    markers.push(marker)
+    markersByTopic.set(topicId, markers)
+  }
+
+  return markersByTopic
+}
+
+async function getTopicMarkers(topicId: string): Promise<EntityMarker[]> {
+  const markersByTopic = await getMarkersByTopicIds([topicId])
+  return markersByTopic.get(topicId) ?? []
 }
 
 export async function listTopics(
@@ -45,8 +67,10 @@ export async function listTopics(
     }),
   ])
 
+  const markersByTopic = await getMarkersByTopicIds(topics.map((topic) => topic.id))
+
   return toPaginatedResponse(
-    topics.map((topic) => toTopicDto(topic, topic._count.entities)),
+    topics.map((topic) => toTopicDto(topic, topic._count.entities, markersByTopic.get(topic.id) ?? [])),
     totalItems,
     pagination,
   )
@@ -60,11 +84,14 @@ export async function getTopic(
   const { getTopicForUser } = await import('../../lib/ownership.js')
   const topic = await getTopicForUser(categoryId, topicId, user)
 
-  const entityCount = await prisma.entity.count({
-    where: { topicId: topic.id },
-  })
+  const [entityCount, markers] = await Promise.all([
+    prisma.entity.count({
+      where: { topicId: topic.id },
+    }),
+    getTopicMarkers(topic.id),
+  ])
 
-  return toTopicDto(topic, entityCount)
+  return toTopicDto(topic, entityCount, markers)
 }
 
 export async function createTopic(
@@ -89,7 +116,7 @@ export async function createTopic(
     },
   })
 
-  return toTopicDto(topic, 0)
+  return toTopicDto(topic, 0, [])
 }
 
 export async function updateTopic(
@@ -109,7 +136,7 @@ export async function updateTopic(
     },
   })
 
-  return toTopicDto(topic, topic._count.entities)
+  return toTopicDto(topic, topic._count.entities, await getTopicMarkers(topic.id))
 }
 
 export async function deleteTopic(

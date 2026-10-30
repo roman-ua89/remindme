@@ -2,12 +2,15 @@ import { z } from 'zod'
 
 import { categoryIdParamsSchema } from './categories.js'
 import { paginatedResponseSchema } from './common/pagination.js'
+import { entityMarkerSchema } from './entities.js'
 
 export const topicSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   categoryId: z.string().uuid(),
   entityCount: z.number().int().nonnegative(),
+  /** Distinct markers across the topic's entities, ascending */
+  markers: z.array(entityMarkerSchema),
 })
 
 export const createTopicSchema = z.object({

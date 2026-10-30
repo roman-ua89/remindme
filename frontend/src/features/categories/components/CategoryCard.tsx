@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditCategoryPopover } from '@/features/categories/components/EditCategoryPopover';
+import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
 import { PlayButton } from '@/features/player/components/PlayButton';
 import type { Category } from '@/features/categories/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx';
@@ -48,6 +49,7 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-1'>
+                        <EntityMarkerDots markers={category.markers} />
                         {canPlay && (
                             <span className='mr-1 text-base text-stone-300 flex gap-2 w-8'>
                                 <span className='text-green-600'>{category.completion}%</span>

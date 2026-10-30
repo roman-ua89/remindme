@@ -6,14 +6,16 @@ import type {
     UpdateCategoryInput,
 } from '@remindme/contracts/categories';
 import type { PaginationQuery } from '@remindme/contracts/common/pagination';
+import type { EntityMarker } from '@remindme/contracts/entities';
 
+import { findTopicMarkers } from '../../lib/entity-markers.js';
 import { conflict } from '../../lib/errors.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
 import { prisma } from '../../lib/prisma.js';
 
-type CategoryStats = { entityCount: number; completion: number };
+type CategoryStats = { entityCount: number; completion: number; markers: EntityMarker[] };
 
-const EMPTY_STATS: CategoryStats = { entityCount: 0, completion: 0 };
+const EMPTY_STATS: CategoryStats = { entityCount: 0, completion: 0, markers: [] };
 
 function toCategoryDto(category: { id: string; name: string }, topicCount: number, stats: CategoryStats): Category {
     return {
@@ -22,6 +24,7 @@ function toCategoryDto(category: { id: string; name: string }, topicCount: numbe
         topicCount,
         entityCount: stats.entityCount,
         completion: stats.completion,
+        markers: stats.markers,
     };
 }
 
@@ -36,7 +39,7 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
         return stats;
     }
 
-    const [topics, tiers] = await Promise.all([
+    const [topics, tiers, topicMarkers] = await Promise.all([
         prisma.topic.findMany({
             where: { categoryId: { in: categoryIds } },
             select: {
@@ -50,6 +53,7 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
             where: { topic: { categoryId: { in: categoryIds } }, visibility: 'included' },
             _count: { _all: true },
         }),
+        findTopicMarkers({ topic: { categoryId: { in: categoryIds } } }),
     ]);
 
     const categoryByTopicId = new Map<string, string>();
@@ -85,6 +89,24 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
         const current = stats.get(categoryId);
         if (current && total > 0) {
             current.completion = Math.floor((ahead / total) * 100);
+        }
+    }
+
+    const markersByCategory = new Map<string, Set<EntityMarker>>();
+    for (const { topicId, marker } of topicMarkers) {
+        const categoryId = categoryByTopicId.get(topicId);
+        if (!categoryId) {
+            continue;
+        }
+        const markers = markersByCategory.get(categoryId) ?? new Set<EntityMarker>();
+        markers.add(marker);
+        markersByCategory.set(categoryId, markers);
+    }
+
+    for (const [categoryId, markers] of markersByCategory) {
+        const current = stats.get(categoryId);
+        if (current) {
+            current.markers = [...markers];
         }
     }
 

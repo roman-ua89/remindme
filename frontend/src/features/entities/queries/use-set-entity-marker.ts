@@ -26,6 +26,12 @@ export function useSetEntityMarker() {
             queryClient.invalidateQueries({
                 queryKey: [...queryKeys.entities.all(categoryId, topicId), 'list'],
             });
+            queryClient.invalidateQueries({
+                queryKey: [...queryKeys.topics.all(categoryId), 'list'],
+            });
+            queryClient.invalidateQueries({
+                queryKey: [...queryKeys.categories.all, 'list'],
+            });
         },
         onError: (error) => {
             toast.error(getApiErrorMessage(error));
