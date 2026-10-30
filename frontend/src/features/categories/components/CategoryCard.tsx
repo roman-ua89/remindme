@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ListTodo, Trash2Icon } from 'lucide-react';
+import { Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -49,9 +49,8 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
                 <CardAction>
                     <div className='flex items-center gap-1'>
                         {canPlay && (
-                            <span className='mr-1 text-base text-stone-300 flex gap-2 w-16'>
-                                <ListTodo width={20} />
-                                <span className='text-green-600/50'>{category.completion}%</span>
+                            <span className='mr-1 text-base text-stone-300 flex gap-2 w-8'>
+                                <span className='text-green-600'>{category.completion}%</span>
                             </span>
                         )}
                         <PlayButton scope={{ type: 'category', categoryId: category.id }} disabled={!canPlay} ariaLabel='Play category' />
