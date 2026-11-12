@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
   Never take or execute a task whose title starts with `Done`; treat it as finished.
 - End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
+- After `reviewer` accepts the work, run the `commit-message` skill, show me the draft, and commit only after I approve.
 
 ## Project
 
