@@ -91,6 +91,10 @@ export const setEntityMarkerSchema = z.object({
   marker: entityMarkerSchema.nullable(),
 })
 
+export const setEntityVisibilitySchema = z.object({
+  visibility: entityVisibilitySchema,
+})
+
 export const entityListItemSchema = z.object({
   id: z.string().uuid(),
   topicId: z.string().uuid(),
@@ -169,6 +173,7 @@ export type BlockType = z.infer<typeof blockTypeSchema>
 export type EntityVisibility = z.infer<typeof entityVisibilitySchema>
 export type EntityMarker = z.infer<typeof entityMarkerSchema>
 export type SetEntityMarkerInput = z.infer<typeof setEntityMarkerSchema>
+export type SetEntityVisibilityInput = z.infer<typeof setEntityVisibilitySchema>
 export type SaveEntityBlock = z.infer<typeof saveEntityBlockSchema>
 export type SaveEntityInput = z.infer<typeof saveEntitySchema>
 export type UpdateEntityInput = z.infer<typeof updateEntitySchema>

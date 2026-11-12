@@ -30,7 +30,7 @@ Operation-centric reference for how PostgreSQL data changes when the RemindMe ba
 | `id` | UUID generated on INSERT |
 | `created_at` | DB default `CURRENT_TIMESTAMP` on INSERT |
 | `updated_at` | Prisma `@updatedAt` on UPDATE (tables: `users`, `categories`, `topics`, `entities`, `entity_blocks`) |
-| `entities.edited_at` | `NULL` on INSERT; set to `now()` only by Update entity (Constructor edit) — not by revise/skip/marker |
+| `entities.edited_at` | `NULL` on INSERT; set to `now()` only by Update entity (Constructor edit) — not by revise/skip/marker/visibility |
 | `is_active` | Default `true` on `users` INSERT |
 | `revised_count`, `skipped_count` | Default `0` on `entities` INSERT |
 | `schedule_count` | On `entities` INSERT: `MIN(schedule_count)` of included entities in the topic, else in the category, else `0` (createEntity) |
@@ -47,8 +47,8 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Auth | register, forgotPassword, resetPassword | login, getCurrentUser, logout |
 | Users (admin) | updateUser | listUsers, getUser |
 | Categories | createCategory, updateCategory, deleteCategory | listCategories, getCategory |
-| Topics | createTopic, updateTopic, deleteTopic | listTopics, getTopic |
-| Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker | listEntities, getEntity |
+| Topics | createTopic, updateTopic, deleteTopic, setTopicVisibility | listTopics, getTopic |
+| Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker, setEntityVisibility | listEntities, getEntity |
 | Player | — | getPlayerBatch |
 | Activity | recordPlayerTime (+ written by reviseEntity / skipEntity) | getDailyActivity, getTodayActivity |
 | Media | uploadMedia | getMediaFile |
@@ -282,6 +282,25 @@ DELETE FROM topics WHERE id = '<topic_id>';
 
 ---
 
+#### Set topic visibility (Topics list)
+
+- **Service:** `setTopicVisibility()` — [topics.service.ts](../src/modules/topics/topics.service.ts)
+- **Route:** `PATCH /api/v1/categories/:categoryId/topics/:topicId/visibility` — body `{ "visibility": "included" | "excluded" }`
+- **Transaction:** no
+
+| Table | Operation | Columns set |
+|-------|-----------|-------------|
+| `entities` | UPDATE (all rows where `topic_id` matches) | `visibility`, `updated_at`; `edited_at` untouched |
+| `topics` | — | not written (topic visibility is derived from its entities) |
+
+```sql
+UPDATE entities SET visibility = $1, updated_at = now() WHERE topic_id = $2;
+```
+
+**Note:** an empty topic has no entities to update; the frontend disables its switch when `entityCount = 0`.
+
+---
+
 ### 3.4 Entities (information entities)
 
 #### Create entity
@@ -391,6 +410,22 @@ Read side: category and topic responses carry `markers`, the distinct non-null `
 ```sql
 SELECT topic_id, marker FROM entities WHERE topic_id = ANY($1) AND marker IS NOT NULL
 GROUP BY topic_id, marker ORDER BY marker;
+```
+
+---
+
+#### Set entity visibility (Entities list)
+
+- **Service:** `setEntityVisibility()` — [entities.service.ts](../src/modules/entities/entities.service.ts)
+- **Route:** `PATCH /api/v1/categories/:categoryId/topics/:topicId/entities/:entityId/visibility` — body `{ "visibility": "included" | "excluded" }`
+- **Transaction:** no
+
+| Table | Operation | Columns set |
+|-------|-----------|-------------|
+| `entities` | UPDATE | `visibility`, `updated_at`; `edited_at` untouched (reserved for Constructor saves) |
+
+```sql
+UPDATE entities SET visibility = $1, updated_at = now() WHERE id = $2;
 ```
 
 ---
@@ -679,7 +714,7 @@ Every column across all 12 tables, and how the application uses it today.
 | `revised_count` | ⬆ 👁 | reviseEntity only |
 | `skipped_count` | ⬆ 👁 | skipEntity only |
 | `schedule_count` | ✅ ⬆ | Initial value on createEntity; +1 in reviseEntity; Player min-pool ordering, not exposed in DTOs |
-| `visibility` | ✅ 👁 | updateEntity; default `included` on create |
+| `visibility` | ✅ 👁 | updateEntity, setEntityVisibility, setTopicVisibility; default `included` on create |
 | `created_at` | ⚙ 👁 | |
 | `updated_at` | ⚙ | Auto on UPDATE |
 

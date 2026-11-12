@@ -1,4 +1,4 @@
-export type { EntityListItem, EntityListPage, EntityMarker } from '@remindme/contracts/entities';
+export type { EntityListItem, EntityListPage, EntityMarker, EntityVisibility } from '@remindme/contracts/entities';
 
 export type BlockType = 'text' | 'code' | 'image' | 'list' | 'link';
 

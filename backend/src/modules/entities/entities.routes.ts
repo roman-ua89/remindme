@@ -4,6 +4,7 @@ import {
   entityIdParamsSchema,
   saveEntitySchema,
   setEntityMarkerSchema,
+  setEntityVisibilitySchema,
   updateEntitySchema,
   type EntityIdParams,
 } from '@remindme/contracts/entities'
@@ -172,6 +173,26 @@ router.patch(
         topicId,
         entityId,
         req.body.marker,
+      )
+      res.json(entity)
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
+router.patch(
+  '/:entityId/visibility',
+  validate({ params: entityIdParamsSchema, body: setEntityVisibilitySchema }),
+  async (req, res, next) => {
+    try {
+      const { categoryId, topicId, entityId } = req.params as EntityIdParams
+      const entity = await entitiesService.setEntityVisibility(
+        req.user!,
+        categoryId,
+        topicId,
+        entityId,
+        req.body.visibility,
       )
       res.json(entity)
     } catch (error) {

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -13,9 +13,10 @@ import { EntityTemplatesPanel } from '@/features/entities/components/EntityTempl
 import { useCreateEntity } from '@/features/entities/queries/use-create-entity';
 import { useEntity } from '@/features/entities/queries/use-entity';
 import { useSetEntityMarker } from '@/features/entities/queries/use-set-entity-marker';
+import { useSetEntityVisibility } from '@/features/entities/queries/use-set-entity-visibility';
 import { useUpdateEntity } from '@/features/entities/queries/use-update-entity';
 import { entityConstructorFormSchema } from '@/features/entities/schemas';
-import type { BlockType, EntityConstructorFormValues, EntityMarker } from '@/features/entities/types';
+import type { BlockType, EntityConstructorFormValues, EntityMarker, EntityVisibility } from '@/features/entities/types';
 import { createBlock } from '@/features/entities/utils/block-factory';
 import { toEntityFormValues } from '@/features/entities/utils/to-form-values';
 import { toSaveEntityPayload } from '@/features/entities/utils/to-save-payload';
@@ -47,6 +48,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     const { mutate: updateEntity, isPending: isUpdating } = useUpdateEntity(categoryId, topicId, entityId ?? '');
     const { mutate: deleteEntity, isPending: isDeleting } = useDeleteEntity(categoryId, topicId);
     const { mutateAsync: setEntityMarker } = useSetEntityMarker();
+    const { mutateAsync: setEntityVisibility } = useSetEntityVisibility();
 
     const isEditMode = Boolean(entityId);
     const isLoading = isCategoryLoading || isTopicLoading || (isEditMode && isEntityLoading);
@@ -55,6 +57,11 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     function handleMarkerChange(marker: EntityMarker | null) {
         if (!entityId) return Promise.resolve();
         return setEntityMarker({ categoryId, topicId, entityId, marker });
+    }
+
+    function handleVisibilityChange(visibility: EntityVisibility) {
+        if (!entityId) return Promise.resolve();
+        return setEntityVisibility({ categoryId, topicId, entityId, visibility });
     }
 
     const form = useForm<EntityConstructorFormValues>({
@@ -79,10 +86,17 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
 
     const watchTitle = watch('title');
 
+    const lastResetKeyRef = useRef<string | null>(null);
+
     useLayoutEffect(() => {
-        if (entity) {
-            reset(toEntityFormValues(entity));
-        }
+        if (!entity) return;
+
+        // Only Constructor saves change editedAt; visibility/marker refetches keep the same key and must not wipe unsaved edits.
+        const resetKey = `${entity.id}:${entity.editedAt ?? entity.createdAt}`;
+        if (lastResetKeyRef.current === resetKey) return;
+
+        lastResetKeyRef.current = resetKey;
+        reset(toEntityFormValues(entity));
     }, [entity, reset]);
 
     if (isLoading) {
@@ -216,6 +230,8 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                             onHoverTemplate={setHoveredTemplate}
                             onInsertTemplate={handleInsertTemplate}
                             togglePreviewMode={togglePreviewMode}
+                            visibility={entity?.visibility}
+                            onVisibilityChange={handleVisibilityChange}
                         />
                     </div>
                 </form>

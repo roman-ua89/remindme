@@ -1,6 +1,6 @@
 # Tasks
 
-## Task 1. Entity visibility
+## Done Task 1. Entity visibility
 
 Goal: exclude entity from Player's collection.
 Description: database table Entity already has field 'visibility'. Frontend does not handle changing this value. This implements visibility switcher. The switcher is turned on by default, which means that Topic/Entity is visible and can be included in result collection for the player.

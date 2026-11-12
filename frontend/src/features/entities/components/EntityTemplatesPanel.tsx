@@ -1,7 +1,8 @@
 import { Code2, FileText, Image, Layers2, Link2, List, Plus } from 'lucide-react';
 
+import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
 import { Button } from '@/components/ui/button';
-import type { BlockType, EntityBlockForm } from '@/features/entities/types';
+import type { BlockType, EntityBlockForm, EntityVisibility } from '@/features/entities/types';
 import { MAX_ENTITY_BLOCKS } from '@/features/entities/types';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +25,9 @@ type EntityTemplatesPanelProps = {
     onHoverTemplate: (type: BlockType | null) => void;
     onInsertTemplate: (type: BlockType) => void;
     togglePreviewMode: () => void;
+    /** Shown only in edit mode (when entityId is set) */
+    visibility?: EntityVisibility;
+    onVisibilityChange: (visibility: EntityVisibility) => Promise<unknown>;
 };
 
 export function EntityTemplatesPanel({
@@ -33,11 +37,25 @@ export function EntityTemplatesPanel({
     entityId,
     blocks,
     togglePreviewMode,
+    visibility,
+    onVisibilityChange,
 }: EntityTemplatesPanelProps) {
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
         <div className='flex flex-col gap-3 flex-grow-0 shrink-0 basis-2xs sticky top-4 self-start max-h-[calc(100vh-2rem)] overflow-y-auto'>
+            {entityId && visibility ? (
+                <div className='flex items-center justify-between gap-2'>
+                    <span className='text-sm font-medium'>Visibility</span>
+                    <VisibilitySwitch
+                        included={visibility === 'included'}
+                        onChange={(included) => onVisibilityChange(included ? 'included' : 'excluded')}
+                        ariaLabel='Entity visibility'
+                        onTooltip='Shown in the Player'
+                        offTooltip='Hidden from the Player'
+                    />
+                </div>
+            ) : null}
             <h2 className='text-sm font-medium'>Templates</h2>
             <div className='flex flex-col gap-2'>
                 {templates.map(({ type, label, icon: Icon }) => (

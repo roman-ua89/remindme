@@ -52,6 +52,12 @@ export const openApiSpec = {
       patch: { tags: ['topics'], summary: 'Update topic' },
       delete: { tags: ['topics'], summary: 'Delete topic' },
     },
+    '/categories/{categoryId}/topics/{topicId}/visibility': {
+      patch: {
+        tags: ['topics'],
+        summary: 'Set visibility of all entities in topic (body: { visibility: "included" | "excluded" }); returns topic',
+      },
+    },
     '/categories/{categoryId}/topics/{topicId}/entities': {
       get: { tags: ['entities'], summary: 'List entities in topic' },
       post: { tags: ['entities'], summary: 'Create entity with blocks' },
@@ -103,6 +109,12 @@ export const openApiSpec = {
     },
     '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/marker': {
       patch: { tags: ['entities'], summary: 'Set entity marker (body: { marker: 1 | 2 | null })' },
+    },
+    '/categories/{categoryId}/topics/{topicId}/entities/{entityId}/visibility': {
+      patch: {
+        tags: ['entities'],
+        summary: 'Set entity visibility (body: { visibility: "included" | "excluded" }); does not change editedAt',
+      },
     },
     '/player/batch': {
       post: {

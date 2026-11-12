@@ -13,8 +13,10 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
+import { useSetEntityVisibility } from '@/features/entities/queries/use-set-entity-visibility';
 import { PlayButton } from '@/features/player/components/PlayButton';
 import type { EntityListItem } from '@/features/entities/types';
 import { Link, useParams } from '@tanstack/react-router';
@@ -31,6 +33,7 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
         from: '/_app/categories/$categoryId/topics/$topicId/',
     });
     const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+    const { mutateAsync: setEntityVisibility } = useSetEntityVisibility();
 
     function handleRemove() {
         onRemove(entity.id);
@@ -58,8 +61,22 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-2'>
-                        <EntityMarkerDots markers={entity.marker ? [entity.marker] : []} />
+                        <EntityMarkerDots hidden={entity.visibility === 'excluded'} markers={entity.marker ? [entity.marker] : []} />
                         <span className='text-sm tabular-nums text-gray-400'>{entity.revisedCount} revised</span>
+                        <VisibilitySwitch
+                            included={entity.visibility === 'included'}
+                            onChange={(included) =>
+                                setEntityVisibility({
+                                    categoryId,
+                                    topicId,
+                                    entityId: entity.id,
+                                    visibility: included ? 'included' : 'excluded',
+                                })
+                            }
+                            ariaLabel='Entity visibility'
+                            onTooltip='Shown in the Player'
+                            offTooltip='Hidden from the Player'
+                        />
                         <PlayButton scope={{ type: 'entity', entityId: entity.id }} ariaLabel='Play entity' />
                         <Button variant='ghost' size='icon-sm' aria-label='Edit entity' onClick={() => onEdit(entity.id)}>
                             <PencilIcon />

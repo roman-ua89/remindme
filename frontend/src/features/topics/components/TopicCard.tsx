@@ -13,10 +13,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
 import { EditTopicPopover } from '@/features/topics/components/EditTopicPopover';
+import { useSetTopicVisibility } from '@/features/topics/queries/use-set-topic-visibility';
 import { PlayButton } from '@/features/player/components/PlayButton';
 import type { Topic } from '@/features/topics/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip.tsx';
@@ -28,6 +30,7 @@ type TopicCardProps = {
 
 export function TopicCard({ topic, onDelete }: TopicCardProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const { mutateAsync: setTopicVisibility } = useSetTopicVisibility();
     const canDelete = topic.entityCount === 0;
     const canPlay = topic.entityCount > 0;
 
@@ -50,7 +53,25 @@ export function TopicCard({ topic, onDelete }: TopicCardProps) {
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-1'>
-                        <EntityMarkerDots markers={topic.markers} />
+                        <EntityMarkerDots
+                            hidden={topic.hasExcludedEntities}
+                            hiddenLabel='Some entities are hidden from the Player'
+                            markers={topic.markers}
+                        />
+                        <VisibilitySwitch
+                            included={topic.visibility === 'included'}
+                            disabled={topic.entityCount === 0}
+                            onChange={(included) =>
+                                setTopicVisibility({
+                                    categoryId: topic.categoryId,
+                                    topicId: topic.id,
+                                    visibility: included ? 'included' : 'excluded',
+                                })
+                            }
+                            ariaLabel='Topic visibility'
+                            onTooltip='Exclude all entities in this topic from the Player'
+                            offTooltip='Include all entities in this topic in the Player'
+                        />
                         <PlayButton scope={{ type: 'topic', topicId: topic.id }} disabled={!canPlay} ariaLabel='Play topic' />
                         <EditTopicPopover topic={topic} />
                         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

@@ -49,7 +49,11 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
                 </CardTitle>
                 <CardAction>
                     <div className='flex items-center gap-1'>
-                        <EntityMarkerDots markers={category.markers} />
+                        <EntityMarkerDots
+                            hidden={category.hasExcludedEntities}
+                            hiddenLabel='Some entities are hidden from the Player'
+                            markers={category.markers}
+                        />
                         {canPlay && (
                             <span className='mr-1 text-base text-stone-300 flex gap-2 w-8'>
                                 <span className='text-green-600'>{category.completion}%</span>

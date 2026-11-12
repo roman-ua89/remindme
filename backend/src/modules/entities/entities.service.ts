@@ -449,3 +449,21 @@ export async function setEntityMarker(
 
     return toEntityListItem(entity);
 }
+
+/** Only visibility is written here; editedAt stays reserved for Constructor saves. */
+export async function setEntityVisibility(
+    user: AuthUser,
+    categoryId: string,
+    topicId: string,
+    entityId: string,
+    visibility: EntityVisibility,
+): Promise<EntityListItem> {
+    await getEntityForUser(categoryId, topicId, entityId, user);
+
+    const entity = await prisma.entity.update({
+        where: { id: entityId },
+        data: { visibility },
+    });
+
+    return toEntityListItem(entity);
+}

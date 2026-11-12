@@ -1,6 +1,6 @@
 import type { AuthUser } from '../../middleware/auth.js'
 import type { PaginationQuery } from '@remindme/contracts/common/pagination'
-import type { EntityMarker } from '@remindme/contracts/entities'
+import type { EntityMarker, EntityVisibility } from '@remindme/contracts/entities'
 import type {
   CreateTopicInput,
   Topic,
@@ -9,6 +9,7 @@ import type {
 } from '@remindme/contracts/topics'
 
 import { findTopicMarkers } from '../../lib/entity-markers.js'
+import { findTopicExcludedCounts } from '../../lib/entity-visibility.js'
 import { conflict } from '../../lib/errors.js'
 import { getCategoryForUser } from '../../lib/ownership.js'
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js'
@@ -18,6 +19,7 @@ function toTopicDto(
   topic: { id: string; name: string; categoryId: string },
   entityCount: number,
   markers: EntityMarker[],
+  excludedCount: number,
 ): Topic {
   return {
     id: topic.id,
@@ -25,6 +27,8 @@ function toTopicDto(
     categoryId: topic.categoryId,
     entityCount,
     markers,
+    visibility: entityCount > 0 && excludedCount === entityCount ? 'excluded' : 'included',
+    hasExcludedEntities: excludedCount > 0,
   }
 }
 
@@ -44,6 +48,28 @@ async function getMarkersByTopicIds(topicIds: string[]): Promise<Map<string, Ent
 async function getTopicMarkers(topicId: string): Promise<EntityMarker[]> {
   const markersByTopic = await getMarkersByTopicIds([topicId])
   return markersByTopic.get(topicId) ?? []
+}
+
+async function getExcludedCountsByTopicIds(topicIds: string[]): Promise<Map<string, number>> {
+  const rows = await findTopicExcludedCounts({ topicId: { in: topicIds } })
+  return new Map(rows.map((row): [string, number] => [row.topicId, row.excludedCount]))
+}
+
+async function getTopicExcludedCount(topicId: string): Promise<number> {
+  const excludedByTopic = await getExcludedCountsByTopicIds([topicId])
+  return excludedByTopic.get(topicId) ?? 0
+}
+
+async function loadTopicDto(topic: { id: string; name: string; categoryId: string }): Promise<Topic> {
+  const [entityCount, markers, excludedCount] = await Promise.all([
+    prisma.entity.count({
+      where: { topicId: topic.id },
+    }),
+    getTopicMarkers(topic.id),
+    getTopicExcludedCount(topic.id),
+  ])
+
+  return toTopicDto(topic, entityCount, markers, excludedCount)
 }
 
 export async function listTopics(
@@ -67,10 +93,19 @@ export async function listTopics(
     }),
   ])
 
-  const markersByTopic = await getMarkersByTopicIds(topics.map((topic) => topic.id))
+  const topicIds = topics.map((topic) => topic.id)
+  const markersByTopic = await getMarkersByTopicIds(topicIds)
+  const excludedByTopic = await getExcludedCountsByTopicIds(topicIds)
 
   return toPaginatedResponse(
-    topics.map((topic) => toTopicDto(topic, topic._count.entities, markersByTopic.get(topic.id) ?? [])),
+    topics.map((topic) =>
+      toTopicDto(
+        topic,
+        topic._count.entities,
+        markersByTopic.get(topic.id) ?? [],
+        excludedByTopic.get(topic.id) ?? 0,
+      ),
+    ),
     totalItems,
     pagination,
   )
@@ -84,14 +119,7 @@ export async function getTopic(
   const { getTopicForUser } = await import('../../lib/ownership.js')
   const topic = await getTopicForUser(categoryId, topicId, user)
 
-  const [entityCount, markers] = await Promise.all([
-    prisma.entity.count({
-      where: { topicId: topic.id },
-    }),
-    getTopicMarkers(topic.id),
-  ])
-
-  return toTopicDto(topic, entityCount, markers)
+  return loadTopicDto(topic)
 }
 
 export async function createTopic(
@@ -116,7 +144,7 @@ export async function createTopic(
     },
   })
 
-  return toTopicDto(topic, 0, [])
+  return toTopicDto(topic, 0, [], 0)
 }
 
 export async function updateTopic(
@@ -136,7 +164,30 @@ export async function updateTopic(
     },
   })
 
-  return toTopicDto(topic, topic._count.entities, await getTopicMarkers(topic.id))
+  return toTopicDto(
+    topic,
+    topic._count.entities,
+    await getTopicMarkers(topic.id),
+    await getTopicExcludedCount(topic.id),
+  )
+}
+
+/** Sets visibility on every entity of the topic; the topic's own visibility is derived from its entities. */
+export async function setTopicVisibility(
+  user: AuthUser,
+  categoryId: string,
+  topicId: string,
+  visibility: EntityVisibility,
+): Promise<Topic> {
+  const { getTopicForUser } = await import('../../lib/ownership.js')
+  const topic = await getTopicForUser(categoryId, topicId, user)
+
+  await prisma.entity.updateMany({
+    where: { topicId },
+    data: { visibility },
+  })
+
+  return loadTopicDto(topic)
 }
 
 export async function deleteTopic(

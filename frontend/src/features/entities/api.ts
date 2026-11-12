@@ -4,8 +4,10 @@ import type {
     EntityListItem,
     EntityListPage,
     EntityMarker,
+    EntityVisibility,
     SaveEntityInput,
     SetEntityMarkerInput,
+    SetEntityVisibilityInput,
     UpdateEntityInput,
 } from '@remindme/contracts/entities';
 
@@ -43,5 +45,16 @@ export async function deleteEntity(categoryId: string, topicId: string, entityId
 export async function setEntityMarker(categoryId: string, topicId: string, entityId: string, marker: EntityMarker | null): Promise<EntityListItem> {
     const payload: SetEntityMarkerInput = { marker };
     const { data } = await apiClient.patch<EntityListItem>(`/categories/${categoryId}/topics/${topicId}/entities/${entityId}/marker`, payload);
+    return data;
+}
+
+export async function setEntityVisibility(
+    categoryId: string,
+    topicId: string,
+    entityId: string,
+    visibility: EntityVisibility,
+): Promise<EntityListItem> {
+    const payload: SetEntityVisibilityInput = { visibility };
+    const { data } = await apiClient.patch<EntityListItem>(`/categories/${categoryId}/topics/${topicId}/entities/${entityId}/visibility`, payload);
     return data;
 }

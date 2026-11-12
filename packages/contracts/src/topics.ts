@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { categoryIdParamsSchema } from './categories.js'
 import { paginatedResponseSchema } from './common/pagination.js'
-import { entityMarkerSchema } from './entities.js'
+import { entityMarkerSchema, entityVisibilitySchema } from './entities.js'
 
 export const topicSchema = z.object({
   id: z.string().uuid(),
@@ -11,6 +11,10 @@ export const topicSchema = z.object({
   entityCount: z.number().int().nonnegative(),
   /** Distinct markers across the topic's entities, ascending */
   markers: z.array(entityMarkerSchema),
+  /** 'excluded' only when the topic has entities and all of them are excluded; otherwise 'included' */
+  visibility: entityVisibilitySchema,
+  /** True when at least one of the topic's entities is excluded */
+  hasExcludedEntities: z.boolean(),
 })
 
 export const createTopicSchema = z.object({
@@ -19,6 +23,10 @@ export const createTopicSchema = z.object({
 
 export const updateTopicSchema = z.object({
   name: z.string().trim().min(1).max(100),
+})
+
+export const setTopicVisibilitySchema = z.object({
+  visibility: entityVisibilitySchema,
 })
 
 export const topicIdParamsSchema = categoryIdParamsSchema.extend({
@@ -30,5 +38,6 @@ export const topicListPageSchema = paginatedResponseSchema(topicSchema)
 export type Topic = z.infer<typeof topicSchema>
 export type CreateTopicInput = z.infer<typeof createTopicSchema>
 export type UpdateTopicInput = z.infer<typeof updateTopicSchema>
+export type SetTopicVisibilityInput = z.infer<typeof setTopicVisibilitySchema>
 export type TopicIdParams = z.infer<typeof topicIdParamsSchema>
 export type TopicListPage = z.infer<typeof topicListPageSchema>

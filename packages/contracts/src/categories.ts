@@ -12,6 +12,8 @@ export const categorySchema = z.object({
   completion: z.number().int().min(0).max(100),
   /** Distinct markers across the category's entities, ascending */
   markers: z.array(entityMarkerSchema),
+  /** True when at least one of the category's entities is excluded */
+  hasExcludedEntities: z.boolean(),
 })
 
 export const createCategorySchema = z.object({

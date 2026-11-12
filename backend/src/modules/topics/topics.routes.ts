@@ -2,6 +2,7 @@ import { Router } from 'express'
 
 import {
   createTopicSchema,
+  setTopicVisibilitySchema,
   topicIdParamsSchema,
   updateTopicSchema,
   type TopicIdParams,
@@ -98,6 +99,25 @@ router.delete(
       const { categoryId, topicId } = req.params as TopicIdParams
       await topicsService.deleteTopic(req.user!, categoryId, topicId)
       res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
+router.patch(
+  '/:topicId/visibility',
+  validate({ params: topicIdParamsSchema, body: setTopicVisibilitySchema }),
+  async (req, res, next) => {
+    try {
+      const { categoryId, topicId } = req.params as TopicIdParams
+      const topic = await topicsService.setTopicVisibility(
+        req.user!,
+        categoryId,
+        topicId,
+        req.body.visibility,
+      )
+      res.json(topic)
     } catch (error) {
       next(error)
     }

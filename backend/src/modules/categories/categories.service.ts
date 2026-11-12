@@ -9,13 +9,19 @@ import type { PaginationQuery } from '@remindme/contracts/common/pagination';
 import type { EntityMarker } from '@remindme/contracts/entities';
 
 import { findTopicMarkers } from '../../lib/entity-markers.js';
+import { findTopicExcludedCounts } from '../../lib/entity-visibility.js';
 import { conflict } from '../../lib/errors.js';
 import { getPaginationSkip, toPaginatedResponse } from '../../lib/pagination.js';
 import { prisma } from '../../lib/prisma.js';
 
-type CategoryStats = { entityCount: number; completion: number; markers: EntityMarker[] };
+type CategoryStats = {
+    entityCount: number;
+    completion: number;
+    markers: EntityMarker[];
+    hasExcludedEntities: boolean;
+};
 
-const EMPTY_STATS: CategoryStats = { entityCount: 0, completion: 0, markers: [] };
+const EMPTY_STATS: CategoryStats = { entityCount: 0, completion: 0, markers: [], hasExcludedEntities: false };
 
 function toCategoryDto(category: { id: string; name: string }, topicCount: number, stats: CategoryStats): Category {
     return {
@@ -25,6 +31,7 @@ function toCategoryDto(category: { id: string; name: string }, topicCount: numbe
         entityCount: stats.entityCount,
         completion: stats.completion,
         markers: stats.markers,
+        hasExcludedEntities: stats.hasExcludedEntities,
     };
 }
 
@@ -39,7 +46,7 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
         return stats;
     }
 
-    const [topics, tiers, topicMarkers] = await Promise.all([
+    const [topics, tiers, topicMarkers, excludedTopics] = await Promise.all([
         prisma.topic.findMany({
             where: { categoryId: { in: categoryIds } },
             select: {
@@ -54,6 +61,7 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
             _count: { _all: true },
         }),
         findTopicMarkers({ topic: { categoryId: { in: categoryIds } } }),
+        findTopicExcludedCounts({ topic: { categoryId: { in: categoryIds } } }),
     ]);
 
     const categoryByTopicId = new Map<string, string>();
@@ -107,6 +115,14 @@ async function getCategoryStatsByIds(categoryIds: string[]): Promise<Map<string,
         const current = stats.get(categoryId);
         if (current) {
             current.markers = [...markers];
+        }
+    }
+
+    for (const { topicId } of excludedTopics) {
+        const categoryId = categoryByTopicId.get(topicId);
+        const current = categoryId ? stats.get(categoryId) : undefined;
+        if (current) {
+            current.hasExcludedEntities = true;
         }
     }
 
