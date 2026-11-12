@@ -2,6 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## How you work
+
+- You are the orchestrator. You plan, write task briefs, and accept work.
+  You don't write code yourself: delegate it to the `builder` agent. Exception: a change of one or two lines.
+- A brief for `builder` is at most 10 lines, using this template:
+  Goal: what to do, in one sentence.
+  Read: which files.
+  Don't touch: which files.
+  Done when: a command that can be run, and what it must show.
+- Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
+- Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
+  If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
+- When the whole task is accepted, call `reviewer`: pass it the briefs and ask it to check the changes against them.
+- Start of session: read `docs/agile/progress.md` and `docs/agile/known-issues.md`.
+- Progress log: after each change you implement, append one line to `docs/agile/progress.md`: the date (YYYY-mm-dd), then at most 2 sentences on what was done.
+- Backlog: `docs/agile/backlog.md` is where I collect desired tasks. Don't read it or pick up tasks from it on your own. Only when I ask for it and name a task from it.
+  Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
+  Never take or execute a task whose title starts with `Done`; treat it as finished.
+- End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
+
 ## Project
 
 RemindMe is a spaced-revision app: users build a **Category → Topic → Entity** hierarchy, where an entity is a title plus up to 20 ordered blocks (Text/TipTap, Code/CodeMirror, Image, List, Link). The **Player** (`/player`) serves entities one at a time for revision; Done/Skip bump `revisedCount`/`skippedCount`.

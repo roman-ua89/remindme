@@ -1,0 +1,24 @@
+{
+  "model": "claude-opus-5-5",
+  "effortLevel": "xhigh",
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(npx prisma *)",
+      "Bash(python3 -)",
+      "Bash(npm run *)",
+      "Bash(npx prettier *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)"
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "1",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "30"
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "context7"
+  ]
+}
