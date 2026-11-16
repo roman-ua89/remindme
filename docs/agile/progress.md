@@ -19,3 +19,9 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-16 Plan 0.4: added `.vercel/` to `.gitignore`; `git check-ignore` confirms files under it are ignored.
 2026-11-16 Plan 0.5: branches renamed (`main` is now `dev`) and `prod` created; both point at 7db1caa, so `prod` is ahead of anything deployed.
 2026-11-16 Plan 0.6: GitHub has `dev` and `prod` with `dev` as the default branch; the repo is public and the public history is kept unchanged (see decisions.md).
+2026-11-16 Branch names now follow `<type>/<number>_<short_task_name>` (for example `feature/33_some_task_name`), with `feature` replacing `feat` in the plan and `decisions.md`. The number matches the commit number.
+2026-11-16 Added the `create-branch` skill (`.claude/skills/create-branch`): the orchestrator runs it at task start to cut `<type>/<number>_<short_task_name>` from the latest `dev`, and it never commits or pushes. CLAUDE.md now points to it, and the `commit-message` skill no longer carries a temporary no-branch rule.
+2026-11-16 `create-branch` now reads the previous commit number after switching to `dev`, and its name check accepts 1–4 words; `docs/orchestrator.md` shows the branch step.
+2026-11-16 Added the `merge-branch` skill (dialog: fast-forward `dev` to the task branch and delete it, only when chosen), and `commit-message` now ends with a commit button. Backlog tasks start with `create-branch` too.
+2026-11-16 Review fixes: `commit-message` refuses to commit on `dev` or `prod` and describes the commit button; `merge-branch` checks that local `dev` is not behind origin; the backlog arrow in `docs/orchestrator.md` goes through `create-branch`; decisions line 8 is back to its 2026-11-14 wording, with a superseding line added.
+2026-11-16 `merge-branch` now pushes `dev` to origin with a plain push right after the fast-forward merge, and deletes the task branch only after the push succeeds.

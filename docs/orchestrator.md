@@ -7,9 +7,10 @@ Rules live in [CLAUDE.md](../CLAUDE.md); agents in `.claude/agents/`; skill in `
 
 ```mermaid
 flowchart TD
-    BL[/docs/agile/backlog.md<br/>only when the human names a task/] -.-> C
+    BL[/docs/agile/backlog.md<br/>only when the human names a task/] -.-> BR
     A([Session start]) --> B[Orchestrator reads<br/>docs/agile/progress.md<br/>docs/agile/known-issues.md]
-    B --> C[Orchestrator plans task<br/>and splits it into briefs]
+    B --> BR[create-branch skill<br/>cuts the task branch from latest dev]
+    BR --> C[Orchestrator plans task<br/>and splits it into briefs]
     C --> D["Brief (max 10 lines)<br/>Goal / Read / Don't touch / Done when"]
     D --> E1[builder #1]
     D --> E2[builder #2<br/>only if files don't overlap]
@@ -24,7 +25,9 @@ flowchart TD
     J -- yes --> K[reviewer: git diff vs briefs<br/>and docs/agile/decisions.md<br/>read-only]
     K --> L[List of discrepancies<br/>or 'No discrepancies']
     L --> M[Orchestrator appends to<br/>docs/agile/progress.md<br/>decisions.md / known-issues.md]
-    M --> N([Task done])
+    M --> CM[commit-message skill<br/>draft + commit button]
+    CM --> MB[merge-branch skill<br/>dialog: merge, push dev and delete branch, or not yet]
+    MB --> N([Task done])
     N -.-> O[/reflect skill<br/>on user request/]
     O -.-> P[Proposes minimal edits to<br/>CLAUDE.md / agents / known-issues.md<br/>applied only after approval]
 ```
@@ -33,7 +36,7 @@ flowchart TD
 
 | Who | Does | Never does |
 |-----|------|------------|
-| Orchestrator | Plans, writes briefs, runs "Done when", accepts work, updates `docs/` | Writes code (except 1-2 line fixes) |
+| Orchestrator | Plans, runs `create-branch` at task start, writes briefs, runs "Done when", accepts work, commits and merges through the skills, updates `docs/` | Writes code (except 1-2 line fixes) |
 | `builder` | Implements one brief, runs "Done when", reports | Touches "Don't touch" files |
 | `reviewer` | Compares `git diff` with briefs and `docs/agile/decisions.md` | Changes anything |
 | `reflect` | Lists what went wrong, proposes minimal edits | Changes anything before approval |

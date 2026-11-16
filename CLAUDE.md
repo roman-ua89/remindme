@@ -11,17 +11,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Read: which files.
   Don't touch: which files.
   Done when: a command that can be run, and what it must show.
+- Every task starts with the `create-branch` skill, before the first brief, whether it comes from chat or from the backlog. All work for the task happens on that branch, so don't switch branches during a task.
 - Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
 - Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
   If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
 - When the whole task is accepted, call `reviewer`: pass it the briefs and ask it to check the changes against them.
 - Start of session: read `docs/agile/progress.md` and `docs/agile/known-issues.md`.
 - Progress log: after each change you implement, append one line to `docs/agile/progress.md`: the date (YYYY-mm-dd), then at most 2 sentences on what was done.
-- Backlog: `docs/agile/backlog.md` is where I collect desired tasks. Don't read it or pick up tasks from it on your own. Only when I ask for it and name a task from it.
+- Backlog: `docs/agile/backlog.md` is where I collect desired tasks. Don't read it or pick up tasks from it on your own. Only when I ask for it and name a task from it. A backlog task starts with `create-branch` like any other task, and its backlog number is the branch number.
   Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
   Never take or execute a task whose title starts with `Done`; treat it as finished.
 - End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
-- After `reviewer` accepts the work, run the `commit-message` skill, show me the draft, and commit only after I approve.
+- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, and commits only when I click it. Then run the `merge-branch` skill: it offers, in a dialog, to merge the branch into `dev`, push `dev` and delete the branch. It does that only when I choose it.
 
 ## Project
 

@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only after the user approves.
+description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only when the user clicks commit on a task branch.
 ---
 
 ## Format
@@ -17,9 +17,9 @@ description: Drafts a git commit message for a task the orchestrator has accepte
 
 ## Steps
 
-1. Take the task from the orchestrator's briefs and `reviewer`'s report. Run `git status --porcelain` only to list the files to stage. Files not part of this task go in your reply, not in the commit.
-2. Write the draft to `.git/commit-message-draft.txt` (inside `.git/`, so it is never tracked) and show it in your reply.
-3. Stop and wait. The user may approve, edit the file, or ask for changes.
-4. On approval: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push.
-5. If the branch is `main`, ask before committing.
-6. **Temporary rule (until the user changes it): never create a new branch for a commit.** Commit on the branch that is checked out, even if it is `main`. Do not run `git switch -c`, `git checkout -b` or `git branch <name>`. Propose a branch name only if the user asks for one.
+1. Check the branch. `git branch --show-current` must match `^(feature|fix|chore)/[0-9]+_[a-z0-9]+(_[a-z0-9]+){0,3}$`, the pattern `create-branch` uses. If it is `dev`, `prod` or anything else, stop and tell the user that commits go on a task branch, so the work has to move to one first. Do not switch or create branches yourself.
+2. Take the task from the orchestrator's briefs and `reviewer`'s report. Run `git status --porcelain` only to list the files to stage. Files not part of this task go in your reply, not in the commit.
+3. Write the draft to `.git/commit-message-draft.txt` (inside `.git/`, so it is never tracked) and show it in your reply.
+4. End the turn with `wrap_up`. The `commit` action is the commit button, and the question is short, for example "Make this commit?". The user may instead edit the file or ask for changes; wait for them.
+5. When the user clicks commit: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push. Then run the `merge-branch` skill.
+6. **Branches:** this skill never creates one. Commit on the branch that is checked out. Do not run `git switch -c`, `git checkout -b` or `git branch <name>`. The `create-branch` skill makes the task's branch at the start of the task.
