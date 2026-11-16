@@ -107,7 +107,7 @@ Some frontend docs describe planned files that don't exist yet (e.g. `stores/`, 
 
 ## Conventions (from `.cursor/rules` and `.cursor/skills`)
 
-- **Formatting:** after editing any `frontend/src` file, run `npx prettier --write <files>` from `frontend/`. Both packages use 4-space indent, single quotes, semicolons, trailing commas (printWidth 150 frontend / 120 backend).
+- **Formatting:** both packages use 4-space indent, single quotes, semicolons, trailing commas (printWidth 150 frontend / 120 backend). A `PostToolUse` hook (`.claude/hooks/format-file.sh`) runs prettier and eslint on every edited `frontend/src` `.ts`/`.tsx` file, so formatting of those files is not a manual step.
 - **Components** are arrow functions: `export const Foo = (props: Props) => { … }` — no `function` component declarations (plain helpers may use `function`).
 - **Navigation from a `<Button>`** uses `useNavigate()` in `onClick`; never `render={<Link />}` inside `Button`. Use `<Link>` only for plain text/icon links.
 - **Destructive actions** (delete/remove/clear) must be confirmed with shadcn `AlertDialog` (`variant="destructive"` on trigger and action); no `window.confirm` or plain `Dialog`.

@@ -9,3 +9,5 @@
 - Backend `format:check` (`prettier --check .` in `backend/`) fails on 31 files today (e.g. `backend/src/server.ts`, `backend/tsconfig.json`, `backend/package.json`), so root `format:check` and `ci` fail on it. Step 1.3 formats `frontend/` only; the backend needs the same one-shot format commit.
 - `backend/tsconfig.json` has no test exclusion, so `npm run build -w backend` also emits `dist/lib/*.test.js`, which imports vitest. `start` never loads them, but test code ships in `dist`.
 - `frontend/src/features/entities/schemas.ts` re-declares the entity and block schemas instead of extending the contracts in `packages/contracts`, which CLAUDE.md asks for. The `to-save-payload` tests exercise this copy, not the contract.
+- `.claude/hooks/format-file.sh` needs `jq` on `PATH`. Without it the hook exits 2 with a message on every Edit/Write, so install `jq` on a new machine before editing.
+- The format hook covers `frontend/src` `.ts`/`.tsx` only. `.css` files in `frontend/src` (for example `styles.css`, `index.css`) are not formatted on edit; `npm run format:check` in `frontend/` still catches them.
