@@ -8,307 +8,294 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteRouteImport } from './routes/auth/route'
-import { Route as AppRouteRouteImport } from './routes/_app/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthIndexRouteImport } from './routes/auth/index'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AppPlayerRouteImport } from './routes/_app/player'
-import { Route as AppFrontendRouteImport } from './routes/_app/frontend'
-import { Route as AppCategoriesIndexRouteImport } from './routes/_app/categories/index'
-import { Route as AppCategoriesCategoryIdIndexRouteImport } from './routes/_app/categories/$categoryId/index'
-import { Route as AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/index'
-import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/new'
-import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/$entityId'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as AuthRouteRouteImport } from './routes/auth/route';
+import { Route as AppRouteRouteImport } from './routes/_app/route';
+import { Route as IndexRouteImport } from './routes/index';
+import { Route as AuthIndexRouteImport } from './routes/auth/index';
+import { Route as AuthLoginRouteImport } from './routes/auth/login';
+import { Route as AppPlayerRouteImport } from './routes/_app/player';
+import { Route as AppFrontendRouteImport } from './routes/_app/frontend';
+import { Route as AppCategoriesIndexRouteImport } from './routes/_app/categories/index';
+import { Route as AppCategoriesCategoryIdIndexRouteImport } from './routes/_app/categories/$categoryId/index';
+import { Route as AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/index';
+import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/new';
+import { Route as AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport } from './routes/_app/categories/$categoryId/topics/$topicId/entities/$entityId';
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
+    id: '/auth',
+    path: '/auth',
+    getParentRoute: () => rootRouteImport,
+} as any);
 const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => rootRouteImport,
-} as any)
+    id: '/_app',
+    getParentRoute: () => rootRouteImport,
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
+    id: '/',
+    path: '/',
+    getParentRoute: () => rootRouteImport,
+} as any);
 const AuthIndexRoute = AuthIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthRouteRoute,
+} as any);
 const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
+    id: '/login',
+    path: '/login',
+    getParentRoute: () => AuthRouteRoute,
+} as any);
 const AppPlayerRoute = AppPlayerRouteImport.update({
-  id: '/player',
-  path: '/player',
-  getParentRoute: () => AppRouteRoute,
-} as any)
+    id: '/player',
+    path: '/player',
+    getParentRoute: () => AppRouteRoute,
+} as any);
 const AppFrontendRoute = AppFrontendRouteImport.update({
-  id: '/frontend',
-  path: '/frontend',
-  getParentRoute: () => AppRouteRoute,
-} as any)
+    id: '/frontend',
+    path: '/frontend',
+    getParentRoute: () => AppRouteRoute,
+} as any);
 const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
-  id: '/categories/',
-  path: '/categories/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppCategoriesCategoryIdIndexRoute =
-  AppCategoriesCategoryIdIndexRouteImport.update({
+    id: '/categories/',
+    path: '/categories/',
+    getParentRoute: () => AppRouteRoute,
+} as any);
+const AppCategoriesCategoryIdIndexRoute = AppCategoriesCategoryIdIndexRouteImport.update({
     id: '/categories/$categoryId/',
     path: '/categories/$categoryId/',
     getParentRoute: () => AppRouteRoute,
-  } as any)
-const AppCategoriesCategoryIdTopicsTopicIdIndexRoute =
-  AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport.update({
+} as any);
+const AppCategoriesCategoryIdTopicsTopicIdIndexRoute = AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport.update({
     id: '/categories/$categoryId/topics/$topicId/',
     path: '/categories/$categoryId/topics/$topicId/',
     getParentRoute: () => AppRouteRoute,
-  } as any)
-const AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute =
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport.update({
+} as any);
+const AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute = AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport.update({
     id: '/categories/$categoryId/topics/$topicId/entities/new',
     path: '/categories/$categoryId/topics/$topicId/entities/new',
     getParentRoute: () => AppRouteRoute,
-  } as any)
-const AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute =
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport.update({
+} as any);
+const AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute = AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport.update({
     id: '/categories/$categoryId/topics/$topicId/entities/$entityId',
     path: '/categories/$categoryId/topics/$topicId/entities/$entityId',
     getParentRoute: () => AppRouteRoute,
-  } as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/frontend': typeof AppFrontendRoute
-  '/player': typeof AppPlayerRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/': typeof AuthIndexRoute
-  '/categories/': typeof AppCategoriesIndexRoute
-  '/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute
-  '/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
-  '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
-  '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
+    '/': typeof IndexRoute;
+    '/auth': typeof AuthRouteRouteWithChildren;
+    '/frontend': typeof AppFrontendRoute;
+    '/player': typeof AppPlayerRoute;
+    '/auth/login': typeof AuthLoginRoute;
+    '/auth/': typeof AuthIndexRoute;
+    '/categories/': typeof AppCategoriesIndexRoute;
+    '/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute;
+    '/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute;
+    '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute;
+    '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/frontend': typeof AppFrontendRoute
-  '/player': typeof AppPlayerRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth': typeof AuthIndexRoute
-  '/categories': typeof AppCategoriesIndexRoute
-  '/categories/$categoryId': typeof AppCategoriesCategoryIdIndexRoute
-  '/categories/$categoryId/topics/$topicId': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
-  '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
-  '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
+    '/': typeof IndexRoute;
+    '/frontend': typeof AppFrontendRoute;
+    '/player': typeof AppPlayerRoute;
+    '/auth/login': typeof AuthLoginRoute;
+    '/auth': typeof AuthIndexRoute;
+    '/categories': typeof AppCategoriesIndexRoute;
+    '/categories/$categoryId': typeof AppCategoriesCategoryIdIndexRoute;
+    '/categories/$categoryId/topics/$topicId': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute;
+    '/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute;
+    '/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_app': typeof AppRouteRouteWithChildren
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/_app/frontend': typeof AppFrontendRoute
-  '/_app/player': typeof AppPlayerRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/': typeof AuthIndexRoute
-  '/_app/categories/': typeof AppCategoriesIndexRoute
-  '/_app/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute
-  '/_app/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
-  '/_app/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
-  '/_app/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
+    __root__: typeof rootRouteImport;
+    '/': typeof IndexRoute;
+    '/_app': typeof AppRouteRouteWithChildren;
+    '/auth': typeof AuthRouteRouteWithChildren;
+    '/_app/frontend': typeof AppFrontendRoute;
+    '/_app/player': typeof AppPlayerRoute;
+    '/auth/login': typeof AuthLoginRoute;
+    '/auth/': typeof AuthIndexRoute;
+    '/_app/categories/': typeof AppCategoriesIndexRoute;
+    '/_app/categories/$categoryId/': typeof AppCategoriesCategoryIdIndexRoute;
+    '/_app/categories/$categoryId/topics/$topicId/': typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute;
+    '/_app/categories/$categoryId/topics/$topicId/entities/$entityId': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute;
+    '/_app/categories/$categoryId/topics/$topicId/entities/new': typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/auth'
-    | '/frontend'
-    | '/player'
-    | '/auth/login'
-    | '/auth/'
-    | '/categories/'
-    | '/categories/$categoryId/'
-    | '/categories/$categoryId/topics/$topicId/'
-    | '/categories/$categoryId/topics/$topicId/entities/$entityId'
-    | '/categories/$categoryId/topics/$topicId/entities/new'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/frontend'
-    | '/player'
-    | '/auth/login'
-    | '/auth'
-    | '/categories'
-    | '/categories/$categoryId'
-    | '/categories/$categoryId/topics/$topicId'
-    | '/categories/$categoryId/topics/$topicId/entities/$entityId'
-    | '/categories/$categoryId/topics/$topicId/entities/new'
-  id:
-    | '__root__'
-    | '/'
-    | '/_app'
-    | '/auth'
-    | '/_app/frontend'
-    | '/_app/player'
-    | '/auth/login'
-    | '/auth/'
-    | '/_app/categories/'
-    | '/_app/categories/$categoryId/'
-    | '/_app/categories/$categoryId/topics/$topicId/'
-    | '/_app/categories/$categoryId/topics/$topicId/entities/$entityId'
-    | '/_app/categories/$categoryId/topics/$topicId/entities/new'
-  fileRoutesById: FileRoutesById
+    fileRoutesByFullPath: FileRoutesByFullPath;
+    fullPaths:
+        | '/'
+        | '/auth'
+        | '/frontend'
+        | '/player'
+        | '/auth/login'
+        | '/auth/'
+        | '/categories/'
+        | '/categories/$categoryId/'
+        | '/categories/$categoryId/topics/$topicId/'
+        | '/categories/$categoryId/topics/$topicId/entities/$entityId'
+        | '/categories/$categoryId/topics/$topicId/entities/new';
+    fileRoutesByTo: FileRoutesByTo;
+    to:
+        | '/'
+        | '/frontend'
+        | '/player'
+        | '/auth/login'
+        | '/auth'
+        | '/categories'
+        | '/categories/$categoryId'
+        | '/categories/$categoryId/topics/$topicId'
+        | '/categories/$categoryId/topics/$topicId/entities/$entityId'
+        | '/categories/$categoryId/topics/$topicId/entities/new';
+    id:
+        | '__root__'
+        | '/'
+        | '/_app'
+        | '/auth'
+        | '/_app/frontend'
+        | '/_app/player'
+        | '/auth/login'
+        | '/auth/'
+        | '/_app/categories/'
+        | '/_app/categories/$categoryId/'
+        | '/_app/categories/$categoryId/topics/$topicId/'
+        | '/_app/categories/$categoryId/topics/$topicId/entities/$entityId'
+        | '/_app/categories/$categoryId/topics/$topicId/entities/new';
+    fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AppRouteRoute: typeof AppRouteRouteWithChildren
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+    IndexRoute: typeof IndexRoute;
+    AppRouteRoute: typeof AppRouteRouteWithChildren;
+    AuthRouteRoute: typeof AuthRouteRouteWithChildren;
 }
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
+    interface FileRoutesByPath {
+        '/auth': {
+            id: '/auth';
+            path: '/auth';
+            fullPath: '/auth';
+            preLoaderRoute: typeof AuthRouteRouteImport;
+            parentRoute: typeof rootRouteImport;
+        };
+        '/_app': {
+            id: '/_app';
+            path: '';
+            fullPath: '/';
+            preLoaderRoute: typeof AppRouteRouteImport;
+            parentRoute: typeof rootRouteImport;
+        };
+        '/': {
+            id: '/';
+            path: '/';
+            fullPath: '/';
+            preLoaderRoute: typeof IndexRouteImport;
+            parentRoute: typeof rootRouteImport;
+        };
+        '/auth/': {
+            id: '/auth/';
+            path: '/';
+            fullPath: '/auth/';
+            preLoaderRoute: typeof AuthIndexRouteImport;
+            parentRoute: typeof AuthRouteRoute;
+        };
+        '/auth/login': {
+            id: '/auth/login';
+            path: '/login';
+            fullPath: '/auth/login';
+            preLoaderRoute: typeof AuthLoginRouteImport;
+            parentRoute: typeof AuthRouteRoute;
+        };
+        '/_app/player': {
+            id: '/_app/player';
+            path: '/player';
+            fullPath: '/player';
+            preLoaderRoute: typeof AppPlayerRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/frontend': {
+            id: '/_app/frontend';
+            path: '/frontend';
+            fullPath: '/frontend';
+            preLoaderRoute: typeof AppFrontendRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/categories/': {
+            id: '/_app/categories/';
+            path: '/categories';
+            fullPath: '/categories/';
+            preLoaderRoute: typeof AppCategoriesIndexRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/categories/$categoryId/': {
+            id: '/_app/categories/$categoryId/';
+            path: '/categories/$categoryId';
+            fullPath: '/categories/$categoryId/';
+            preLoaderRoute: typeof AppCategoriesCategoryIdIndexRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/categories/$categoryId/topics/$topicId/': {
+            id: '/_app/categories/$categoryId/topics/$topicId/';
+            path: '/categories/$categoryId/topics/$topicId';
+            fullPath: '/categories/$categoryId/topics/$topicId/';
+            preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/categories/$categoryId/topics/$topicId/entities/new': {
+            id: '/_app/categories/$categoryId/topics/$topicId/entities/new';
+            path: '/categories/$categoryId/topics/$topicId/entities/new';
+            fullPath: '/categories/$categoryId/topics/$topicId/entities/new';
+            preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
+        '/_app/categories/$categoryId/topics/$topicId/entities/$entityId': {
+            id: '/_app/categories/$categoryId/topics/$topicId/entities/$entityId';
+            path: '/categories/$categoryId/topics/$topicId/entities/$entityId';
+            fullPath: '/categories/$categoryId/topics/$topicId/entities/$entityId';
+            preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport;
+            parentRoute: typeof AppRouteRoute;
+        };
     }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/': {
-      id: '/auth/'
-      path: '/'
-      fullPath: '/auth/'
-      preLoaderRoute: typeof AuthIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_app/player': {
-      id: '/_app/player'
-      path: '/player'
-      fullPath: '/player'
-      preLoaderRoute: typeof AppPlayerRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/frontend': {
-      id: '/_app/frontend'
-      path: '/frontend'
-      fullPath: '/frontend'
-      preLoaderRoute: typeof AppFrontendRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories/': {
-      id: '/_app/categories/'
-      path: '/categories'
-      fullPath: '/categories/'
-      preLoaderRoute: typeof AppCategoriesIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories/$categoryId/': {
-      id: '/_app/categories/$categoryId/'
-      path: '/categories/$categoryId'
-      fullPath: '/categories/$categoryId/'
-      preLoaderRoute: typeof AppCategoriesCategoryIdIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories/$categoryId/topics/$topicId/': {
-      id: '/_app/categories/$categoryId/topics/$topicId/'
-      path: '/categories/$categoryId/topics/$topicId'
-      fullPath: '/categories/$categoryId/topics/$topicId/'
-      preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories/$categoryId/topics/$topicId/entities/new': {
-      id: '/_app/categories/$categoryId/topics/$topicId/entities/new'
-      path: '/categories/$categoryId/topics/$topicId/entities/new'
-      fullPath: '/categories/$categoryId/topics/$topicId/entities/new'
-      preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories/$categoryId/topics/$topicId/entities/$entityId': {
-      id: '/_app/categories/$categoryId/topics/$topicId/entities/$entityId'
-      path: '/categories/$categoryId/topics/$topicId/entities/$entityId'
-      fullPath: '/categories/$categoryId/topics/$topicId/entities/$entityId'
-      preLoaderRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-  }
 }
 
 interface AppRouteRouteChildren {
-  AppFrontendRoute: typeof AppFrontendRoute
-  AppPlayerRoute: typeof AppPlayerRoute
-  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
-  AppCategoriesCategoryIdIndexRoute: typeof AppCategoriesCategoryIdIndexRoute
-  AppCategoriesCategoryIdTopicsTopicIdIndexRoute: typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute
+    AppFrontendRoute: typeof AppFrontendRoute;
+    AppPlayerRoute: typeof AppPlayerRoute;
+    AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute;
+    AppCategoriesCategoryIdIndexRoute: typeof AppCategoriesCategoryIdIndexRoute;
+    AppCategoriesCategoryIdTopicsTopicIdIndexRoute: typeof AppCategoriesCategoryIdTopicsTopicIdIndexRoute;
+    AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute;
+    AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute: typeof AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute;
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppFrontendRoute: AppFrontendRoute,
-  AppPlayerRoute: AppPlayerRoute,
-  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
-  AppCategoriesCategoryIdIndexRoute: AppCategoriesCategoryIdIndexRoute,
-  AppCategoriesCategoryIdTopicsTopicIdIndexRoute:
-    AppCategoriesCategoryIdTopicsTopicIdIndexRoute,
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute:
-    AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute,
-  AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute:
-    AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute,
-}
+    AppFrontendRoute: AppFrontendRoute,
+    AppPlayerRoute: AppPlayerRoute,
+    AppCategoriesIndexRoute: AppCategoriesIndexRoute,
+    AppCategoriesCategoryIdIndexRoute: AppCategoriesCategoryIdIndexRoute,
+    AppCategoriesCategoryIdTopicsTopicIdIndexRoute: AppCategoriesCategoryIdTopicsTopicIdIndexRoute,
+    AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute: AppCategoriesCategoryIdTopicsTopicIdEntitiesEntityIdRoute,
+    AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute: AppCategoriesCategoryIdTopicsTopicIdEntitiesNewRoute,
+};
 
-const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
-  AppRouteRouteChildren,
-)
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(AppRouteRouteChildren);
 
 interface AuthRouteRouteChildren {
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthIndexRoute: typeof AuthIndexRoute
+    AuthLoginRoute: typeof AuthLoginRoute;
+    AuthIndexRoute: typeof AuthIndexRoute;
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthLoginRoute: AuthLoginRoute,
-  AuthIndexRoute: AuthIndexRoute,
-}
+    AuthLoginRoute: AuthLoginRoute,
+    AuthIndexRoute: AuthIndexRoute,
+};
 
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(AuthRouteRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AppRouteRoute: AppRouteRouteWithChildren,
-  AuthRouteRoute: AuthRouteRouteWithChildren,
-}
-export const routeTree = rootRouteImport
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+    IndexRoute: IndexRoute,
+    AppRouteRoute: AppRouteRouteWithChildren,
+    AuthRouteRoute: AuthRouteRouteWithChildren,
+};
+export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
