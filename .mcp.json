@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "Authorization": "Bearer ctx7sk-03bf2ee0-3ba4-4c9b-920f-edf2c84f6991"
+        "Authorization": "Bearer ${CONTEXT7_API_KEY}"
       }
     },
     "shadcn": {
