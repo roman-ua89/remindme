@@ -1081,7 +1081,7 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 | Toast library | sonner or shadcn toast | Unspecified for now |
 | Admin panel | Settings, layout, and permissions UX | Deferred — not defined for now |
 | Charts (statistics) | Recharts or TanStack Charts | TBD |
-| Frontend testing | Vitest + React Testing Library | Vitest scaffolded in frontend; adoption strategy TBD |
+| Frontend testing | Vitest + React Testing Library | Vitest unit tests for pure utils and contract schemas (step 1.4); no React component tests yet |
 | Object storage provider | S3-compatible (AWS S3, MinIO, etc.) | TBD |
 | Email provider | Transactional email for password reset | TBD |
 | Package manager | pnpm or npm workspaces | TBD |
