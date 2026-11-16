@@ -38,7 +38,7 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
     const markSkip = useMarkSkip();
     const setEntityMarker = useSetEntityMarker();
 
-    const currentEntity = session.queue[0];
+    const currentEntity = session.queue.at(0);
     const isMutating = markDone.isPending || markSkip.isPending;
     const progress = getBatchProgress(session);
     const showProgress = session.status === 'playing' || session.status === 'batchComplete';
@@ -69,7 +69,6 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
     useEffect(() => {
         loadBatch([]);
         // Remount via route key when scope changes.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function handleDone() {

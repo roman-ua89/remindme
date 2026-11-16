@@ -70,7 +70,7 @@ function ChartContainer({
 }
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-    const colorConfig = Object.entries(config).filter(([, config]) => config.theme ?? config.color);
+    const colorConfig = Object.entries(config).filter(([, itemConfig]) => itemConfig.theme ?? itemConfig.color);
 
     if (!colorConfig.length) {
         return null;
@@ -130,9 +130,10 @@ function ChartTooltipContent({
         }
 
         const [item] = payload;
-        const key = `${labelKey ?? item?.dataKey ?? item?.name ?? 'value'}`;
+        const key = `${labelKey ?? item.dataKey ?? item.name ?? 'value'}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
-        const value = !labelKey && typeof label === 'string' ? (config[label]?.label ?? label) : itemConfig?.label;
+        const labelConfig: ChartConfig[string] | undefined = typeof label === 'string' ? config[label] : undefined;
+        const value = !labelKey && typeof label === 'string' ? (labelConfig?.label ?? label) : itemConfig?.label;
 
         if (labelFormatter) {
             return <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>;
@@ -175,7 +176,7 @@ function ChartTooltipContent({
                                     indicator === 'dot' && 'items-center',
                                 )}
                             >
-                                {formatter && item?.value !== undefined && item.name ? (
+                                {formatter && item.value !== undefined && item.name ? (
                                     formatter(item.value, item.name, item, index, item.payload)
                                 ) : (
                                     <>
@@ -276,9 +277,9 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
     let configLabelKey: string = key;
 
     if (key in payload && typeof payload[key as keyof typeof payload] === 'string') {
-        configLabelKey = payload[key as keyof typeof payload] as string;
+        configLabelKey = payload[key as keyof typeof payload];
     } else if (payloadPayload && key in payloadPayload && typeof payloadPayload[key as keyof typeof payloadPayload] === 'string') {
-        configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string;
+        configLabelKey = payloadPayload[key as keyof typeof payloadPayload];
     }
 
     return configLabelKey in config ? config[configLabelKey] : config[key];

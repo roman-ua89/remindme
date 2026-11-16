@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { EntityConstructorFormValues, ListBlockRow } from '@/features/entities/types';
+import type { EntityConstructorFormValues } from '@/features/entities/types';
 import { createEmptyListRow } from '@/features/entities/utils/block-factory';
 
 type ListBlockEditorProps = {
@@ -51,7 +51,7 @@ export function ListBlockEditor({ control, name }: ListBlockEditorProps) {
                 </div>
             ))}
 
-            <Button type='button' variant='outline' size='sm' className='w-fit' onClick={() => append(createEmptyListRow() as ListBlockRow)}>
+            <Button type='button' variant='outline' size='sm' className='w-fit' onClick={() => append(createEmptyListRow())}>
                 <PlusIcon />
                 Add row
             </Button>

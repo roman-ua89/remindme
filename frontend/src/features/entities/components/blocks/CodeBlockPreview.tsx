@@ -15,7 +15,7 @@ type CodeBlockPreviewProps = {
 
 export function CodeBlockPreview({ contentJson }: CodeBlockPreviewProps) {
     const [revealed, setRevealed] = useState(false);
-    const blurredByDefault = contentJson.blurredByDefault ?? false;
+    const blurredByDefault = contentJson.blurredByDefault;
     const isBlurred = blurredByDefault && !revealed;
 
     const toggleRevealed = () => {

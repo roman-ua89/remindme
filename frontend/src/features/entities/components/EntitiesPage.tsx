@@ -56,7 +56,7 @@ export function EntitiesPage() {
     const entities = data?.items ?? [];
     const totalPages = data?.totalPages ?? 0;
     const isPageLoading = isCategoryLoading || isTopicLoading;
-    const isEntitiesInitialLoad = isEntitiesLoading && data === undefined;
+    const isEntitiesInitialLoad = isEntitiesLoading;
     const showFullPageLoader = isPageLoading || isEntitiesInitialLoad;
 
     const topicEntityCount = isSearchActive ? topicHasEntitiesRef.current : (data?.totalItems ?? 0);

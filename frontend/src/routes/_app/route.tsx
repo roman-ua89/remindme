@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_app')({
     beforeLoad: async ({ context }) => {
         try {
             const user = await context.queryClient.fetchQuery(currentUserQueryOptions());
-            if (typeof user?.id === 'string') return;
+            if (typeof user.id === 'string') return;
         } catch (error) {
             if (!isUnauthorizedError(error)) throw error;
         }
