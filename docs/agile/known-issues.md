@@ -5,7 +5,7 @@
 - `npx shadcn add` adds a stray `cn` dependency to package.json and generates `import { cn } from "cn"`; revert package.json/lock and use `@/lib/utils`.
 - `.mcp.json` is tracked and contains a literal context7 API key. Rotate it and switch to `${CONTEXT7_API_KEY}` before the repo is pushed anywhere (Phase 0 of `docs/agentic-cicd-plan.md`).
 - Mermaid 11 (GitHub's renderer) rejects a `gitGraph` that merges into a branch with no commits of its own ("Cannot merge branch into itself"); give the target branch a commit first.
-- On a fresh checkout, the backend `typecheck` (and `tsc` in `build`) fails with "`@prisma/client` has no exported member `Prisma`" until `npm run db:generate -w backend` has run. CI must generate the Prisma client before typecheck (Phase 2).
+- On a fresh checkout, the backend `typecheck` (and `tsc` in `build`) fails with "`@prisma/client` has no exported member `Prisma`" until `npm run db:generate -w backend` has run. CI generates the Prisma client before `npm run ci` (step 2.1 in `.github/workflows/ci.yml`).
 - `backend/tsconfig.json` has no test exclusion, so `npm run build -w backend` also emits `dist/lib/*.test.js`, which imports vitest. `start` never loads them, but test code ships in `dist`.
 - `frontend/src/features/entities/schemas.ts` re-declares the entity and block schemas instead of extending the contracts in `packages/contracts`, which CLAUDE.md asks for. The `to-save-payload` tests exercise this copy, not the contract.
 - `.claude/hooks/format-file.sh` needs `jq` on `PATH`. Without it the hook exits 2 with a message on every Edit/Write, so install `jq` on a new machine before editing.
