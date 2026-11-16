@@ -81,5 +81,8 @@
             "esbuild",
             "lightningcss"
         ]
+    },
+    "optionalDependencies": {
+        "@tailwindcss/oxide-linux-x64-gnu": "4.3.2"
     }
 }

@@ -24,3 +24,50 @@ jobs:
 
       - name: Run CI checks
         run: npm run ci
+
+  migrations:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://remindme:remindme@localhost:5432/remindme
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: remindme
+          POSTGRES_PASSWORD: remindme
+          POSTGRES_DB: remindme
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U remindme -d remindme"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate -w backend
+
+      - name: Apply migrations from zero
+        run: npm run db:migrate:deploy -w backend
+
+      - name: Check schema drift
+        working-directory: backend
+        run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
+
+      - name: Seed base data (first run)
+        run: npm run db:seed -w backend
+
+      - name: Seed base data (second run, must be idempotent)
+        run: npm run db:seed -w backend
