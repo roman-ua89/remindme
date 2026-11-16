@@ -14,6 +14,5 @@ export function useEntity({ categoryId, topicId, entityId }: IProps) {
         queryKey: queryKeys.entities.detail(categoryId, topicId, entityId!),
         queryFn: () => getEntity(categoryId, topicId, entityId!),
         enabled: Boolean(entityId),
-
     });
 }

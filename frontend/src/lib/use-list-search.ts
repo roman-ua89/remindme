@@ -8,11 +8,7 @@ type UseListSearchOptions = {
     onSearchChange?: () => void;
 };
 
-export function useListSearch({
-    minLength = 3,
-    debounceMs = 500,
-    onSearchChange,
-}: UseListSearchOptions = {}) {
+export function useListSearch({ minLength = 3, debounceMs = 500, onSearchChange }: UseListSearchOptions = {}) {
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState<string | undefined>();
 

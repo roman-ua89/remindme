@@ -1,4 +1,3 @@
-
 export const constants = {
-    maxTitleSymbols: 75
+    maxTitleSymbols: 75,
 } as const;

@@ -11,6 +11,6 @@ export function useEntities(categoryId: string, topicId: string, page: number, p
     return useQuery({
         queryKey: queryKeys.entities.list(categoryId, topicId, query),
         queryFn: () => getEntities(categoryId, topicId, query),
-        placeholderData: keepPreviousData
+        placeholderData: keepPreviousData,
     });
 }

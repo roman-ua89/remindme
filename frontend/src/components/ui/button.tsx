@@ -18,8 +18,10 @@ const buttonVariants = cva(
                 destructive:
                     'bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
                 softBlue: 'bg-blue-100 hover:bg-blue-200 text-blue-800',
-                defaultEditorBtn: 'text-sm bg-blue-300 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
-                selectedEditorBtn: 'text-sm bg-blue-500 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
+                defaultEditorBtn:
+                    'text-sm bg-blue-300 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
+                selectedEditorBtn:
+                    'text-sm bg-blue-500 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
                 link: 'text-primary underline-offset-4 hover:underline',
             },
             size: {

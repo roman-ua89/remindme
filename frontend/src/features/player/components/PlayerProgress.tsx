@@ -1,21 +1,21 @@
-import { Progress, ProgressLabel } from '@/components/ui/progress'
-import type { PlayerBatchProgress } from '@/features/player/types'
+import { Progress, ProgressLabel } from '@/components/ui/progress';
+import type { PlayerBatchProgress } from '@/features/player/types';
 
 type PlayerProgressProps = {
-    progress: PlayerBatchProgress
-}
+    progress: PlayerBatchProgress;
+};
 
 export function PlayerProgress({ progress }: PlayerProgressProps) {
-    const { completedInBatch, batchTotal, remainingInBatch, value } = progress
+    const { completedInBatch, batchTotal, remainingInBatch, value } = progress;
 
     return (
-        <Progress value={value} className="w-full">
-            <div className="flex w-full items-baseline justify-between gap-3">
+        <Progress value={value} className='w-full'>
+            <div className='flex w-full items-baseline justify-between gap-3'>
                 <ProgressLabel>
                     {completedInBatch} of {batchTotal}
                 </ProgressLabel>
-                <p className="text-sm text-muted-foreground tabular-nums">{remainingInBatch} left</p>
+                <p className='text-sm text-muted-foreground tabular-nums'>{remainingInBatch} left</p>
             </div>
         </Progress>
-    )
+    );
 }

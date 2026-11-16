@@ -1,21 +1,13 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const createCategoryFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Category name is required')
-    .max(100, 'Name must be 100 characters or less'),
-})
+    name: z.string().trim().min(1, 'Category name is required').max(100, 'Name must be 100 characters or less'),
+});
 
-export type CreateCategoryFormValues = z.infer<typeof createCategoryFormSchema>
+export type CreateCategoryFormValues = z.infer<typeof createCategoryFormSchema>;
 
 export const updateCategoryFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Category name is required')
-    .max(100, 'Name must be 100 characters or less'),
-})
+    name: z.string().trim().min(1, 'Category name is required').max(100, 'Name must be 100 characters or less'),
+});
 
-export type UpdateCategoryFormValues = z.infer<typeof updateCategoryFormSchema>
+export type UpdateCategoryFormValues = z.infer<typeof updateCategoryFormSchema>;

@@ -34,15 +34,15 @@ npm run db:seed
 
 Copy `.env.example` to `.env` and adjust as needed:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3000` | API server port |
-| `DATABASE_URL` | `postgresql://remindme:remindme@localhost:5432/remindme` | PostgreSQL connection string |
-| `JWT_SECRET` | — | Secret for signing auth tokens (min 16 chars) |
-| `JWT_EXPIRES_IN` | `7d` | Token lifetime |
-| `CORS_ORIGIN` | `http://localhost:5173` | Frontend origin (must match Vite dev server) |
-| `UPLOAD_DIR` | `./uploads` | Local directory for uploaded images |
-| `MAX_UPLOAD_BYTES` | `5242880` | Max upload size (5 MB) |
+| Variable           | Default                                                  | Description                                   |
+| ------------------ | -------------------------------------------------------- | --------------------------------------------- |
+| `PORT`             | `3000`                                                   | API server port                               |
+| `DATABASE_URL`     | `postgresql://remindme:remindme@localhost:5432/remindme` | PostgreSQL connection string                  |
+| `JWT_SECRET`       | —                                                        | Secret for signing auth tokens (min 16 chars) |
+| `JWT_EXPIRES_IN`   | `7d`                                                     | Token lifetime                                |
+| `CORS_ORIGIN`      | `http://localhost:5173`                                  | Frontend origin (must match Vite dev server)  |
+| `UPLOAD_DIR`       | `./uploads`                                              | Local directory for uploaded images           |
+| `MAX_UPLOAD_BYTES` | `5242880`                                                | Max upload size (5 MB)                        |
 
 ## Database
 
@@ -108,13 +108,13 @@ npm start
 
 ## Useful endpoints
 
-| URL | Description |
-|-----|-------------|
-| `GET /health` | Health check |
-| `GET /api/docs` | Swagger UI (development only) |
-| `POST /api/v1/auth/register` | Register |
-| `POST /api/v1/auth/login` | Login (sets httpOnly cookie) |
-| `GET /api/v1/auth/me` | Current user |
+| URL                          | Description                   |
+| ---------------------------- | ----------------------------- |
+| `GET /health`                | Health check                  |
+| `GET /api/docs`              | Swagger UI (development only) |
+| `POST /api/v1/auth/register` | Register                      |
+| `POST /api/v1/auth/login`    | Login (sets httpOnly cookie)  |
+| `GET /api/v1/auth/me`        | Current user                  |
 
 ## Project layout
 

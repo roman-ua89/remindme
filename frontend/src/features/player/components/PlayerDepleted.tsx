@@ -1,24 +1,17 @@
-import { InboxIcon } from 'lucide-react'
+import { InboxIcon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button'
-import {
-    Empty,
-    EmptyContent,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty'
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 
 type PlayerDepletedProps = {
-    onHome: () => void
-}
+    onHome: () => void;
+};
 
 export function PlayerDepleted({ onHome }: PlayerDepletedProps) {
     return (
-        <Empty className="border">
+        <Empty className='border'>
             <EmptyHeader>
-                <EmptyMedia variant="icon">
+                <EmptyMedia variant='icon'>
                     <InboxIcon />
                 </EmptyMedia>
                 <EmptyTitle>Nothing to revise</EmptyTitle>
@@ -27,10 +20,10 @@ export function PlayerDepleted({ onHome }: PlayerDepletedProps) {
                 </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-                <Button type="button" onClick={onHome}>
+                <Button type='button' onClick={onHome}>
                     Go to Home
                 </Button>
             </EmptyContent>
         </Empty>
-    )
+    );
 }

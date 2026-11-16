@@ -9,7 +9,11 @@ export const devPlanTasks: DevPlanTask[] = [
     { id: '10', label: 'List item visibility: icon on list page + icon on constructor page', done: false },
     { id: '20', label: 'Entity constructor - page has no fixed width with Code block.', done: false },
     { id: '22', label: 'Increase font size in player everywhere.', done: false },
-    { id: '23', label: 'When called run player on a single entity, when pressed Done - ask for next 3 from same Topic or Close player. ', done: false },
+    {
+        id: '23',
+        label: 'When called run player on a single entity, when pressed Done - ask for next 3 from same Topic or Close player. ',
+        done: false,
+    },
     { id: '24', label: 'Dark theme', done: false },
     { id: '25', label: 'Copy icon for code from player', done: false },
     { id: '26', label: 'Rename: Go to Home', done: false },

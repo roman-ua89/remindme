@@ -1,16 +1,16 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: remindme-postgres
-    restart: unless-stopped
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: remindme
-      POSTGRES_PASSWORD: remindme
-      POSTGRES_DB: remindme
-    volumes:
-      - remindme_pg_data:/var/lib/postgresql/data
+    postgres:
+        image: postgres:16
+        container_name: remindme-postgres
+        restart: unless-stopped
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_USER: remindme
+            POSTGRES_PASSWORD: remindme
+            POSTGRES_DB: remindme
+        volumes:
+            - remindme_pg_data:/var/lib/postgresql/data
 
 volumes:
-  remindme_pg_data:
+    remindme_pg_data:

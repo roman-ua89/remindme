@@ -13,14 +13,7 @@ type ListSearchInputProps = {
     placeholder?: string;
 };
 
-export function ListSearchInput({
-    value,
-    onChange,
-    isPending = false,
-    showClean = false,
-    onClean,
-    placeholder = 'Search',
-}: ListSearchInputProps) {
+export function ListSearchInput({ value, onChange, isPending = false, showClean = false, onClean, placeholder = 'Search' }: ListSearchInputProps) {
     return (
         <div className='rounded-lg bg-gray-200/60 p-2'>
             <InputGroup className='w-60'>

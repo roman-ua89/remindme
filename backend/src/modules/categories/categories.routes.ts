@@ -6,10 +6,7 @@ import {
     updateCategorySchema,
     type CategoryIdParams,
 } from '@remindme/contracts/categories';
-import {
-    paginationQuerySchema,
-    type PaginationQuery,
-} from '@remindme/contracts/common/pagination';
+import { paginationQuerySchema, type PaginationQuery } from '@remindme/contracts/common/pagination';
 
 import { auth } from '../../middleware/auth.js';
 import { requirePermission } from '../../middleware/require-permission.js';

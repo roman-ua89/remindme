@@ -1,8 +1,8 @@
 type FieldErrorProps = {
-  message?: string
-}
+    message?: string;
+};
 
 export function FieldError({ message }: FieldErrorProps) {
-  if (!message) return null
-  return <p className="text-sm text-destructive">{message}</p>
+    if (!message) return null;
+    return <p className='text-sm text-destructive'>{message}</p>;
 }

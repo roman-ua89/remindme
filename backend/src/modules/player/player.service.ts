@@ -1,16 +1,8 @@
-import type {
-    PlayerApiScope,
-    PlayerBatchRequest,
-    PlayerBatchResponse,
-} from '@remindme/contracts/player';
+import type { PlayerApiScope, PlayerBatchRequest, PlayerBatchResponse } from '@remindme/contracts/player';
 import type { Prisma } from '@prisma/client';
 
 import type { AuthUser } from '../../middleware/auth.js';
-import {
-    getCategoryForUser,
-    getEntityByIdForUser,
-    getTopicByIdForUser,
-} from '../../lib/ownership.js';
+import { getCategoryForUser, getEntityByIdForUser, getTopicByIdForUser } from '../../lib/ownership.js';
 import { prisma } from '../../lib/prisma.js';
 import { loadEntitiesWithCategory } from '../entities/entities.service.js';
 
@@ -47,10 +39,7 @@ async function assertScopeOwnership(scope: PlayerApiScope, user: AuthUser): Prom
     }
 }
 
-function buildEligibleWhere(
-    scope: PlayerApiScope,
-    excludeEntityIds: string[],
-): Prisma.EntityWhereInput | null {
+function buildEligibleWhere(scope: PlayerApiScope, excludeEntityIds: string[]): Prisma.EntityWhereInput | null {
     const visibilityFilter = { visibility: 'included' as const };
 
     if (scope.type === 'entity') {
@@ -64,8 +53,7 @@ function buildEligibleWhere(
         };
     }
 
-    const excludeFilter =
-        excludeEntityIds.length > 0 ? { id: { notIn: excludeEntityIds } } : {};
+    const excludeFilter = excludeEntityIds.length > 0 ? { id: { notIn: excludeEntityIds } } : {};
 
     if (scope.type === 'category') {
         return {
@@ -82,10 +70,7 @@ function buildEligibleWhere(
     };
 }
 
-export async function getPlayerBatch(
-    user: AuthUser,
-    input: PlayerBatchRequest,
-): Promise<PlayerBatchResponse> {
+export async function getPlayerBatch(user: AuthUser, input: PlayerBatchRequest): Promise<PlayerBatchResponse> {
     await assertScopeOwnership(input.scope, user);
 
     const where = buildEligibleWhere(input.scope, input.excludeEntityIds);
@@ -110,10 +95,7 @@ export async function getPlayerBatch(
         select: { id: true },
     });
 
-    const pickedIds = shuffleIds(candidates.map((candidate) => candidate.id)).slice(
-        0,
-        clampLimit(input.limit),
-    );
+    const pickedIds = shuffleIds(candidates.map((candidate) => candidate.id)).slice(0, clampLimit(input.limit));
 
     return {
         items: await loadEntitiesWithCategory(pickedIds),
