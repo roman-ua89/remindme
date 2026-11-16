@@ -1,53 +1,54 @@
 {
-  "name": "@remindme/backend",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": "^24.0.0"
-  },
-  "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "format:check": "prettier --check .",
-    "test": "node --test",
-    "start": "node dist/server.js",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.19.0",
-    "@remindme/contracts": "*",
-    "bcrypt": "^6.0.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
-    "pino": "^9.9.0",
-    "pino-http": "^10.5.0",
-    "swagger-ui-express": "^5.0.1",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/cookie-parser": "^1.4.9",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^22.10.2",
-    "@types/swagger-ui-express": "^4.1.8",
-    "prisma": "^6.19.0",
-    "tsx": "^4.20.5",
-    "typescript": "^6.0.2"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  }
+    "name": "@remindme/backend",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": "^24.0.0"
+    },
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsc",
+        "typecheck": "tsc --noEmit",
+        "format": "prettier --write . '!docs/**'",
+        "format:check": "prettier --check . '!docs/**'",
+        "test": "node --test",
+        "start": "node dist/server.js",
+        "db:migrate": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:seed": "tsx prisma/seed.ts",
+        "db:studio": "prisma studio",
+        "db:generate": "prisma generate"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.19.0",
+        "@remindme/contracts": "*",
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.1",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "multer": "^2.0.2",
+        "pino": "^9.9.0",
+        "pino-http": "^10.5.0",
+        "swagger-ui-express": "^5.0.1",
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
+        "@types/cookie-parser": "^1.4.9",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.3",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/multer": "^2.0.0",
+        "@types/node": "^22.10.2",
+        "@types/swagger-ui-express": "^4.1.8",
+        "prisma": "^6.19.0",
+        "tsx": "^4.20.5",
+        "typescript": "^6.0.2"
+    },
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    }
 }

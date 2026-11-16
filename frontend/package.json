@@ -13,8 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
-    "format": "prettier --write . && eslint --fix",
-    "check": "prettier --check ."
+    "format": "prettier --write . '!docs/**'",
+    "check": "prettier --check . '!docs/**'"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
