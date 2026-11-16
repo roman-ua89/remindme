@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
 - Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
   If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
+- Every `builder` must leave `npm run ci` green before reporting done.
 - When the whole task is accepted, call `reviewer`: pass it the briefs and ask it to check the changes against them.
 - Start of session: read `docs/agile/progress.md` and `docs/agile/known-issues.md`.
 - Progress log: after each change you implement, append one line to `docs/agile/progress.md`: the date (YYYY-mm-dd), then at most 2 sentences on what was done.
@@ -40,6 +41,7 @@ npm workspaces monorepo (Node `^24`, install from the repo root only):
 
 ```bash
 npm install                       # from repo root
+npm run ci                        # typecheck, lint, format:check, test, build (repo root)
 npm run dev:backend               # tsx watch, http://localhost:3000/api/v1
 npm run dev:frontend              # vite, http://localhost:5173
 
@@ -62,7 +64,7 @@ npx tsc --noEmit                  # type-check (vite build does not type-check)
 npm run build -w backend          # tsc → backend/dist
 ```
 
-Notes: there are currently no test files and no backend lint/test scripts. The root `npm run build` calls a `build` script on `@remindme/contracts` that doesn't exist, so build the backend directly. Env: copy `backend/.env.example` → `backend/.env` (`JWT_SECRET` ≥16 chars required; `CORS_ORIGIN` must match the Vite origin) and `frontend/.env.example` → `frontend/.env` (`VITE_API_URL`). Swagger UI at `/api/docs` in development (spec hand-written in `backend/src/openapi/spec.ts`).
+Env: copy `backend/.env.example` → `backend/.env` (`JWT_SECRET` ≥16 chars required; `CORS_ORIGIN` must match the Vite origin) and `frontend/.env.example` → `frontend/.env` (`VITE_API_URL`). Swagger UI at `/api/docs` in development (spec hand-written in `backend/src/openapi/spec.ts`).
 
 ## Architecture
 

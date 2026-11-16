@@ -21,3 +21,4 @@
 - 2026-11-16 Step 1.4: the backend test runner is vitest (`^4.1.12`, installed from the root lockfile), replacing `node --test`. Frontend and backend tests run from the root `npm run test`.
 - 2026-11-16 Step 1.4: `frontend/vitest.config.ts` gives vitest only `tsconfigPaths`, without the TanStack router plugin, so `npm run test` does not rewrite `src/routeTree.gen.ts`. This supersedes the 2026-11-16 line that said the frontend `test` exits 1 with no test files.
 - 2026-11-16 Step 1.5: formatting and linting on edit are enforced by a `PostToolUse` hook (matcher `Edit|Write`), not by a prompt rule. The hook covers only `frontend/src` `.ts`/`.tsx`, because the eslint config lives in `frontend/`; backend files are not touched by it. It reads the file path with `jq`, and on lint errors exits 2 so the agent fixes them.
+- 2026-11-16 Step 1.6: a builder reports done only after `npm run ci` (repo root) exits 0, on top of its brief's "Done when".
