@@ -17,3 +17,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-16 Plan 0.2: removed the stray `frontend/package-lock.json` (staged deletion, not yet committed); the root `package-lock.json` is unchanged.
 2026-11-16 Plan 0.3: added `.nvmrc` containing `24`; `engines.node` (`^24.0.0`) was already set in the root and backend `package.json`, and the local Node (v24) matches.
 2026-11-16 Plan 0.4: added `.vercel/` to `.gitignore`; `git check-ignore` confirms files under it are ignored.
+2026-11-16 Plan 0.5: branches renamed (`main` is now `dev`) and `prod` created; both point at 7db1caa, so `prod` is ahead of anything deployed.
