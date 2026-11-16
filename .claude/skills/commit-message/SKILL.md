@@ -24,3 +24,4 @@ Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>
 3. Stop and wait. The user may approve, edit the file, or ask for changes.
 4. On approval: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push.
 5. If the branch is `main`, ask before committing.
+6. **Temporary rule (until the user changes it): never create a new branch for a commit.** Commit on the branch that is checked out, even if it is `main`. Do not run `git switch -c`, `git checkout -b` or `git branch <name>`. Propose a branch name only if the user asks for one.

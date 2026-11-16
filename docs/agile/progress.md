@@ -12,3 +12,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-14 Reworked `docs/agentic-cicd-plan.md` to drop staging: a green push to `dev` now deploys to production automatically (staged deploy, smoke test, promote), and the pipeline moves `prod` to the deployed commit.
 2026-11-14 Updated `docs/agentic-cicd-plan.md` for a PR-based flow: feature branch → PR into `dev` with required checks and Claude review → my squash merge → the existing pipeline to production. Rulesets, the `ship` skill, diagrams and interview Q&A now follow it.
 2026-11-16 Plan Phase 0.1: `.mcp.json` reads the context7 key from `${CONTEXT7_API_KEY}` instead of a literal; the user reports the old key is rotated (not checked against the dashboard), but it remains in one git commit.
+2026-11-16 `commit-message` skill: added a temporary rule (step 6) to never create a new branch for a commit; commit on the checked-out branch until the user changes it.
