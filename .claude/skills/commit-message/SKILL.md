@@ -9,8 +9,6 @@ description: Drafts a git commit message for a task the orchestrator has accepte
 [<number>] <task title>
 
 <one-sentence summary>
-
-Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>
 ```
 
 - **Title:** the task title. For a backlog task, use the title without the `Done` prefix, e.g. `[1] Entity visibility`.
