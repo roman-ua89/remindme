@@ -15,3 +15,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-16 `commit-message` skill: added a temporary rule (step 6) to never create a new branch for a commit; commit on the checked-out branch until the user changes it.
 2026-11-16 `docs/agentic-cicd-plan.md`: added a Status column (✅ done / ⬜ todo) to the Phase 0–5 step tables and marked 0.1 done; Part E checkbox for the context7 key ticked.
 2026-11-16 Plan 0.2: removed the stray `frontend/package-lock.json` (staged deletion, not yet committed); the root `package-lock.json` is unchanged.
+2026-11-16 Plan 0.3: added `.nvmrc` containing `24`; `engines.node` (`^24.0.0`) was already set in the root and backend `package.json`, and the local Node (v24) matches.
