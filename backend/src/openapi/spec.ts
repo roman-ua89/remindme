@@ -8,6 +8,7 @@ export const openApiSpec = {
     servers: [{ url: '/api/v1' }],
     tags: [
         { name: 'auth' },
+        { name: 'health' },
         { name: 'categories' },
         { name: 'topics' },
         { name: 'entities' },
@@ -16,6 +17,9 @@ export const openApiSpec = {
         { name: 'users' },
     ],
     paths: {
+        '/health': {
+            get: { tags: ['health'], summary: 'Health check: status and deployed commit (APP_COMMIT_SHA or "local")' },
+        },
         '/auth/register': {
             post: { tags: ['auth'], summary: 'Register a new user' },
         },
