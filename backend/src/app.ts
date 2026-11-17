@@ -21,10 +21,10 @@ import { statsRoutes } from './modules/stats/stats.routes.js';
 import { topicsRoutes } from './modules/topics/topics.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
 import { openApiSpec } from './openapi/spec.js';
-import { ensureUploadDir } from './modules/media/media.service.js';
+import { storage } from './lib/storage.js';
 
 export async function createApp() {
-    await ensureUploadDir();
+    await storage.ensureReady();
 
     const app = express();
 

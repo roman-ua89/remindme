@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import { Router } from 'express';
 import multer from 'multer';
 
@@ -38,8 +36,13 @@ router.get('/files/:storageKey', async (req, res, next) => {
             return next(notFound('File not found'));
         }
 
+        if (result.file.type === 'redirect') {
+            res.redirect(result.file.url);
+            return;
+        }
+
         res.type(result.asset.mimeType);
-        res.sendFile(path.resolve(result.filePath));
+        res.sendFile(result.file.path);
     } catch (error) {
         next(error);
     }

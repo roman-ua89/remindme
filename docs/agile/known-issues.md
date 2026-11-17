@@ -17,3 +17,7 @@
 - Vercel's build runs `npm` with install scripts blocked (`@prisma/client` postinstall among them), so the Prisma client is not generated during `vercel build`. Step 3.5 has to add the generation.
 - The Vite `/api` proxy target is hardcoded to `http://localhost:3000` (`frontend/vite.config.ts`), but the backend reads `PORT`. If `PORT` changes, change the proxy target too. A `VITE_API_URL` line in a local `frontend/.env` overrides the relative default, so dev skips the proxy until that line is removed.
 - These still describe `VITE_API_URL` as the dev default: `frontend/docs/AUTH.md`, `frontend/docs/TECH_STACK.md`, `backend/README.md` and `CLAUDE.md`. Plan step 3.8 updates them.
+- The `vercel-blob` storage driver has no tests and has not run against Vercel Blob. Its first real check is the Phase 4 deploy.
+- A failed `del` in `deleteMediaAssetsIfUnreferenced` is swallowed, so the blob stays behind with no database row. Nothing cleans these up yet.
+- `backend/.env.example` still sets `MAX_UPLOAD_BYTES=5242880` and lacks `STORAGE_DRIVER` and `BLOB_READ_WRITE_TOKEN`; `backend/README.md` has the same 5 MB value and an env table without the new variables. Plan steps 3.6 and 3.8 update them.
+- `backend/docs/ARCHITECTURE.md` and `backend/docs/DATA-FLOWS.md` still describe `ensureUploadDir` and local-only media storage. Plan step 3.8 updates them.
