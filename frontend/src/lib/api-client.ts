@@ -39,7 +39,7 @@ function normalizeError(error: unknown): ApiClientError {
     return new ApiClientError('Something went wrong');
 }
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
 
 /** Client IANA timezone, sent as `X-Timezone`. */
 export const CLIENT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
