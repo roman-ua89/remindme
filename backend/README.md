@@ -34,15 +34,19 @@ npm run db:seed
 
 Copy `.env.example` to `.env` and adjust as needed:
 
-| Variable           | Default                                                  | Description                                   |
-| ------------------ | -------------------------------------------------------- | --------------------------------------------- |
-| `PORT`             | `3000`                                                   | API server port                               |
-| `DATABASE_URL`     | `postgresql://remindme:remindme@localhost:5432/remindme` | PostgreSQL connection string                  |
-| `JWT_SECRET`       | —                                                        | Secret for signing auth tokens (min 16 chars) |
-| `JWT_EXPIRES_IN`   | `7d`                                                     | Token lifetime                                |
-| `CORS_ORIGIN`      | `http://localhost:5173`                                  | Frontend origin (must match Vite dev server)  |
-| `UPLOAD_DIR`       | `./uploads`                                              | Local directory for uploaded images           |
-| `MAX_UPLOAD_BYTES` | `5242880`                                                | Max upload size (5 MB)                        |
+| Variable                | Default                                                  | Description                                                                                         |
+| ----------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `PORT`                  | `3000`                                                   | API server port                                                                                     |
+| `DATABASE_URL`          | `postgresql://remindme:remindme@localhost:5432/remindme` | PostgreSQL connection string                                                                        |
+| `DIRECT_URL`            | —                                                        | Direct PostgreSQL URL for the Prisma CLI (`directUrl`); the app does not read it                    |
+| `JWT_SECRET`            | —                                                        | Secret for signing auth tokens (min 16 chars)                                                       |
+| `JWT_EXPIRES_IN`        | `7d`                                                     | Token lifetime                                                                                      |
+| `CORS_ORIGIN`           | —                                                        | Frontend origin allowed by CORS (`http://localhost:5173` for Vite); unset means CORS is not enabled |
+| `UPLOAD_DIR`            | `./uploads`                                              | Local directory for uploaded images (`local` driver)                                                |
+| `MAX_UPLOAD_BYTES`      | `4194304`                                                | Max upload size (4 MB)                                                                              |
+| `STORAGE_DRIVER`        | `local`                                                  | Media storage: `local` (disk under `UPLOAD_DIR`) or `vercel-blob`                                   |
+| `BLOB_READ_WRITE_TOKEN` | —                                                        | Vercel Blob read/write token; required when `STORAGE_DRIVER=vercel-blob`                            |
+| `APP_COMMIT_SHA`        | `local`                                                  | Commit SHA returned by `GET /api/v1/health`                                                         |
 
 ## Database
 

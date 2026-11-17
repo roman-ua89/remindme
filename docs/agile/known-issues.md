@@ -21,5 +21,5 @@
 - These still describe `VITE_API_URL` as the dev default: `frontend/docs/AUTH.md`, `frontend/docs/TECH_STACK.md`, `backend/README.md` and `CLAUDE.md`. Plan step 3.8 updates them.
 - The `vercel-blob` storage driver has no tests and has not run against Vercel Blob. Its first real check is the Phase 4 deploy.
 - A failed `del` in `deleteMediaAssetsIfUnreferenced` is swallowed, so the blob stays behind with no database row. Nothing cleans these up yet.
-- `backend/.env.example` still sets `MAX_UPLOAD_BYTES=5242880` and lacks `STORAGE_DRIVER` and `BLOB_READ_WRITE_TOKEN`; `backend/README.md` has the same 5 MB value and an env table without the new variables. Plan steps 3.6 and 3.8 update them.
+- Setting `CORS_ORIGIN` to an empty string (for example `CORS_ORIGIN=` in Vercel) fails the URL check in `env.ts` and exits at startup. Leave the variable unset to turn CORS off, as the cloud deployment does.
 - `backend/docs/ARCHITECTURE.md` and `backend/docs/DATA-FLOWS.md` still describe `ensureUploadDir` and local-only media storage. Plan step 3.8 updates them.

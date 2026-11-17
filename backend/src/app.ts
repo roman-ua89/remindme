@@ -34,12 +34,14 @@ export async function createApp() {
         }),
     );
 
-    app.use(
-        cors({
-            origin: env.CORS_ORIGIN,
-            credentials: true,
-        }),
-    );
+    if (env.CORS_ORIGIN) {
+        app.use(
+            cors({
+                origin: env.CORS_ORIGIN,
+                credentials: true,
+            }),
+        );
+    }
 
     app.use(express.json({ limit: '2mb' }));
     app.use(cookieParser());
@@ -54,7 +56,7 @@ export async function createApp() {
 
     const api = express.Router();
     api.get('/health', (_req, res) => {
-        res.json({ status: 'ok', commit: process.env.APP_COMMIT_SHA ?? 'local' });
+        res.json({ status: 'ok', commit: env.APP_COMMIT_SHA });
     });
     api.use('/activity', activityRoutes);
     api.use('/auth', authRoutes);

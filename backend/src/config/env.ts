@@ -9,11 +9,13 @@ const envSchema = z
         DATABASE_URL: z.string().min(1),
         JWT_SECRET: z.string().min(16),
         JWT_EXPIRES_IN: z.string().default(SESSION_MAX_AGE_JWT),
-        CORS_ORIGIN: z.string().url(),
+        DIRECT_URL: z.string().min(1).optional(),
+        CORS_ORIGIN: z.string().url().optional(),
         UPLOAD_DIR: z.string().default('./uploads'),
         MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(4_194_304),
         STORAGE_DRIVER: z.enum(['local', 'vercel-blob']).default('local'),
         BLOB_READ_WRITE_TOKEN: z.string().optional(),
+        APP_COMMIT_SHA: z.string().default('local'),
     })
     .superRefine((value, ctx) => {
         if (value.STORAGE_DRIVER === 'vercel-blob' && !value.BLOB_READ_WRITE_TOKEN) {
