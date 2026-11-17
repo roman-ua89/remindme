@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
@@ -9,6 +8,7 @@ import { badRequest } from '../../lib/errors.js';
 import { prisma } from '../../lib/prisma.js';
 import { env } from '../../config/env.js';
 import { mediaUrl } from '../../lib/media-url.js';
+import { storage } from '../../lib/storage.js';
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
@@ -28,10 +28,6 @@ function toMediaAssetDto(asset: {
     };
 }
 
-export async function ensureUploadDir() {
-    await fs.mkdir(env.UPLOAD_DIR, { recursive: true });
-}
-
 export async function uploadMedia(user: AuthUser, file: Express.Multer.File): Promise<MediaAsset> {
     if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
         throw badRequest('Unsupported file type');
@@ -41,13 +37,8 @@ export async function uploadMedia(user: AuthUser, file: Express.Multer.File): Pr
         throw badRequest('File is too large');
     }
 
-    await ensureUploadDir();
-
     const extension = path.extname(file.originalname) || '';
-    const storageKey = `${crypto.randomUUID()}${extension}`;
-    const destination = path.join(env.UPLOAD_DIR, storageKey);
-
-    await fs.writeFile(destination, file.buffer);
+    const storageKey = await storage.save(`${crypto.randomUUID()}${extension}`, file.buffer, file.mimetype);
 
     const asset = await prisma.mediaAsset.create({
         data: {
@@ -71,10 +62,9 @@ export async function getMediaFile(storageKey: string) {
         return null;
     }
 
-    const filePath = path.join(env.UPLOAD_DIR, storageKey);
     return {
         asset,
-        filePath,
+        file: await storage.read(storageKey),
     };
 }
 
@@ -100,8 +90,7 @@ export async function deleteMediaAssetsIfUnreferenced(mediaAssetIds: string[]) {
             continue;
         }
 
-        const filePath = path.join(env.UPLOAD_DIR, asset.storageKey);
-        await fs.unlink(filePath).catch(() => undefined);
+        await storage.delete(asset.storageKey).catch(() => undefined);
 
         await prisma.mediaAsset.delete({ where: { id: mediaAssetId } });
     }
