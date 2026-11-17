@@ -322,7 +322,7 @@ One module: `src/lib/api-client.ts`
 ```typescript
 // Conceptual structure — implement when scaffolding
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL ?? '/api/v1',
   withCredentials: true,
 });
 ```
@@ -938,7 +938,7 @@ Prisma maps [DATABASE.md](DATABASE.md) tables 1:1:
 
 **Migrations:** `prisma migrate dev` in development; `prisma migrate deploy` in production.
 
-**Seed:** `prisma/seed.ts` inserts roles, permissions, and default role→permission mappings from DATABASE.md §5.
+**Seed:** `prisma/seed-base.ts` inserts roles, permissions, and default role→permission mappings from DATABASE.md §5; `prisma/seed-dev.ts` adds the dev admin user.
 
 **Constraints:** enforce block position range (0–19), type-specific nullability, and unique `(entityId, position)` in Prisma schema and/or SQL migrations where Prisma checks are insufficient.
 
@@ -992,11 +992,11 @@ Grouped by [PRODUCT.md](PRODUCT.md) flows. Exact paths and DTOs are defined in `
 
 1. Client sends multipart file → **Multer** parses upload
 2. Validate mime type and size limits
-3. Store binary in **S3-compatible object storage**; persist metadata in `media_assets`
+3. Store binary through the storage driver (`lib/storage.ts`): **local** disk under `UPLOAD_DIR`, or **Vercel Blob** (`vercel-blob`); persist metadata in `media_assets`
 4. Image blocks reference `media_asset_id`
-5. Orphan cleanup when blocks are removed (application concern; no background queue in v1)
+5. Assets are deleted with their entity when no block still references them; removing or replacing blocks leaves orphan rows (no background queue in v1)
 
-For local development, a **filesystem storage adapter** is acceptable before wiring S3.
+`STORAGE_DRIVER` selects the driver: `local` (default) or `vercel-blob`.
 
 ### 15.8 OpenAPI
 
@@ -1015,9 +1015,9 @@ JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:5173
 ```
 
-**npm scripts (when scaffolded):** `dev`, `build`, `start`, `db:migrate`, `db:seed`, `db:studio`, `test`.
+**npm scripts (when scaffolded):** `dev`, `build`, `start`, `db:migrate`, `db:seed:base`, `db:seed:dev`, `db:studio`, `test`.
 
-Frontend points at the API via **`VITE_API_URL=http://localhost:3000/api/v1`**.
+The frontend calls the relative **`/api/v1`** when `VITE_API_URL` is unset; the Vite dev server proxies `/api` to `http://localhost:3000`. Set `VITE_API_URL` only when the API is on another origin.
 
 ### 15.10 Backend folder structure
 
@@ -1026,10 +1026,11 @@ backend/
   prisma/
     schema.prisma
     migrations/
-    seed.ts
+    seed-base.ts
+    seed-dev.ts
   src/
-    app.ts                 # Express app — middleware, routes
-    server.ts              # listen()
+    app.ts                 # Express app — middleware, routes; default export is the Vercel handler
+    server.ts              # local dev only: listen()
     config/
       env.ts               # Zod-validated env
     lib/
@@ -1082,7 +1083,6 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 | Admin panel | Settings, layout, and permissions UX | Deferred — not defined for now |
 | Charts (statistics) | Recharts or TanStack Charts | TBD |
 | Frontend testing | Vitest + React Testing Library | Vitest unit tests for pure utils and contract schemas (step 1.4); no React component tests yet |
-| Object storage provider | S3-compatible (AWS S3, MinIO, etc.) | TBD |
 | Email provider | Transactional email for password reset | TBD |
 | Package manager | pnpm or npm workspaces | TBD |
 

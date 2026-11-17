@@ -26,8 +26,9 @@ docker compose up -d
 # 3. Run migrations
 npm run db:migrate
 
-# 4. Seed roles, permissions, and dev admin user
-npm run db:seed
+# 4. Seed roles, permissions, and the dev admin user
+npm run db:seed:base
+npm run db:seed:dev
 ```
 
 ## Environment variables
@@ -75,10 +76,11 @@ npm run db:migrate -w backend
 ### Seed data
 
 ```bash
-npm run db:seed
+npm run db:seed:base   # roles and permissions
+npm run db:seed:dev    # dev admin account (refuses to run when NODE_ENV=production)
 ```
 
-Seeds roles (`user`, `admin`), permissions, and a dev admin account:
+`db:seed:base` seeds roles (`user`, `admin`) and permissions. `db:seed:dev` seeds a dev admin account:
 
 - **Email:** `admin@remindme.local`
 - **Password:** `admin12345`
@@ -130,8 +132,8 @@ backend/
     lib/            # prisma, errors, jwt
     middleware/     # auth, validate, error handling
     modules/        # domain routes + services
-    app.ts          # Express app setup
-    server.ts       # entry point
+    app.ts          # Express app setup; default export is the Vercel handler
+    server.ts       # local dev entry point (listens on PORT)
   docker-compose.yml
 ```
 
@@ -139,6 +141,6 @@ backend/
 
 **Docker not running** — `docker compose up -d` fails if the Docker daemon is not started.
 
-**Port 3000 in use** — change `PORT` in `.env` and update `VITE_API_URL` in the frontend `.env` to match.
+**Port 3000 in use** — change `PORT` in `.env` and the `/api` proxy target in `frontend/vite.config.ts` to match. Leave `VITE_API_URL` unset in the frontend `.env`.
 
 **Migration drift** — after editing `prisma/schema.prisma`, run `npm run db:migrate` to create and apply a new migration.

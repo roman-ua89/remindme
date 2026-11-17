@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -79,30 +78,7 @@ async function main() {
         }
     }
 
-    const adminRole = roles.find((role) => role.code === 'admin');
-    if (adminRole) {
-        const adminEmail = 'admin@remindme.local';
-        const existingAdmin = await prisma.user.findUnique({
-            where: { email: adminEmail },
-        });
-
-        if (!existingAdmin) {
-            const passwordHash = await bcrypt.hash('admin12345', 12);
-            const adminUser = await prisma.user.create({
-                data: {
-                    email: adminEmail,
-                    passwordHash,
-                    displayName: 'Admin',
-                    userRoles: {
-                        create: { roleId: adminRole.id },
-                    },
-                },
-            });
-            console.log(`Seeded admin user: ${adminUser.email}`);
-        }
-    }
-
-    console.log('Seed completed');
+    console.log('Base seed completed');
 }
 
 main()

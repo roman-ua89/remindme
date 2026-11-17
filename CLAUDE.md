@@ -34,7 +34,7 @@ npm workspaces monorepo (Node `^24`, install from the repo root only):
 | Package | Path | Stack |
 |---------|------|-------|
 | `remindme` (frontend) | `frontend/` | Vite + React 19 SPA, TanStack Router (file-based) + TanStack Query, shadcn/ui on `@base-ui/react`, Tailwind v4, react-hook-form + Zod, Axios |
-| `@remindme/backend` | `backend/` | Express 5, Prisma 6 + PostgreSQL, JWT in httpOnly cookie, multer uploads to local disk |
+| `@remindme/backend` | `backend/` | Express 5, Prisma 6 + PostgreSQL, JWT in httpOnly cookie, multer uploads to a storage driver (local disk or Vercel Blob) |
 | `@remindme/contracts` | `packages/contracts/` | Shared Zod schemas + inferred DTO types (wire format). Consumed as TS source via `exports` subpaths, e.g. `@remindme/contracts/entities` — no build step |
 
 ## Commands
@@ -49,7 +49,8 @@ npm run dev:frontend              # vite, http://localhost:5173
 docker compose up -d              # local Postgres (backend/docker-compose.yml)
 npm run db:migrate                # prisma migrate dev — also use after editing schema.prisma
 npm run db:generate               # regenerate Prisma client
-npm run db:seed                   # roles, permissions, dev admin admin@remindme.local / admin12345
+npm run db:seed:base              # roles, permissions
+npm run db:seed:dev               # dev admin admin@remindme.local / admin12345
 npm run db:studio
 
 # Frontend (run in frontend/)
@@ -64,7 +65,7 @@ npx tsc --noEmit                  # type-check (vite build does not type-check)
 npm run build -w backend          # tsc → backend/dist
 ```
 
-Env: copy `backend/.env.example` → `backend/.env` (`JWT_SECRET` ≥16 chars required; `CORS_ORIGIN` must match the Vite origin) and `frontend/.env.example` → `frontend/.env` (`VITE_API_URL`). Swagger UI at `/api/docs` in development (spec hand-written in `backend/src/openapi/spec.ts`).
+Env: copy `backend/.env.example` → `backend/.env` (`JWT_SECRET` ≥16 chars required; `CORS_ORIGIN` must match the Vite origin) and `frontend/.env.example` → `frontend/.env` (leave `VITE_API_URL` unset: the app then calls the relative `/api/v1`, which the Vite `/api` proxy forwards to `localhost:3000`). Swagger UI at `/api/docs` in development (spec hand-written in `backend/src/openapi/spec.ts`).
 
 ## Architecture
 
@@ -94,7 +95,7 @@ Some frontend docs describe planned files that don't exist yet (e.g. `stores/`, 
 - Routes are nested to mirror the hierarchy: `/categories/:categoryId/topics/:topicId/entities/...`. `entities-flat.routes.ts` exposes entities outside that nesting; `player` exposes `POST /player/batch` (samples lowest-`scheduleCount` entities in a scope — `revisedCount` plus a creation offset so new entities join the current tier, see `getInitialScheduleCount`); Done/Skip are `PATCH …/entities/:id/revise` and `…/skip`; they also upsert-increment `user_daily_activity` (per user, per local day from the `X-Timezone` header — `lib/daily-activity.ts`), read by `GET /activity/daily?month=YYYY-MM` for the Home chart.
 - Authorization is three layers: `middleware/auth.ts` (cookie `remindme_token` → `req.user` with roles+permissions from the JWT) → `requirePermission('content:manage_own' | 'users:manage' …)` → `lib/ownership.ts` (row belongs to user, or `content:manage_any`).
 - Errors: throw helpers from `lib/errors.ts` (`notFound`, `conflict`, `validationError`…); `middleware/error-handler.ts` produces the `ApiError` JSON shape from contracts. `validate()` replaces `req.body/params/query` with parsed values.
-- Entity save is a `prisma.$transaction` across `entities`, `entity_blocks`, `list_block_rows`, referencing `media_assets`. Media: upload writes to `UPLOAD_DIR`, blocks store `mediaAssetId`, responses carry `mediaUrl` (`lib/media-url.ts`).
+- Entity save is a `prisma.$transaction` across `entities`, `entity_blocks`, `list_block_rows`, referencing `media_assets`. Media: uploads go through the storage driver (`lib/storage.ts`: `local` writes to `UPLOAD_DIR`, `vercel-blob` stores the blob URL), blocks store `mediaAssetId`, responses carry `mediaUrl` (`lib/media-url.ts`).
 - Modules should not import each other's services; share via `lib/` or contracts.
 
 ### Frontend (`frontend/src`)
