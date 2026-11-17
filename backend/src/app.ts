@@ -53,6 +53,9 @@ export async function createApp() {
     }
 
     const api = express.Router();
+    api.get('/health', (_req, res) => {
+        res.json({ status: 'ok', commit: process.env.APP_COMMIT_SHA ?? 'local' });
+    });
     api.use('/activity', activityRoutes);
     api.use('/auth', authRoutes);
     api.use('/categories', categoriesRoutes);
