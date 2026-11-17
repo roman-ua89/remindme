@@ -73,7 +73,7 @@ jobs:
         run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
 
       - name: Seed base data (first run)
-        run: npm run db:seed -w backend
+        run: npm run db:seed:base -w backend
 
       - name: Seed base data (second run, must be idempotent)
-        run: npm run db:seed -w backend
+        run: npm run db:seed:base -w backend

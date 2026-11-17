@@ -29,7 +29,7 @@ flowchart TB
     subgraph outside [Outside the backend]
         Browser["React SPA<br/>(frontend)"]
         PG[(PostgreSQL)]
-        Disk["Local disk<br/>(uploads/)"]
+        Disk["Media storage<br/>(local uploads/ or Vercel Blob)"]
     end
 
     subgraph monorepo [Monorepo]
@@ -66,15 +66,15 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    participant Node as node server.ts
+    participant Node as node server.ts for local dev
     participant App as createApp()
-    participant Media as media.service
+    participant Storage as lib/storage.ts
     participant Express as Express app
     participant Routes as module routers
 
     Node->>App: createApp()
-    App->>Media: ensureUploadDir()
-    App->>Express: cors, json, cookies, logging
+    App->>Storage: storage.ensureReady()
+    App->>Express: logging, cors (if CORS_ORIGIN), json, cookies
     App->>Routes: mount /api/v1/auth, /categories, …
     App->>Express: register errorHandler (last)
     Node->>Express: listen(PORT)
@@ -82,8 +82,8 @@ sequenceDiagram
 
 | File | Responsibility |
 |------|----------------|
-| [`server.ts`](../src/server.ts) | Entry point — creates the app and starts listening |
-| [`app.ts`](../src/app.ts) | Wires global middleware, mounts all route modules under `/api/v1`, attaches error handler |
+| [`server.ts`](../src/server.ts) | Local dev entry point (`npm run dev`, `npm start`) — creates the app and calls `listen()`; not used on Vercel |
+| [`app.ts`](../src/app.ts) | Wires global middleware, mounts all route modules under `/api/v1`, attaches error handler; default export is the Vercel function handler |
 | [`config/env.ts`](../src/config/env.ts) | Validates `process.env` with Zod at startup (fails fast if misconfigured) |
 
 Route mounting in `app.ts` defines the **URL tree**:
@@ -132,7 +132,7 @@ flowchart TB
 
     subgraph L5 [Layer 5 — Persistence]
         DB[(PostgreSQL)]
-        Files["uploads/"]
+        Files["media files<br/>(uploads/ or Vercel Blob)"]
     end
 
     Routes --> Validate
@@ -203,7 +203,7 @@ If anything fails, the route calls `next(error)` and Express jumps to `errorHand
 
 On a protected route, the typical chain is:
 
-1. **Global** (in `app.ts`): CORS → `express.json()` → `cookieParser()` → logging
+1. **Global** (in `app.ts`): request logging (`pino-http`) → CORS (only when `CORS_ORIGIN` is set) → `express.json()` → `cookieParser()`
 2. **Router-level** (in `*.routes.ts`): `auth` → `requirePermission(...)`
 3. **Per-route**: `validate({ body, params, query })`
 4. **Handler**: call service → `res.json(...)`
@@ -520,7 +520,7 @@ flowchart LR
 
     subgraph stores [Stores]
         PG[(PostgreSQL)]
-        FS["uploads/"]
+        FS["media files<br/>(uploads/ or Vercel Blob)"]
     end
 
     UI --> HTTP --> Val --> AuthZ --> Svc
@@ -548,15 +548,15 @@ flowchart LR
 
 | Step | Where |
 |------|--------|
-| Upload `POST /media/upload` | File bytes → `uploads/<storageKey>` on disk; metadata → `media_assets` table |
-| Reference in entity | Entity block stores `mediaAssetId`; response includes `mediaUrl: /api/v1/media/files/:storageKey` |
-| Serve `GET /media/files/:storageKey` | Lookup in DB → `res.sendFile` from disk |
+| Upload `POST /media/upload` | File bytes → storage driver (`lib/storage.ts`): `local` writes `uploads/<storageKey>`, `vercel-blob` uploads a public blob and keeps its URL as `storageKey`; metadata → `media_assets` table |
+| Reference in entity | Entity block stores `mediaAssetId`; response includes `mediaUrl` (`lib/media-url.ts`): `/api/v1/media/files/:storageKey` for local keys, the blob URL unchanged for `vercel-blob` |
+| Serve `GET /media/files/:storageKey` | Lookup in DB → `res.sendFile` from disk (`local`) or redirect to the blob URL (`vercel-blob`) |
 
 ```mermaid
 sequenceDiagram
     participant FE as Frontend
     participant Med as media module
-    participant Disk as uploads/
+    participant Disk as storage driver
     participant DB as PostgreSQL
     participant Ent as entities module
 
@@ -628,15 +628,17 @@ backend/
   prisma/
     schema.prisma       # DB tables (source of truth with DATABASE.md)
     migrations/         # SQL migration history
-    seed.ts               # roles, permissions, dev admin
+    seed-base.ts          # roles, permissions
+    seed-dev.ts           # dev admin
   src/
-    server.ts             # start listening
-    app.ts                # Express wiring + route mounts
+    server.ts             # local dev: start listening
+    app.ts                # Express wiring + route mounts; default export is the Vercel handler
     config/env.ts         # validated environment
     lib/
       prisma.ts           # singleton PrismaClient
       errors.ts           # AppError + helpers
       jwt.ts              # sign/verify JWT, cookie name
+      storage.ts          # media storage driver: local disk or Vercel Blob (STORAGE_DRIVER)
       ownership.ts        # getCategory/Topic/EntityForUser + getTopicByIdForUser
     middleware/
       auth.ts             # cookie → req.user

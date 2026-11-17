@@ -19,7 +19,8 @@
     "build": "npm run build -w frontend && npm run build -w backend",
     "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build",
     "db:migrate": "npm run db:migrate -w backend",
-    "db:seed": "npm run db:seed -w backend",
+    "db:seed:base": "npm run db:seed:base -w backend",
+    "db:seed:dev": "npm run db:seed:dev -w backend",
     "db:studio": "npm run db:studio -w backend"
   },
   "devDependencies": {

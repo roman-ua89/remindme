@@ -54,7 +54,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
 
-**Not implemented:** delete user, create user (admin), change email, verify email, reorder (`position` update), delete media asset, RBAC admin CRUD, password-reset token cleanup.
+**Not implemented:** delete user, create user (admin), change email, verify email, reorder (`position` update), delete media asset (no standalone endpoint; assets are deleted only with their entity), RBAC admin CRUD, password-reset token cleanup.
 
 ---
 
@@ -348,8 +348,9 @@ VALUES (gen_random_uuid(), '<topic_id>', 'My Entity', 0, 0, 0, <min_schedule_cou
 | `entities` | DELETE | row by `id` |
 | `entity_blocks` | CASCADE DELETE | all blocks for entity |
 | `list_block_rows` | CASCADE DELETE | all rows for those blocks |
+| `media_assets` | DELETE | app code, only when no block references it; stored file removed by the storage driver |
 
-**Note:** `entity_blocks.media_asset_id` uses `ON DELETE SET NULL` on `media_assets` — deleting an entity does **not** delete the media asset row.
+**Note:** Image assets are deleted with their entity. `deleteEntity()` collects the entity's `media_asset_id` values before the delete, then calls `deleteMediaAssetsIfUnreferenced()`: for each asset that no block still references, it removes the stored file through the storage driver and deletes the `media_assets` row. The `entity_blocks.media_asset_id` foreign key (`ON DELETE SET NULL`) only clears references; it does not delete assets.
 
 ---
 
@@ -548,21 +549,21 @@ VALUES (gen_random_uuid(), '<block_id>', 0, 'Term', 'Definition');
 |-------|-----------|-------------|
 | `media_assets` | INSERT | `user_id`, `storage_key`, `mime_type`, `byte_size`, `original_filename` |
 
-**Side effect (not DB):** file written to disk at `UPLOAD_DIR/<storage_key>`.
+**Side effect (not DB):** bytes saved through the storage driver (`lib/storage.ts`): `local` writes `UPLOAD_DIR/<storage_key>`; `vercel-blob` uploads a public blob and stores its URL as `storage_key`.
 
 ```sql
 INSERT INTO media_assets (id, user_id, storage_key, mime_type, byte_size, original_filename, created_at)
 VALUES (gen_random_uuid(), '<user_id>', '<uuid>.png', 'image/png', 12345, 'photo.png', now());
 ```
 
-**Not implemented:** delete media asset. Orphan `media_assets` rows can remain after entity block replacement or entity deletion.
+**Delete:** only on entity deletion, via `deleteMediaAssetsIfUnreferenced()`: when no block still references an asset, it deletes the stored file through the storage driver, then the row. A failed storage delete is ignored, so a file can remain with no row. Block replacement does not delete assets, so orphan `media_assets` rows can remain there.
 
 ---
 
 ### 3.7 Seed (dev/bootstrap only)
 
-- **Script:** [prisma/seed.ts](../prisma/seed.ts)
-- **Trigger:** `npm run db:seed` (not an HTTP API)
+- **Scripts:** [prisma/seed-base.ts](../prisma/seed-base.ts) (roles, permissions) and [prisma/seed-dev.ts](../prisma/seed-dev.ts) (dev admin)
+- **Trigger:** `npm run db:seed:base` and `npm run db:seed:dev` (not an HTTP API)
 
 | Step | Table | Operation | Columns set |
 |------|-------|-----------|-------------|
@@ -610,6 +611,7 @@ flowchart TD
 | `categories` | `topics` | **RESTRICT** (app also blocks if topics exist) |
 | `topics` | `entities` → `entity_blocks` → `list_block_rows` | CASCADE chain |
 | `entities` | `entity_blocks` → `list_block_rows` | CASCADE chain |
+| `entities` (app code, after the delete) | `media_assets` + stored file, only when no block references them | app-level, not FK |
 | `entity_blocks` | `list_block_rows` | CASCADE |
 | `entities` / `topics` / `categories` | `user_daily_activity` is **not** affected — history is per user, not per entity | — |
 | `media_assets` | `entity_blocks.media_asset_id` | SET NULL (block kept, reference cleared) |
@@ -778,7 +780,7 @@ Future per-day metrics: add counter columns (default `0`) and increment them in 
 | Change email | `users.email` |
 | Verify email | `users.email_verified_at` |
 | Reorder categories/topics/entities | `categories.position`, `topics.position`, `entities.position` |
-| Delete media asset | `media_assets` (+ disk file) |
+| Delete media asset | `media_assets` (+ stored file); no endpoint, assets are deleted only with their entity today |
 | Password reset token cleanup | `password_reset_tokens` |
 | RBAC management | `roles`, `permissions`, `role_permissions` |
 
@@ -800,5 +802,6 @@ backend/src/modules/categories/categories.service.ts
 backend/src/modules/topics/topics.service.ts
 backend/src/modules/entities/entities.service.ts
 backend/src/modules/media/media.service.ts
-backend/prisma/seed.ts
+backend/prisma/seed-base.ts
+backend/prisma/seed-dev.ts
 ```

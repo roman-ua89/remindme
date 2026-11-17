@@ -94,7 +94,7 @@ flowchart TB
 
 ## 3. Backend architecture
 
-Auth endpoints are mounted at `/api/v1/auth` in `backend/src/app.ts`. CORS is configured with `credentials: true` so the browser may send cookies cross-origin (dev: `localhost:5173` → `localhost:3000`).
+Auth endpoints are mounted at `/api/v1/auth` in `backend/src/app.ts`. CORS is configured with `credentials: true` so the browser may send cookies cross-origin. In dev that only happens when `VITE_API_URL` points at the API (`localhost:5173` → `localhost:3000`); by default the Vite `/api` proxy makes the calls same-origin.
 
 ```mermaid
 flowchart TB
@@ -364,6 +364,6 @@ Content-Type: application/json
 ## 9. Local development checklist
 
 1. Backend running on `http://localhost:3000` with `CORS_ORIGIN=http://localhost:5173`.
-2. Frontend `VITE_API_URL` defaults to `http://localhost:3000/api/v1` (see `lib/api-client.ts`).
+2. Frontend `VITE_API_URL` is unset by default, so the app calls the relative `/api/v1`, which the Vite dev server proxies to `http://localhost:3000` (see `lib/api-client.ts` and `vite.config.ts`).
 3. Browser must allow third-party cookies only if origins differ; same-site `lax` works for typical dev setup.
 4. JWT secret and expiry configured in backend `.env` (`JWT_SECRET`, `JWT_EXPIRES_IN`).

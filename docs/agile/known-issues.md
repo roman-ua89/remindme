@@ -18,8 +18,8 @@
 - `vercel build` lists the Prisma engine (`libquery_engine-rhel-openssl-3.0.x.so.node`) in the backend function's `.vc-config.json` `filePathMap`, but does not copy it into `.vercel/output`; only the experimental `vercel build --standalone` does. Whether the engine loads on Vercel's runtime is unverified until the Phase 4 deploy.
 - The schema's `directUrl = env("DIRECT_URL")` means `prisma migrate dev` and `prisma validate` fail on a local `backend/.env` without a `DIRECT_URL` line (copy `DATABASE_URL`).
 - The Vite `/api` proxy target is hardcoded to `http://localhost:3000` (`frontend/vite.config.ts`), but the backend reads `PORT`. If `PORT` changes, change the proxy target too. A `VITE_API_URL` line in a local `frontend/.env` overrides the relative default, so dev skips the proxy until that line is removed.
-- These still describe `VITE_API_URL` as the dev default: `frontend/docs/AUTH.md`, `frontend/docs/TECH_STACK.md`, `backend/README.md` and `CLAUDE.md`. Plan step 3.8 updates them.
 - The `vercel-blob` storage driver has no tests and has not run against Vercel Blob. Its first real check is the Phase 4 deploy.
 - A failed `del` in `deleteMediaAssetsIfUnreferenced` is swallowed, so the blob stays behind with no database row. Nothing cleans these up yet.
 - Setting `CORS_ORIGIN` to an empty string (for example `CORS_ORIGIN=` in Vercel) fails the URL check in `env.ts` and exits at startup. Leave the variable unset to turn CORS off, as the cloud deployment does.
-- `backend/docs/ARCHITECTURE.md` and `backend/docs/DATA-FLOWS.md` still describe `ensureUploadDir` and local-only media storage. Plan step 3.8 updates them.
+- `seed-dev` refuses to run when `NODE_ENV=production`, but it reads `NODE_ENV` from the shell only: the seed does not load `backend/.env`, so `NODE_ENV=production` written in that file does not stop it.
+- `prisma.seed` (run by `prisma migrate reset`) chains `npm run db:seed:base && npm run db:seed:dev`. This is not tested, because `migrate reset` drops the database.
