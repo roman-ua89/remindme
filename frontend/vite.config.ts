@@ -10,6 +10,12 @@ const config = defineConfig({
     envDir: '.',
     resolve: { tsconfigPaths: true },
     plugins: [devtools(), tailwindcss(), tanstackRouter({ target: 'react', autoCodeSplitting: true }), viteReact()],
+    server: {
+        // Same-origin in dev: the browser calls /api/v1 on the Vite origin and Vite forwards it to the Express API.
+        proxy: {
+            '/api': { target: 'http://localhost:3000', changeOrigin: true },
+        },
+    },
 });
 
 export default config;
