@@ -21,5 +21,5 @@ description: Drafts a git commit message for a task the orchestrator has accepte
 2. Take the task from the orchestrator's briefs and `reviewer`'s report. Run `git status --porcelain` only to list the files to stage. Files not part of this task go in your reply, not in the commit.
 3. Write the draft to `.git/commit-message-draft.txt` (inside `.git/`, so it is never tracked) and show it in your reply.
 4. End the turn with `wrap_up`. The `commit` action is the commit button, and the question is short, for example "Make this commit?". The user may instead edit the file or ask for changes; wait for them.
-5. When the user clicks commit: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push. Then run the `merge-branch` skill.
+5. When the user clicks commit: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push. Then run the `push-commit` skill.
 6. **Branches:** this skill never creates one. Commit on the branch that is checked out. Do not run `git switch -c`, `git checkout -b` or `git branch <name>`. The `create-branch` skill makes the task's branch at the start of the task.

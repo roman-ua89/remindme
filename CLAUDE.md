@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
   Never take or execute a task whose title starts with `Done`; treat it as finished.
 - End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
-- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, and commits only when I click it. Then run the `merge-branch` skill: it offers, in a dialog, to merge the branch into `dev`, push `dev` and delete the branch. It does that only when I choose it.
+- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, and commits only when I click it. Then run the `push-commit` skill: it offers, in a dialog, to push the task branch to origin. It never pushes `dev` and never merges; the pull request into `dev` is opened on GitHub, and I merge it once its checks are green.
 
 ## Project
 

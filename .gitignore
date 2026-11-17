@@ -8,3 +8,5 @@ uploads/
 .idea
 /docs/agentic-cicd-plan.md
 .vercel/
+.vercel
+.env*

@@ -26,8 +26,8 @@ flowchart TD
     K --> L[List of discrepancies<br/>or 'No discrepancies']
     L --> M[Orchestrator appends to<br/>docs/agile/progress.md<br/>decisions.md / known-issues.md]
     M --> CM[commit-message skill<br/>draft + commit button]
-    CM --> MB[merge-branch skill<br/>dialog: merge, push dev and delete branch, or not yet]
-    MB --> N([Task done])
+    CM --> PC[push-commit skill<br/>dialog: push the task branch, or not yet]
+    PC --> N([Task done])
     N -.-> O[/reflect skill<br/>on user request/]
     O -.-> P[Proposes minimal edits to<br/>CLAUDE.md / agents / known-issues.md<br/>applied only after approval]
 ```

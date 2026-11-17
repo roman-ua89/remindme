@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
@@ -66,4 +68,20 @@ export async function createApp() {
     app.use(errorHandler);
 
     return app;
+}
+
+// Vercel Function handler: one app per function instance, reused by later requests to that instance.
+let appPromise: ReturnType<typeof createApp> | undefined;
+
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
+    appPromise ??= createApp();
+    let app: Awaited<ReturnType<typeof createApp>>;
+    try {
+        app = await appPromise;
+    } catch (error) {
+        // Do not cache a failed start-up: the next request retries createApp().
+        appPromise = undefined;
+        throw error;
+    }
+    return app(req, res);
 }
