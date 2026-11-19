@@ -6,7 +6,7 @@ Express REST API for RemindMe. Uses Prisma + PostgreSQL, JWT auth (httpOnly cook
 
 ## Prerequisites
 
-- Node.js `^24`
+- Node.js `^26`
 - Docker (for local PostgreSQL)
 - Dependencies installed from the **repo root**:
 
