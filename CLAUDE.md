@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 RemindMe is a spaced-revision app: users build a **Category → Topic → Entity** hierarchy, where an entity is a title plus up to 20 ordered blocks (Text/TipTap, Code/CodeMirror, Image, List, Link). The **Player** (`/player`) serves entities one at a time for revision; Done/Skip bump `revisedCount`/`skippedCount`.
 
-npm workspaces monorepo (Node `^24`, install from the repo root only):
+npm workspaces monorepo (Node `^26`, install from the repo root only):
 
 | Package | Path | Stack |
 |---------|------|-------|
