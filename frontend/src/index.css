@@ -33,6 +33,7 @@
     --accent-foreground: #2e2620;
     --destructive: #a33f33;
     --destructive-soft: #f7e3df;
+    --destructive-soft-hover: #f4d6d0;
     --border: #e9e1d4;
     --input: #dcd2c3;
     --ring: #a65d45;
@@ -47,9 +48,9 @@
     --sidebar-ring: var(--ring);
 
     /* actions */
-    --positive: #5e9a47;
+    --positive: #50833c;
     --positive-foreground: #ffffff;
-    --positive-hover: #4c8a35;
+    --positive-hover: #41752d;
     --positive-disabled: #c3dbb6;
     --positive-checked: #6fae52;
     --info: #eef5fb;
@@ -61,7 +62,7 @@
     --reveal-foreground: #ffffff;
     --reveal-hover: #2f5f8f;
     --stop: #fdede8;
-    --stop-foreground: #b54c36;
+    --stop-foreground: #aa4733;
     --stop-border: #f5cbbf;
     --stop-hover: #fbe0d8;
     --stop-border-hover: #efb3a3;
@@ -156,6 +157,7 @@ body {
     --color-accent-foreground: var(--accent-foreground);
     --color-destructive: var(--destructive);
     --color-destructive-soft: var(--destructive-soft);
+    --color-destructive-soft-hover: var(--destructive-soft-hover);
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);

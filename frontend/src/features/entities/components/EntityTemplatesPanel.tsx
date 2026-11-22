@@ -79,7 +79,7 @@ export function EntityTemplatesPanel({
             </div>
             {isAtLimit ? <p className='text-sm text-muted-foreground'>Maximum {MAX_ENTITY_BLOCKS} blocks reached</p> : null}
             {entityId && (
-                <Button variant='softBlue' onClick={togglePreviewMode}>
+                <Button variant='secondary' onClick={togglePreviewMode}>
                     <Layers2 /> Preview
                 </Button>
             )}

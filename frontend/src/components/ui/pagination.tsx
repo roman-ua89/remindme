@@ -43,7 +43,7 @@ function PaginationLink({ className, isActive, size = 'icon', ...props }: Pagina
 
 function PaginationPrevious({ className, text = 'Previous', ...props }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
     return (
-        <PaginationLink aria-label='Go to previous page' size='default' className={cn('pl-2!', className)} {...props}>
+        <PaginationLink aria-label='Go to previous page' size='default' className={cn('h-10 pl-2!', className)} {...props}>
             <ChevronLeftIcon data-icon='inline-start' />
             <span className='hidden sm:block'>{text}</span>
         </PaginationLink>
@@ -52,7 +52,7 @@ function PaginationPrevious({ className, text = 'Previous', ...props }: React.Co
 
 function PaginationNext({ className, text = 'Next', ...props }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
     return (
-        <PaginationLink aria-label='Go to next page' size='default' className={cn('pr-2!', className)} {...props}>
+        <PaginationLink aria-label='Go to next page' size='default' className={cn('h-10 pr-2!', className)} {...props}>
             <span className='hidden sm:block'>{text}</span>
             <ChevronRightIcon data-icon='inline-end' />
         </PaginationLink>
@@ -64,7 +64,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'
         <span
             aria-hidden
             data-slot='pagination-ellipsis'
-            className={cn("flex size-9 items-center justify-center [&_svg:not([class*='size-'])]:size-4", className)}
+            className={cn("flex size-10 items-center justify-center [&_svg:not([class*='size-'])]:size-4", className)}
             {...props}
         >
             <MoreHorizontalIcon />
