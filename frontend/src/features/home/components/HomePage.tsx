@@ -1,17 +1,13 @@
-import { useNavigate } from '@tanstack/react-router';
-
 import { AppHeader } from '@/components/layout/AppHeader';
 import { PageContainer } from '@/components/layout/PageContainer';
-import { Button } from '@/components/ui/button';
 import { DailyActivityChart } from '@/features/activity/components/DailyActivityChart';
 import { PlayerTimeChart } from '@/features/activity/components/PlayerTimeChart';
 import { useCurrentUser } from '@/features/auth/queries/use-current-user';
 import { GuestHome } from '@/features/home/components/GuestHome';
-import { LibraryStats } from '@/features/home/components/LibraryStats';
+import { TreeCard } from '@/features/home/components/TreeCard';
 
 export const HomePage = () => {
     const { data: user } = useCurrentUser();
-    const navigate = useNavigate();
     const isLoggedIn = Boolean(user);
 
     return (
@@ -19,22 +15,13 @@ export const HomePage = () => {
             <AppHeader />
 
             {isLoggedIn ? (
-                <PageContainer className='flex flex-col gap-14 py-18'>
-                    <section className='flex max-w-[720px] flex-col gap-4'>
-                        <h1 className='font-heading text-4xl leading-tight font-bold tracking-tight sm:text-[44px] sm:leading-[1.1]'>
-                            Revise what you&apos;ve learned, before you forget it.
-                        </h1>
-                        <p className='text-lg leading-relaxed text-muted-foreground'>Structure your knowledge and make it sharp.</p>
-                        <div className='mt-2'>
-                            <Button size='lg' className='h-11 px-5 font-semibold' onClick={() => navigate({ to: '/categories' })}>
-                                Open my categories
-                            </Button>
-                        </div>
-                    </section>
+                <PageContainer className='flex flex-col gap-5.5 py-7'>
+                    <TreeCard />
 
-                    <LibraryStats />
-                    <DailyActivityChart />
-                    <PlayerTimeChart />
+                    <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
+                        <DailyActivityChart />
+                        <PlayerTimeChart />
+                    </div>
                 </PageContainer>
             ) : (
                 <GuestHome />
