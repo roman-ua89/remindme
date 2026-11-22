@@ -8,9 +8,9 @@ type EmptyEntityPromptProps = {
     topicId: string;
 };
 
-export function EmptyEntityPrompt({ categoryId, topicId }: EmptyEntityPromptProps) {
+export const EmptyEntityPrompt = ({ categoryId, topicId }: EmptyEntityPromptProps) => {
     return (
-        <Empty className='border'>
+        <Empty className='rounded-2xl border bg-card'>
             <EmptyHeader>
                 <EmptyMedia variant='icon'>
                     <FileTextIcon />
@@ -23,4 +23,4 @@ export function EmptyEntityPrompt({ categoryId, topicId }: EmptyEntityPromptProp
             </EmptyContent>
         </Empty>
     );
-}
+};

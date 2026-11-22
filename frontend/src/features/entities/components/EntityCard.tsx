@@ -13,8 +13,8 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { ListRow, listRowActionClassName } from '@/components/shared/ListRow';
 import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
-import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
 import { useSetEntityVisibility } from '@/features/entities/queries/use-set-entity-visibility';
 import { PlayButton } from '@/features/player/components/PlayButton';
@@ -28,7 +28,7 @@ type EntityCardProps = {
     onRemove: (id: string) => void;
 };
 
-export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
+export const EntityCard = ({ entity, onEdit, onRemove }: EntityCardProps) => {
     const { categoryId, topicId } = useParams({
         from: '/_app/categories/$categoryId/topics/$topicId/',
     });
@@ -40,73 +40,77 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
         setRemoveDialogOpen(false);
     }
 
-    const createdAt = parseISO(entity.createdAt);
     const dateFormat = 'd-MM-yyyy';
+    const createdLabel = `Created ${format(parseISO(entity.createdAt), dateFormat)}`;
+    const meta = entity.editedAt ? `${createdLabel} · Edited ${format(parseISO(entity.editedAt), dateFormat)}` : createdLabel;
+    const isExcluded = entity.visibility === 'excluded';
 
     return (
-        <Card size='sm' className='transition-colors hover:bg-white/60'>
-            <CardHeader>
-                <CardTitle className='min-w-0'>
-                    <Link
-                        to='/categories/$categoryId/topics/$topicId/entities/$entityId'
-                        params={{ categoryId, topicId, entityId: entity.id }}
-                        className='block w-full truncate py-1'
+        <ListRow
+            title={
+                <Link to='/categories/$categoryId/topics/$topicId/entities/$entityId' params={{ categoryId, topicId, entityId: entity.id }}>
+                    {entity.title}
+                </Link>
+            }
+            meta={meta}
+            hidden={isExcluded}
+            details={
+                <>
+                    <EntityMarkerDots hidden={isExcluded} markers={entity.marker ? [entity.marker] : []} />
+                    <span className='text-sm tabular-nums text-muted-foreground'>{entity.revisedCount} revised</span>
+                    <VisibilitySwitch
+                        included={entity.visibility === 'included'}
+                        onChange={(included) =>
+                            setEntityVisibility({
+                                categoryId,
+                                topicId,
+                                entityId: entity.id,
+                                visibility: included ? 'included' : 'excluded',
+                            })
+                        }
+                        ariaLabel='Entity visibility'
+                        onTooltip='Shown in the Player'
+                        offTooltip='Hidden from the Player'
+                    />
+                </>
+            }
+            actions={
+                <>
+                    <PlayButton scope={{ type: 'entity', entityId: entity.id }} ariaLabel='Play entity' className={listRowActionClassName.play} />
+                    <Button
+                        variant='ghost'
+                        size='icon'
+                        aria-label='Edit entity'
+                        className={listRowActionClassName.edit}
+                        onClick={() => onEdit(entity.id)}
                     >
-                        {entity.title}
-                    </Link>
-                    <div className='text-gray-400 flex gap-4 text-xs font-light absolute top-7'>
-                        <span>Created: {format(createdAt, dateFormat)}</span>
-                        {entity.editedAt ? <span>Edited: {format(parseISO(entity.editedAt), dateFormat)}</span> : null}
-                    </div>
-                </CardTitle>
-                <CardAction>
-                    <div className='flex items-center gap-2'>
-                        <EntityMarkerDots hidden={entity.visibility === 'excluded'} markers={entity.marker ? [entity.marker] : []} />
-                        <span className='text-sm tabular-nums text-gray-400'>{entity.revisedCount} revised</span>
-                        <VisibilitySwitch
-                            included={entity.visibility === 'included'}
-                            onChange={(included) =>
-                                setEntityVisibility({
-                                    categoryId,
-                                    topicId,
-                                    entityId: entity.id,
-                                    visibility: included ? 'included' : 'excluded',
-                                })
+                        <PencilIcon />
+                    </Button>
+                    <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+                        <AlertDialogTrigger
+                            render={
+                                <Button variant='destructive' size='icon' className={listRowActionClassName.remove} aria-label='Remove entity'>
+                                    <Trash2Icon />
+                                </Button>
                             }
-                            ariaLabel='Entity visibility'
-                            onTooltip='Shown in the Player'
-                            offTooltip='Hidden from the Player'
                         />
-                        <PlayButton scope={{ type: 'entity', entityId: entity.id }} ariaLabel='Play entity' />
-                        <Button variant='ghost' size='icon-sm' aria-label='Edit entity' onClick={() => onEdit(entity.id)}>
-                            <PencilIcon />
-                        </Button>
-                        <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
-                            <AlertDialogTrigger
-                                render={
-                                    <Button variant='destructive' size='icon-sm' aria-label='Remove entity'>
-                                        <Trash2Icon />
-                                    </Button>
-                                }
-                            />
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove entity?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will permanently remove &ldquo;{entity.title}&rdquo;. This action cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction variant='destructive' onClick={handleRemove}>
-                                        Remove
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </CardAction>
-            </CardHeader>
-        </Card>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Remove entity?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will permanently remove &ldquo;{entity.title}&rdquo;. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
+                                <AlertDialogAction variant='destructive' onClick={handleRemove}>
+                                    Remove
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </>
+            }
+        />
     );
-}
+};

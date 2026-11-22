@@ -3,9 +3,9 @@ import { FolderOpenIcon } from 'lucide-react';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { AddCategoryPopover } from '@/features/categories/components/AddCategoryPopover';
 
-export function EmptyCategoryPrompt() {
+export const EmptyCategoryPrompt = () => {
     return (
-        <Empty className='border'>
+        <Empty className='rounded-2xl border bg-card'>
             <EmptyHeader>
                 <EmptyMedia variant='icon'>
                     <FolderOpenIcon />
@@ -18,4 +18,4 @@ export function EmptyCategoryPrompt() {
             </EmptyContent>
         </Empty>
     );
-}
+};

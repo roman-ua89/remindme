@@ -14,13 +14,13 @@ export const ENTITY_MARKER_OPTIONS: EntityMarkerOption[] = [
     {
         value: ENTITY_MARKER.needsEdit,
         label: 'Needs edit',
-        dotClassName: 'bg-blue-300',
-        pressedClassName: 'aria-pressed:border-blue-300 aria-pressed:bg-blue-50 aria-pressed:text-blue-700',
+        dotClassName: 'bg-marker-needs-edit',
+        pressedClassName: 'aria-pressed:border-marker-needs-edit aria-pressed:bg-marker-needs-edit/15 aria-pressed:text-foreground',
     },
     {
         value: ENTITY_MARKER.toRemove,
         label: 'To remove',
-        dotClassName: 'bg-red-300',
-        pressedClassName: 'aria-pressed:border-red-300 aria-pressed:bg-red-50 aria-pressed:text-red-700',
+        dotClassName: 'bg-marker-to-remove',
+        pressedClassName: 'aria-pressed:border-marker-to-remove aria-pressed:bg-marker-to-remove/15 aria-pressed:text-foreground',
     },
 ];

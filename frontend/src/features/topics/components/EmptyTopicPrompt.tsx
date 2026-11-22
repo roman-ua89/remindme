@@ -7,9 +7,9 @@ type EmptyTopicPromptProps = {
     categoryId: string;
 };
 
-export function EmptyTopicPrompt({ categoryId }: EmptyTopicPromptProps) {
+export const EmptyTopicPrompt = ({ categoryId }: EmptyTopicPromptProps) => {
     return (
-        <Empty className='border'>
+        <Empty className='rounded-2xl border bg-card'>
             <EmptyHeader>
                 <EmptyMedia variant='icon'>
                     <BookOpenIcon />
@@ -22,4 +22,4 @@ export function EmptyTopicPrompt({ categoryId }: EmptyTopicPromptProps) {
             </EmptyContent>
         </Empty>
     );
-}
+};

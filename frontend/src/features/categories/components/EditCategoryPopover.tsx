@@ -16,9 +16,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip
 
 type EditCategoryPopoverProps = {
     category: Category;
+    /** Styling of the round trigger button, e.g. the row action colours */
+    triggerClassName?: string;
 };
 
-export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
+export const EditCategoryPopover = ({ category, triggerClassName }: EditCategoryPopoverProps) => {
     const [open, setOpen] = useState(false);
     const { mutate: updateCategory, isPending } = useUpdateCategory();
     const inputId = `category-edit-name-${category.id}`;
@@ -63,7 +65,7 @@ export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
                 <TooltipTrigger render={<span className='inline-flex' />}>
                     <PopoverTrigger
                         render={
-                            <Button variant='ghost' size='icon-sm' aria-label='Edit category'>
+                            <Button variant='ghost' size='icon' aria-label='Edit category' className={triggerClassName}>
                                 <PencilIcon />
                             </Button>
                         }
@@ -73,7 +75,7 @@ export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
                     <p>Edit category name</p>
                 </TooltipContent>
             </Tooltip>
-            <PopoverContent align='end' className='w-64'>
+            <PopoverContent align='end' className='w-64 rounded-2xl'>
                 <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller
                         control={control}
@@ -98,4 +100,4 @@ export function EditCategoryPopover({ category }: EditCategoryPopoverProps) {
             </PopoverContent>
         </Popover>
     );
-}
+};

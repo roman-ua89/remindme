@@ -14,7 +14,7 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
+import { ListRow, listRowActionClassName } from '@/components/shared/ListRow';
 import { EditCategoryPopover } from '@/features/categories/components/EditCategoryPopover';
 import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
 import { PlayButton } from '@/features/player/components/PlayButton';
@@ -26,7 +26,7 @@ type CategoryCardProps = {
     onDelete: (id: string) => void;
 };
 
-export function CategoryCard({ category, onDelete }: CategoryCardProps) {
+export const CategoryCard = ({ category, onDelete }: CategoryCardProps) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const canDelete = category.topicCount === 0;
     const canPlay = category.entityCount > 0;
@@ -37,69 +37,76 @@ export function CategoryCard({ category, onDelete }: CategoryCardProps) {
     }
 
     return (
-        <Card size='sm' className='transition-colors hover:bg-white/60'>
-            <CardHeader>
-                <CardTitle>
-                    <Link to='/categories/$categoryId' params={{ categoryId: category.id }} className='block w-full py-1'>
-                        {category.name}{' '}
-                        <span className='text-stone-300'>
-                            Topics: {category.topicCount} · Entities: {category.entityCount}
-                        </span>
-                    </Link>
-                </CardTitle>
-                <CardAction>
-                    <div className='flex items-center gap-1'>
-                        <EntityMarkerDots
-                            hidden={category.hasExcludedEntities}
-                            hiddenLabel='Some entities are hidden from the Player'
-                            markers={category.markers}
-                        />
-                        {canPlay && (
-                            <span className='mr-1 text-base text-stone-300 flex gap-2 w-8'>
-                                <span className='text-green-600'>{category.completion}%</span>
-                            </span>
+        <ListRow
+            title={
+                <Link to='/categories/$categoryId' params={{ categoryId: category.id }}>
+                    {category.name}
+                </Link>
+            }
+            meta={`${category.topicCount} ${category.topicCount === 1 ? 'topic' : 'topics'} · ${category.entityCount} ${category.entityCount === 1 ? 'entity' : 'entities'}`}
+            details={
+                <>
+                    <EntityMarkerDots
+                        hidden={category.hasExcludedEntities}
+                        hiddenLabel='Some entities are hidden from the Player'
+                        markers={category.markers}
+                    />
+                    {canPlay ? <span className='text-sm tabular-nums text-muted-foreground'>{category.completion}%</span> : null}
+                </>
+            }
+            actions={
+                <>
+                    <PlayButton
+                        scope={{ type: 'category', categoryId: category.id }}
+                        disabled={!canPlay}
+                        ariaLabel='Play category'
+                        className={listRowActionClassName.play}
+                    />
+                    <EditCategoryPopover category={category} triggerClassName={listRowActionClassName.edit} />
+                    <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                        {!canDelete ? (
+                            <Tooltip>
+                                <TooltipTrigger render={<span className='inline-flex' />}>
+                                    <Button
+                                        variant='destructive'
+                                        size='icon'
+                                        className={listRowActionClassName.remove}
+                                        aria-label='Delete category'
+                                        disabled
+                                    >
+                                        <Trash2Icon />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Only empty category can be removed</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            <AlertDialogTrigger
+                                render={
+                                    <Button variant='destructive' size='icon' className={listRowActionClassName.remove} aria-label='Delete category'>
+                                        <Trash2Icon />
+                                    </Button>
+                                }
+                            />
                         )}
-                        <PlayButton scope={{ type: 'category', categoryId: category.id }} disabled={!canPlay} ariaLabel='Play category' />
-                        <EditCategoryPopover category={category} />
-                        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                            {!canDelete ? (
-                                <Tooltip>
-                                    <TooltipTrigger render={<span className='inline-flex' />}>
-                                        <Button variant='destructive' size='icon-sm' aria-label='Delete category' disabled>
-                                            <Trash2Icon />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Only empty category can be removed</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            ) : (
-                                <AlertDialogTrigger
-                                    render={
-                                        <Button variant='destructive' size='icon-sm' aria-label='Delete category'>
-                                            <Trash2Icon />
-                                        </Button>
-                                    }
-                                />
-                            )}
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete category?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will permanently delete &ldquo;{category.name}&rdquo;. This action cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction variant='destructive' onClick={handleRemove}>
-                                        Remove
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </CardAction>
-            </CardHeader>
-        </Card>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete category?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will permanently delete &ldquo;{category.name}&rdquo;. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
+                                <AlertDialogAction variant='destructive' onClick={handleRemove}>
+                                    Remove
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </>
+            }
+        />
     );
-}
+};

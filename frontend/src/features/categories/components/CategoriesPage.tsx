@@ -58,10 +58,10 @@ export const CategoriesPage = () => {
                     <div className='flex flex-col items-center gap-1 py-12 text-muted-foreground'>Loading categories…</div>
                 ) : hasCategories ? (
                     <div className='flex flex-col gap-6'>
-                        <div className='flex items-start justify-between gap-4'>
-                            <div className='flex flex-col gap-1'>
-                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>Categories</h1>
+                        <div className='flex items-center justify-between gap-4'>
+                            <div className='flex flex-col gap-2'>
                                 <AppBreadcrumbs />
+                                <h1 className='font-heading text-2xl font-medium tracking-tight'>Categories</h1>
                             </div>
                             <AddCategoryPopover />
                         </div>
@@ -72,9 +72,9 @@ export const CategoriesPage = () => {
                     </div>
                 ) : (
                     <div className='flex flex-col items-center gap-6'>
-                        <div className='flex flex-col items-center gap-1'>
-                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>Categories</h1>
+                        <div className='flex flex-col items-center gap-2'>
                             <AppBreadcrumbs />
+                            <h1 className='font-heading text-2xl font-medium tracking-tight'>Categories</h1>
                         </div>
                         <EmptyCategoryPrompt />
                     </div>
