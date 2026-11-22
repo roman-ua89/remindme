@@ -46,11 +46,11 @@ export function EntityCard({ entity, onEdit, onRemove }: EntityCardProps) {
     return (
         <Card size='sm' className='transition-colors hover:bg-white/60'>
             <CardHeader>
-                <CardTitle>
+                <CardTitle className='min-w-0'>
                     <Link
                         to='/categories/$categoryId/topics/$topicId/entities/$entityId'
                         params={{ categoryId, topicId, entityId: entity.id }}
-                        className='block w-full py-1'
+                        className='block w-full truncate py-1'
                     >
                         {entity.title}
                     </Link>
