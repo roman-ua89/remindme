@@ -15,7 +15,7 @@ export const LoginDialog = () => {
 
     return (
         <Dialog open={login === true} onOpenChange={handleOpenChange}>
-            <DialogTrigger render={<Button size='default' className='px-4 font-semibold' />}>Log in</DialogTrigger>
+            <DialogTrigger render={<Button variant='outline' size='default' className='text-[15px]' />}>Log in</DialogTrigger>
             <DialogContent className='gap-5 sm:max-w-sm'>
                 <DialogHeader className='pr-8'>
                     <DialogTitle className='text-lg font-semibold'>Sign in</DialogTitle>

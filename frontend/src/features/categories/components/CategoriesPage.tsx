@@ -50,7 +50,7 @@ export const CategoriesPage = () => {
     const hasCategories = totalItems > 0;
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen'>
             <AppHeader />
 
             <PageContainer className='py-8'>

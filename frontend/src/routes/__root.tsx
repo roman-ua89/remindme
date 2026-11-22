@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
 
+import { SunGlow } from '@/components/brand/SunGlow';
 import { Toaster } from '@/components/ui/sonner';
 import { currentUserQueryOptions } from '@/features/auth/queries/current-user-query';
 import { getAuthRedirect, isUnauthorizedError } from '@/lib/auth';
@@ -36,7 +37,10 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
     return (
         <QueryClientProvider client={queryClient}>
-            <Outlet />
+            <div className='relative isolate flow-root'>
+                <SunGlow />
+                <Outlet />
+            </div>
             <Toaster />
             <TanStackDevtools
                 config={{

@@ -15,7 +15,7 @@ export const HomePage = () => {
     const isLoggedIn = Boolean(user);
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen'>
             <AppHeader />
 
             <PageContainer className={cn('flex flex-col gap-14', isLoggedIn ? 'py-18' : 'py-24')}>
