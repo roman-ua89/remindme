@@ -1,5 +1,7 @@
 # Known issues
 
+**Screen support:** for now only screens 768px wide and above are supported; the mobile version is out of scope. Agents must not run checks (browser, screenshot or layout) at mobile resolutions: use viewports of 768px and wider, and don't report problems that appear only below 768px.
+
 - Constructor form resets only when `entity.id`/`editedAt` changes (`EntityConstructorPage`). Any new endpoint that changes title/blocks must also bump `editedAt`, and toggle-style endpoints must not, or the form will either miss server changes or wipe unsaved edits.
 - Play buttons on Topic/Category/Entity cards stay enabled even when every entity in scope is hidden; the DTOs carry no included-entity count, so the Player will just come back empty.
 - `npx shadcn add` adds a stray `cn` dependency to package.json and generates `import { cn } from "cn"`; revert package.json/lock and use `@/lib/utils`.
@@ -23,3 +25,6 @@
 - Setting `CORS_ORIGIN` to an empty string (for example `CORS_ORIGIN=` in Vercel) fails the URL check in `env.ts` and exits at startup. Leave the variable unset to turn CORS off, as the cloud deployment does.
 - `seed-dev` refuses to run when `NODE_ENV=production`, but it reads `NODE_ENV` from the shell only: the seed does not load `backend/.env`, so `NODE_ENV=production` written in that file does not stop it.
 - `prisma.seed` (run by `prisma migrate reset`) chains `npm run db:seed:base && npm run db:seed:dev`. This is not tested, because `migrate reset` drops the database.
+- **Cyrillic, decide before Redesign Step 3:** Figtree and Fraunces have no Cyrillic glyphs (Inter had them), and 55 of the 295 entity titles in the dev database use Cyrillic (counted 2026-11-22). Such text falls back to the system sans, and to the system serif in headings (Georgia on macOS), so mixed-script lines use two typefaces and look different per OS. If that is not acceptable, pick another heading font before Step 3 builds the logo and header.
+- **Contrast, fix before Redesign Step 2:** white text on the green Done/Save colour (`positive`) is 3.39:1 (hover 4.20), under WCAG AA 4.5:1 for normal-size text, so that green should be darkened. Also under 4.5: `block-list` on its soft background 3.62, link URL `#4F7DA8` on `block-link-surface` 4.07, `stop-foreground` on `stop-hover` 4.14, `primary` text on `background` 4.48. Check these before Steps 2, 5, 8 and 9 use them for text (Step 5 eyebrow labels are `primary` text).
+- **Interim look after Redesign Step 1:** switches and Done are terracotta (`primary`) until Step 2 makes the switch green and adds the `positive` variant (Step 9 applies it to Done). Until Step 2 restyles `button.tsx`, hover on the default button (`bg-primary/80`, white text) is 3.48:1 and on the destructive button 4.29:1, both measured on the page background; use `primary-hover` (8.16:1) for the former. Headings keep their bold or semibold classes, not Fraunces 500, until each page's step restyles them.
