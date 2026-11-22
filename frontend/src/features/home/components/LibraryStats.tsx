@@ -1,28 +1,32 @@
 import { useLibraryStats } from '@/features/stats/queries/use-library-stats';
+import { cn } from '@/lib/utils';
 
 export const LibraryStats = () => {
     const { data } = useLibraryStats();
 
     // `undefined` while loading or on error — rendered as an em dash.
     const stats = [
-        { label: 'Categories', value: data?.categoriesCount },
-        { label: 'Topics', value: data?.topicsCount },
-        { label: 'Entities', value: data?.entitiesCount },
+        { label: 'categories', value: data?.categoriesCount },
+        { label: 'topics', value: data?.topicsCount },
+        { label: 'entities', value: data?.entitiesCount },
     ];
 
+    // The label comes first in the DOM (dt before dd, as HTML requires); `flex-row-reverse` shows the number first.
+    // `flex-wrap` keeps a long count from pushing the row past its column.
     return (
-        <section aria-labelledby='library-stats-title' className='flex flex-col gap-3'>
-            <h2 id='library-stats-title' className='text-[13px] font-semibold tracking-[0.08em] text-muted-foreground uppercase'>
-                Your library
-            </h2>
-            <dl className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-                {stats.map((stat) => (
-                    <div key={stat.label} className='flex flex-col gap-2 rounded-xl border border-border bg-card p-6'>
-                        <dt className='text-sm font-medium text-muted-foreground'>{stat.label}</dt>
-                        <dd className='m-0 text-5xl leading-none font-semibold tracking-tight tabular-nums'>{stat.value ?? '—'}</dd>
-                    </div>
-                ))}
-            </dl>
-        </section>
+        <dl aria-label='Your library' className='m-0 flex flex-wrap gap-y-2 border-t border-chart-grid pt-3'>
+            {stats.map((stat, index) => (
+                <div
+                    key={stat.label}
+                    className={cn(
+                        'flex flex-row-reverse items-baseline justify-end gap-1.5 px-5 first:pl-0 last:pr-0',
+                        index > 0 && 'border-l border-border',
+                    )}
+                >
+                    <dt className='text-sm text-muted-foreground'>{stat.label}</dt>
+                    <dd className='m-0 font-heading text-[26px] leading-none tabular-nums'>{stat.value ?? '—'}</dd>
+                </div>
+            ))}
+        </dl>
     );
 };
