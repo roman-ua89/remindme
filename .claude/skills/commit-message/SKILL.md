@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only when the user clicks commit on a task branch.
+description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only when the user approves it on a task branch (a click on the commit button, or on "Commit" in a dialog).
 ---
 
 ## Format
@@ -20,6 +20,6 @@ description: Drafts a git commit message for a task the orchestrator has accepte
 1. Check the branch. `git branch --show-current` must match `^(feature|fix|chore)/[0-9]+_[a-z0-9]+(_[a-z0-9]+){0,3}$`, the pattern `create-branch` uses. If it is `dev`, `prod` or anything else, stop and tell the user that commits go on a task branch, so the work has to move to one first. Do not switch or create branches yourself.
 2. Take the task from the orchestrator's briefs and `reviewer`'s report. Run `git status --porcelain` only to list the files to stage. Files not part of this task go in your reply, not in the commit.
 3. Write the draft to `.git/commit-message-draft.txt` (inside `.git/`, so it is never tracked) and show it in your reply.
-4. End the turn with `wrap_up`. The `commit` action is the commit button, and the question is short, for example "Make this commit?". The user may instead edit the file or ask for changes; wait for them.
-5. When the user clicks commit: `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push. Then run the `push-commit` skill.
+4. End the turn with `wrap_up`. The `commit` action is the commit button, and the question is short, for example "Make this commit?". If `update_plan` did not list `commit` as available, or `wrap_up` refuses the button, ask in the same turn with AskUserQuestion: header "Commit", question "Commit on `<branch>`?", options "Commit" (its `preview` shows the draft and the files) and "Not yet". Only a click on the commit button or on "Commit" is approval; "Not yet", a dismissed dialog, or a yes to some other question means commit nothing and say the work is uncommitted. The user may instead edit the file or ask for changes: update the draft (keep their edits), show it, and repeat this step. Typed text, including "Other" in the dialog, is never approval; if it asks to commit, repeat this step. Don't hand the user git commands in place of the dialog; if the dialog is unavailable too, say the work is uncommitted and stop.
+5. When the user approves the commit (a click on the commit button, or on "Commit" in the dialog): `git add <files by name>` (never `git add -A`), then `git commit -F .git/commit-message-draft.txt`. Show `git log -1 --stat`. Do not push. Then run the `push-commit` skill.
 6. **Branches:** this skill never creates one. Commit on the branch that is checked out. Do not run `git switch -c`, `git checkout -b` or `git branch <name>`. The `create-branch` skill makes the task's branch at the start of the task.
