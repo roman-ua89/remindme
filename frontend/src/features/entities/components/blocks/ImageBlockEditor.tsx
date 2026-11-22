@@ -83,9 +83,9 @@ function ImageBlockEditorInner({ value, onChange }: ImageBlockEditorInnerProps) 
                 <img src={value.previewUrl} alt='Uploaded preview' className='max-h-64 w-full object-contain' />
                 <Button
                     type='button'
-                    variant='secondary'
+                    variant='ghost'
                     size='icon-sm'
-                    className='absolute top-2 right-2'
+                    className='absolute top-2 right-2 bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]'
                     aria-label='Remove image'
                     onClick={handleRemove}
                 >

@@ -46,11 +46,11 @@ How to move the app to the new "warm paper" design. Each step below is sized to 
 
 | Role | Default | Hover | Disabled | Used for |
 |------|---------|-------|----------|----------|
-| **Positive** (green) | bg `#5E9A47`, white text, shadow `0 6px 16px rgba(94,154,71,.25)` | `#4C8A35` | `#C3DBB6` | Done, Save, switch on (`#6FAE52`) |
+| **Positive** (green) | bg `#50833C`, white text, shadow `0 6px 16px rgba(94,154,71,.25)` | `#41752D` | `#C3DBB6` | Done, Save, switch on (`#6FAE52`) |
 | **Secondary** (light blue) | bg `#EEF5FB`, border `#C9DDF0`, text `#2F5F8F` | bg `#E3EEF8`, border `#A9C8E6` | — | Skip, Preview |
 | **Reveal** (solid blue) | bg `#3F72A6`, white text | `#2F5F8F` | — | "Show answer" / "Show code" style actions |
-| **Stop** (soft coral) | bg `#FDEDE8`, border `#F5CBBF`, text `#B54C36` | bg `#FBE0D8`, border `#EFB3A3` | — | Stop in Player |
-| **Delete** (soft red) | bg `#F7E3DF`, text `#A33F33` | — | — | Destructive triggers (still confirmed by `AlertDialog`) |
+| **Stop** (soft coral) | bg `#FDEDE8`, border `#F5CBBF`, text `#AA4733` | bg `#FBE0D8`, border `#EFB3A3` | — | Stop in Player |
+| **Delete** (soft red) | bg `#F7E3DF`, text `#A33F33` | bg `#F4D6D0` | — | Destructive triggers (still confirmed by `AlertDialog`) |
 
 ### Block-type colours (icon tile = soft bg + strong fg)
 

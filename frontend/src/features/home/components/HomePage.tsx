@@ -26,7 +26,7 @@ export const HomePage = () => {
                     <p className='text-lg leading-relaxed text-muted-foreground'>Structure your knowledge and make it sharp.</p>
                     {isLoggedIn ? (
                         <div className='mt-2'>
-                            <Button size='lg' className='h-11 rounded-xl px-5 font-semibold' onClick={() => navigate({ to: '/categories' })}>
+                            <Button size='lg' className='h-11 px-5 font-semibold' onClick={() => navigate({ to: '/categories' })}>
                                 Open my categories
                             </Button>
                         </div>
