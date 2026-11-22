@@ -8,9 +8,9 @@ Rules live in [CLAUDE.md](../CLAUDE.md); agents in `.claude/agents/`; skills in 
 ```mermaid
 flowchart TD
     BL[/docs/agile/backlog.md<br/>only when the human names a task/] -.-> BR
-    A([Session start]) --> B[Orchestrator reads<br/>docs/agile/progress.md<br/>docs/agile/known-issues.md]
-    B --> BR[create-branch skill<br/>cuts the task branch from latest dev]
-    BR --> C[Orchestrator plans task<br/>and splits it into briefs]
+    A([Task start]) --> BR[create-branch skill<br/>pulls dev, cuts the task branch from latest dev]
+    BR --> B[Orchestrator reads<br/>docs/agile/progress.md<br/>docs/agile/known-issues.md]
+    B --> C[Orchestrator plans task<br/>and splits it into briefs]
     C --> D["Brief (max 10 lines)<br/>Goal / Read / Don't touch / Done when"]
     D --> E1[builder #1]
     D --> E2["builder #2<br/>only if files don't overlap"]
@@ -33,8 +33,9 @@ flowchart TD
     CB -- Not yet, dismissed or no dialog --> U(["Stop: work stays uncommitted"])
     CB -- Commit clicked --> CO["Commit on the task branch"]
     CO --> PC{"push-commit skill<br/>dialog: push the task branch?"}
-    PC -- Not yet --> LP(["Stop: branch stays local<br/>nothing pushed"])
-    PC -- Push --> PR["push-commit gives the PR link<br/>Human opens the PR into dev"]
+    PC -- Not yet --> LP(["Stop: stays on the task branch<br/>nothing pushed"])
+    PC -- Push --> SW["switch back to dev"]
+    SW --> PR["push-commit gives the PR link<br/>Human opens the PR into dev"]
     PR --> MG["Human merges the PR<br/>once checks are green"]
     MG --> N([Task merged into dev])
     N -.-> O[/reflect skill<br/>on user request/]
@@ -45,7 +46,7 @@ flowchart TD
 
 | Who | Does | Never does |
 |-----|------|------------|
-| Orchestrator | Plans, runs `create-branch` at task start, writes briefs, runs "Done when", accepts work, runs `commit-message` and `push-commit` (commits and pushes only after a click), updates `docs/` | Writes code (except 1-2 line fixes), opens PRs, merges, pushes `dev` |
+| Orchestrator | Plans, runs `create-branch` at task start (it pulls `dev` first), writes briefs, runs "Done when", accepts work, runs `commit-message` and `push-commit` (commits and pushes only after a click; push-commit then switches back to `dev`), updates `docs/` | Writes code (except 1-2 line fixes), opens PRs, merges, pushes `dev` |
 | `builder` | Implements one brief, runs "Done when", reports | Touches "Don't touch" files |
 | `reviewer` | Compares `git diff` with briefs and `docs/agile/decisions.md` | Changes anything |
 | `reflect` | Lists what went wrong, proposes minimal edits | Changes anything before approval |

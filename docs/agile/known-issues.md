@@ -36,3 +36,4 @@
 - **Constructor hint contrast, fix in Redesign Step 8:** "(max 75 symbols)" next to Title is 2.36:1 on paper and 2.22:1 over the sun at 768px, under WCAG AA 4.5:1.
 - An opaque background on a page wrapper hides `SunGlow`, which sits at `-z-10` in `__root`. Put backgrounds on cards and panels, not on the page root.
 - Dev servers started with the desktop app's `preview_start` can hang silently with no open port: on 2026-11-22 `npm` blocked in `getcwd` under `~/Documents`, probably on a macOS folder-access prompt for that launcher. The same scripts run normally from the agent's shell.
+- `push-commit` cannot push follow-up commits: step 1 stops when origin has the branch at a different commit, and an older commit of the same branch counts as different. This is open until the human decides whether it may make a plain fast-forward push there; until then it stops and reports, and stays on the branch.

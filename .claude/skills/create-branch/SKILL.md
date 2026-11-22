@@ -1,6 +1,6 @@
 ---
 name: create-branch
-description: Creates the feature branch for a task the orchestrator is about to start, named <type>/<number>_<short_task_name> and cut from the latest dev. Use at the start of a task, before the first builder brief. Creates the branch only; never commits, pushes or deletes.
+description: Switches to dev and runs `git pull --ff-only` before cutting the feature branch for a task the orchestrator is about to start, named <type>/<number>_<short_task_name> and cut from the latest dev. Use at the start of a task, before the first builder brief. Creates the branch only; never commits, pushes or deletes.
 ---
 
 ## Name
@@ -17,7 +17,7 @@ description: Creates the feature branch for a task the orchestrator is about to 
 ## Steps
 
 1. Run `git status --porcelain`. If anything is listed, stop and name the files. The new branch would carry them, and this skill does not commit or stash.
-2. `git switch dev && git pull --ff-only`. If the pull fails, stop and report the error. Do not reset or force.
+2. `git switch dev && git pull --ff-only`. If the pull fails, stop and report the error. Do not reset or force. Run this before reading project files, and not in parallel with those reads: until it finishes they may be stale.
 3. Build the name from the rules above. Read the previous commit from this `dev` (`git log -1 --format=%s`), not from whatever branch was checked out before.
 4. Check the number is free: `git branch -a --list '*/<number>_*'`. If it prints anything, stop and ask the user, because another branch already uses that number.
 5. `git switch -c <name>`.
