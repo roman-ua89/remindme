@@ -58,3 +58,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-22 Redesign Step 2 review fix: pagination controls are all 40px high and `InputGroupButton` is a pill. `npm run ci` passes, and the heights were measured on the three list pages.
 2026-11-22 Redesign Step 3: added the brand components (logo, sun, six tree stages, drop, watering can) from the canvas, identical to its SVGs element by element, plus the sun on every page and the new header on all but the Player. Checked in the browser at 1280px and 768px.
 2026-11-22 `push-commit` now switches back to `dev` once the task branch is on origin, and `create-branch`, which already pulled `dev`, now runs before any project file is read. The git commands were tested in a throwaway repo, and `npm run ci` passes.
+2026-11-22 Builders skip `npm run ci` when the check in `builder.md` finds only `.md` changes in paths CI can't be affected by. The check passed 96 test runs in a throwaway repo, in bash and zsh.

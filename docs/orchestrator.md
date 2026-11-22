@@ -14,7 +14,7 @@ flowchart TD
     C --> D["Brief (max 10 lines)<br/>Goal / Read / Don't touch / Done when"]
     D --> E1[builder #1]
     D --> E2["builder #2<br/>only if files don't overlap"]
-    E1 --> F["Builder report:<br/>npm run ci green<br/>Changed / Command / Output / Result"]
+    E1 --> F["Builder report:<br/>npm run ci green, or skip-ci for safe .md only<br/>Changed / Command / Output / Result"]
     E2 --> F
     F --> G{"Orchestrator runs<br/>'Done when' itself.<br/>Passed?"}
     G -- no, returns < 3 --> H["Return brief to the builder that wrote it<br/>with error output"]
@@ -47,7 +47,7 @@ flowchart TD
 | Who | Does | Never does |
 |-----|------|------------|
 | Orchestrator | Plans, runs `create-branch` at task start (it pulls `dev` first), writes briefs, runs "Done when", accepts work, runs `commit-message` and `push-commit` (commits and pushes only after a click; push-commit then switches back to `dev`), updates `docs/` | Writes code (except 1-2 line fixes), opens PRs, merges, pushes `dev` |
-| `builder` | Implements one brief, runs "Done when", reports | Touches "Don't touch" files |
+| `builder` | Implements one brief, runs "Done when" and `npm run ci` unless only safe `.md` files changed (the check in `builder.md` step 3), reports | Touches "Don't touch" files |
 | `reviewer` | Compares `git diff` with briefs and `docs/agile/decisions.md` | Changes anything |
 | `reflect` | Lists what went wrong, proposes minimal edits | Changes anything before approval |
 | Human | Clicks Commit or Push, opens PRs, merges them once checks are green, names backlog tasks, approves `reflect` edits, answers after 3 failed returns | |

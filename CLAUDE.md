@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
 - Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
   If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
-- Every `builder` must leave `npm run ci` green before reporting done.
+- Every `builder` must leave `npm run ci` green before reporting done, unless the check in `.claude/agents/builder.md` step 3 prints `skip-ci`: every file changed on the branch is an `.md` in the repo root, `docs/`, `.claude/`, `.cursor/` or `backend/docs/`. Any other `.md` can fail CI (Prettier, Tailwind), so it still runs. Run that check yourself before accepting: on `run-ci`, CI must have passed; on `skip-ci`, don't run CI yourself either, and for such docs-only tasks "Done when" is a cheaper check of the edit, such as a `grep`.
 - When the whole task is accepted, call `reviewer`: pass it the briefs and ask it to check the changes against them.
 - Start of session: read `docs/agile/progress.md` and `docs/agile/known-issues.md`.
 - Progress log: after each change you implement, append one line to `docs/agile/progress.md`: the date (YYYY-mm-dd), then at most 2 sentences on what was done.
