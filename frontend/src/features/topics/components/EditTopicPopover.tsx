@@ -16,9 +16,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip
 
 type EditTopicPopoverProps = {
     topic: Topic;
+    /** Styling of the round trigger button, e.g. the row action colours */
+    triggerClassName?: string;
 };
 
-export function EditTopicPopover({ topic }: EditTopicPopoverProps) {
+export const EditTopicPopover = ({ topic, triggerClassName }: EditTopicPopoverProps) => {
     const [open, setOpen] = useState(false);
     const { mutate: updateTopic, isPending } = useUpdateTopic(topic.categoryId);
     const inputId = `topic-edit-name-${topic.id}`;
@@ -63,7 +65,7 @@ export function EditTopicPopover({ topic }: EditTopicPopoverProps) {
                 <TooltipTrigger render={<span className='inline-flex' />}>
                     <PopoverTrigger
                         render={
-                            <Button variant='ghost' size='icon-sm' aria-label='Edit topic'>
+                            <Button variant='ghost' size='icon' aria-label='Edit topic' className={triggerClassName}>
                                 <PencilIcon />
                             </Button>
                         }
@@ -73,7 +75,7 @@ export function EditTopicPopover({ topic }: EditTopicPopoverProps) {
                     <p>Edit topic name</p>
                 </TooltipContent>
             </Tooltip>
-            <PopoverContent align='end' className='w-64'>
+            <PopoverContent align='end' className='w-64 rounded-2xl'>
                 <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller
                         control={control}
@@ -98,4 +100,4 @@ export function EditTopicPopover({ topic }: EditTopicPopoverProps) {
             </PopoverContent>
         </Popover>
     );
-}
+};

@@ -17,7 +17,10 @@ type ListPaginationProps = {
     onPageChange: (page: number) => void;
 };
 
-export function ListPagination({ page, totalPages, onPageChange }: ListPaginationProps) {
+const activePageClassName =
+    'border-primary bg-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover hover:text-primary-foreground';
+
+export const ListPagination = ({ page, totalPages, onPageChange }: ListPaginationProps) => {
     if (totalPages <= 1) {
         return null;
     }
@@ -53,7 +56,12 @@ export function ListPagination({ page, totalPages, onPageChange }: ListPaginatio
                         </PaginationItem>
                     ) : (
                         <PaginationItem key={item}>
-                            <PaginationLink href='#' isActive={item === page} onClick={(event) => handlePageClick(event, item)}>
+                            <PaginationLink
+                                href='#'
+                                isActive={item === page}
+                                className={item === page ? activePageClassName : undefined}
+                                onClick={(event) => handlePageClick(event, item)}
+                            >
                                 {item}
                             </PaginationLink>
                         </PaginationItem>
@@ -71,4 +79,4 @@ export function ListPagination({ page, totalPages, onPageChange }: ListPaginatio
             </PaginationContent>
         </Pagination>
     );
-}
+};

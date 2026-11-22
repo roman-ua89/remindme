@@ -12,7 +12,7 @@ import { useCreateCategory } from '@/features/categories/queries/use-create-cate
 import { createCategoryFormSchema } from '@/features/categories/schemas';
 import type { CreateCategoryFormValues } from '@/features/categories/schemas';
 
-export function AddCategoryPopover() {
+export const AddCategoryPopover = () => {
     const [open, setOpen] = useState(false);
     const { mutate: createCategory, isPending } = useCreateCategory();
 
@@ -44,7 +44,7 @@ export function AddCategoryPopover() {
                     </Button>
                 }
             />
-            <PopoverContent align='end' className='w-64'>
+            <PopoverContent align='end' className='w-64 rounded-2xl'>
                 <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller
                         control={control}
@@ -64,4 +64,4 @@ export function AddCategoryPopover() {
             </PopoverContent>
         </Popover>
     );
-}
+};

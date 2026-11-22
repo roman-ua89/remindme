@@ -6,9 +6,9 @@ const DEFAULT_HIDDEN_LABEL = 'Hidden from the Player';
 
 type EntityMarkerDotsProps = {
     markers: EntityMarker[];
-    /** Adds a gray dot left of the marker dots when the item is excluded from the Player */
+    /** Adds a hidden-marker dot left of the marker dots when the item is excluded from the Player */
     hidden?: boolean;
-    /** Tooltip and aria-label of the gray dot */
+    /** Tooltip and aria-label of the hidden-marker dot */
     hiddenLabel?: string;
 };
 
@@ -22,7 +22,7 @@ export const EntityMarkerDots = ({ markers, hidden = false, hiddenLabel = DEFAUL
     return (
         <span className='flex shrink-0 items-center gap-2'>
             {hidden ? (
-                <span role='img' className='size-2 shrink-0 rounded-full bg-muted-foreground/40' title={hiddenLabel} aria-label={hiddenLabel} />
+                <span role='img' className='size-2 shrink-0 rounded-full bg-marker-hidden' title={hiddenLabel} aria-label={hiddenLabel} />
             ) : null}
             {options.map((option) => (
                 <span

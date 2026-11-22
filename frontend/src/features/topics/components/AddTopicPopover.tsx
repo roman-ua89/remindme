@@ -16,7 +16,7 @@ type AddTopicPopoverProps = {
     categoryId: string;
 };
 
-export function AddTopicPopover({ categoryId }: AddTopicPopoverProps) {
+export const AddTopicPopover = ({ categoryId }: AddTopicPopoverProps) => {
     const [open, setOpen] = useState(false);
     const { mutate: createTopic, isPending } = useCreateTopic(categoryId);
 
@@ -48,7 +48,7 @@ export function AddTopicPopover({ categoryId }: AddTopicPopoverProps) {
                     </Button>
                 }
             />
-            <PopoverContent align='end' className='w-64'>
+            <PopoverContent align='end' className='w-64 rounded-2xl'>
                 <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller
                         control={control}
@@ -68,4 +68,4 @@ export function AddTopicPopover({ categoryId }: AddTopicPopoverProps) {
             </PopoverContent>
         </Popover>
     );
-}
+};

@@ -17,7 +17,7 @@ import { useListSearch } from '@/lib/use-list-search';
 import { Button } from '#/components/ui/button.tsx';
 import { ChevronLeft } from 'lucide-react';
 
-export function EntitiesPage() {
+export const EntitiesPage = () => {
     const navigate = useNavigate({
         from: '/categories/$categoryId/topics/$topicId/',
     });
@@ -117,18 +117,18 @@ export function EntitiesPage() {
                     <div className='flex flex-col items-center gap-1 py-12 text-muted-foreground'>Loading entities…</div>
                 ) : isCategoryError || isTopicError || !category || !topic ? (
                     <div className='flex flex-col gap-4'>
-                        <div className='flex flex-col gap-1'>
-                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>Topic not found</h1>
+                        <div className='flex flex-col gap-2'>
                             <AppBreadcrumbs category={category ? { id: categoryId, name: category.name } : undefined} />
+                            <h1 className='font-heading text-2xl font-medium tracking-tight'>Topic not found</h1>
                         </div>
                         <p className='text-muted-foreground'>Topic not found.</p>
                     </div>
                 ) : showEntitiesView ? (
                     <div className='flex flex-col gap-6'>
-                        <div className='flex items-start justify-between gap-4'>
-                            <div className='flex flex-col gap-1'>
-                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>Entities</h1>
+                        <div className='flex items-center justify-between gap-4'>
+                            <div className='flex flex-col gap-2'>
                                 <AppBreadcrumbs category={{ id: categoryId, name: category.name }} topic={{ id: topicId, name: topic.name }} />
+                                <h1 className='font-heading text-2xl font-medium tracking-tight'>Entities</h1>
                             </div>
                             <div className='flex gap-2'>
                                 <Button variant='outline' onClick={goBack}>
@@ -153,9 +153,9 @@ export function EntitiesPage() {
                     </div>
                 ) : (
                     <div className='flex flex-col gap-6'>
-                        <div className='flex flex-col justify-between gap-1'>
-                            <h1 className='font-heading text-2xl font-semibold tracking-tight'>{topic.name}</h1>
+                        <div className='flex flex-col gap-2'>
                             <AppBreadcrumbs category={{ id: categoryId, name: category.name }} topic={{ id: topicId, name: topic.name }} />
+                            <h1 className='font-heading text-2xl font-medium tracking-tight'>{topic.name}</h1>
                         </div>
                         <EmptyEntityPrompt categoryId={categoryId} topicId={topicId} />
                     </div>
@@ -163,4 +163,4 @@ export function EntitiesPage() {
             </PageContainer>
         </div>
     );
-}
+};

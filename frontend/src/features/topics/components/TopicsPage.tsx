@@ -14,7 +14,7 @@ import { useTopics } from '@/features/topics/queries/use-topics';
 import { Button } from '#/components/ui/button.tsx';
 import { ChevronLeft } from 'lucide-react';
 
-export function TopicsPage() {
+export const TopicsPage = () => {
     const navigate = useNavigate({ from: '/categories/$categoryId/' });
     const { categoryId } = useParams({ from: '/_app/categories/$categoryId/' });
     const { page: pageParam } = useSearch({
@@ -78,9 +78,9 @@ export function TopicsPage() {
             <div className='min-h-screen'>
                 <AppHeader />
                 <PageContainer className='flex flex-col gap-4 py-8'>
-                    <div className='flex flex-col gap-1'>
-                        <h1 className='font-heading text-2xl font-semibold tracking-tight'>Category not found</h1>
+                    <div className='flex flex-col gap-2'>
                         <AppBreadcrumbs />
+                        <h1 className='font-heading text-2xl font-medium tracking-tight'>Category not found</h1>
                     </div>
                     <p className='text-muted-foreground'>Category not found.</p>
                 </PageContainer>
@@ -98,12 +98,10 @@ export function TopicsPage() {
                 <div className='flex flex-col gap-6'>
                     {hasTopics ? (
                         <>
-                            <div className='flex items-start justify-between gap-4'>
-                                <div className='flex flex-col gap-1'>
-                                    <div className='flex items-center gap-2'>
-                                        <h1 className='font-heading text-2xl font-semibold tracking-tight'>Topics</h1>
-                                    </div>
+                            <div className='flex items-center justify-between gap-4'>
+                                <div className='flex flex-col gap-2'>
                                     <AppBreadcrumbs category={{ id: categoryId, name: category.name }} />
+                                    <h1 className='font-heading text-2xl font-medium tracking-tight'>Topics</h1>
                                 </div>
                                 <div className='flex gap-2'>
                                     <Button variant='outline' onClick={goBack}>
@@ -120,9 +118,9 @@ export function TopicsPage() {
                         </>
                     ) : (
                         <>
-                            <div className='flex flex-col justify-between gap-1'>
-                                <h1 className='font-heading text-2xl font-semibold tracking-tight'>{category.name}</h1>
+                            <div className='flex flex-col gap-2'>
                                 <AppBreadcrumbs category={{ id: categoryId, name: category.name }} />
+                                <h1 className='font-heading text-2xl font-medium tracking-tight'>{category.name}</h1>
                             </div>
                             <EmptyTopicPrompt categoryId={categoryId} />
                         </>
@@ -131,4 +129,4 @@ export function TopicsPage() {
             </PageContainer>
         </div>
     );
-}
+};

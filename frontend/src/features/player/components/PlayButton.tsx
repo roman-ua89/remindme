@@ -9,6 +9,7 @@ type PlayButtonProps = {
     scope: PlayerScope;
     disabled?: boolean;
     ariaLabel: string;
+    className?: string;
 };
 
 function toPlayerSearch(scope: PlayerScope) {
@@ -22,7 +23,7 @@ function toPlayerSearch(scope: PlayerScope) {
     }
 }
 
-export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonProps) {
+export const PlayButton = ({ scope, disabled = false, ariaLabel, className }: PlayButtonProps) => {
     const navigate = useNavigate();
     const returnTo = useLocation({ select: (location) => location.href });
 
@@ -31,14 +32,15 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
             <TooltipTrigger render={<span className='inline-flex' />}>
                 <Button
                     variant='ghost'
-                    size='icon-sm'
+                    size='icon'
                     aria-label={ariaLabel}
                     disabled={disabled}
+                    className={className}
                     onClick={() => {
                         navigate({ to: '/player', search: { ...toPlayerSearch(scope), returnTo } });
                     }}
                 >
-                    {disabled ? <PlayOff className='text-red-800' /> : <PlayIcon className='text-green-600' />}
+                    {disabled ? <PlayOff className='text-destructive' /> : <PlayIcon className='text-positive' />}
                 </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -46,4 +48,4 @@ export function PlayButton({ scope, disabled = false, ariaLabel }: PlayButtonPro
             </TooltipContent>
         </Tooltip>
     );
-}
+};

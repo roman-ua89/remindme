@@ -13,9 +13,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { ListRow, listRowActionClassName } from '@/components/shared/ListRow';
 import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
 import { Button } from '@/components/ui/button';
-import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { EntityMarkerDots } from '@/features/entities/components/EntityMarkerDots';
 import { EditTopicPopover } from '@/features/topics/components/EditTopicPopover';
 import { useSetTopicVisibility } from '@/features/topics/queries/use-set-topic-visibility';
@@ -28,7 +28,7 @@ type TopicCardProps = {
     onDelete: (id: string) => void;
 };
 
-export function TopicCard({ topic, onDelete }: TopicCardProps) {
+export const TopicCard = ({ topic, onDelete }: TopicCardProps) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { mutateAsync: setTopicVisibility } = useSetTopicVisibility();
     const canDelete = topic.entityCount === 0;
@@ -40,79 +40,90 @@ export function TopicCard({ topic, onDelete }: TopicCardProps) {
     }
 
     return (
-        <Card size='sm' className='transition-colors hover:bg-white/60'>
-            <CardHeader>
-                <CardTitle>
-                    <Link
-                        to='/categories/$categoryId/topics/$topicId'
-                        params={{ categoryId: topic.categoryId, topicId: topic.id }}
-                        className='block w-full py-1'
-                    >
-                        {topic.name} <span className='text-stone-300'>Entities: {topic.entityCount}</span>
-                    </Link>
-                </CardTitle>
-                <CardAction>
-                    <div className='flex items-center gap-1'>
-                        <EntityMarkerDots
-                            hidden={topic.hasExcludedEntities}
-                            hiddenLabel='Some entities are hidden from the Player'
-                            markers={topic.markers}
-                        />
-                        <VisibilitySwitch
-                            included={topic.visibility === 'included'}
-                            disabled={topic.entityCount === 0}
-                            onChange={(included) =>
-                                setTopicVisibility({
-                                    categoryId: topic.categoryId,
-                                    topicId: topic.id,
-                                    visibility: included ? 'included' : 'excluded',
-                                })
-                            }
-                            ariaLabel='Topic visibility'
-                            onTooltip='Exclude all entities in this topic from the Player'
-                            offTooltip='Include all entities in this topic in the Player'
-                        />
-                        <PlayButton scope={{ type: 'topic', topicId: topic.id }} disabled={!canPlay} ariaLabel='Play topic' />
-                        <EditTopicPopover topic={topic} />
-                        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                            {!canDelete ? (
-                                <Tooltip>
-                                    <TooltipTrigger render={<span className='inline-flex' />}>
-                                        <Button variant='destructive' size='icon-sm' aria-label='Delete topic' disabled>
-                                            <Trash2Icon />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Only empty topic can be removed</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            ) : (
-                                <AlertDialogTrigger
-                                    render={
-                                        <Button variant='destructive' size='icon-sm' aria-label='Delete topic'>
-                                            <Trash2Icon />
-                                        </Button>
-                                    }
-                                />
-                            )}
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete topic?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will permanently delete &ldquo;{topic.name}&rdquo;. This action cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction variant='destructive' onClick={handleRemove}>
-                                        Remove
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </CardAction>
-            </CardHeader>
-        </Card>
+        <ListRow
+            title={
+                <Link to='/categories/$categoryId/topics/$topicId' params={{ categoryId: topic.categoryId, topicId: topic.id }}>
+                    {topic.name}
+                </Link>
+            }
+            meta={`${topic.entityCount} ${topic.entityCount === 1 ? 'entity' : 'entities'}`}
+            hidden={topic.visibility === 'excluded'}
+            details={
+                <>
+                    <EntityMarkerDots
+                        hidden={topic.hasExcludedEntities}
+                        hiddenLabel='Some entities are hidden from the Player'
+                        markers={topic.markers}
+                    />
+                    <VisibilitySwitch
+                        included={topic.visibility === 'included'}
+                        disabled={topic.entityCount === 0}
+                        onChange={(included) =>
+                            setTopicVisibility({
+                                categoryId: topic.categoryId,
+                                topicId: topic.id,
+                                visibility: included ? 'included' : 'excluded',
+                            })
+                        }
+                        ariaLabel='Topic visibility'
+                        onTooltip='Exclude all entities in this topic from the Player'
+                        offTooltip='Include all entities in this topic in the Player'
+                    />
+                </>
+            }
+            actions={
+                <>
+                    <PlayButton
+                        scope={{ type: 'topic', topicId: topic.id }}
+                        disabled={!canPlay}
+                        ariaLabel='Play topic'
+                        className={listRowActionClassName.play}
+                    />
+                    <EditTopicPopover topic={topic} triggerClassName={listRowActionClassName.edit} />
+                    <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                        {!canDelete ? (
+                            <Tooltip>
+                                <TooltipTrigger render={<span className='inline-flex' />}>
+                                    <Button
+                                        variant='destructive'
+                                        size='icon'
+                                        className={listRowActionClassName.remove}
+                                        aria-label='Delete topic'
+                                        disabled
+                                    >
+                                        <Trash2Icon />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Only empty topic can be removed</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            <AlertDialogTrigger
+                                render={
+                                    <Button variant='destructive' size='icon' className={listRowActionClassName.remove} aria-label='Delete topic'>
+                                        <Trash2Icon />
+                                    </Button>
+                                }
+                            />
+                        )}
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete topic?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will permanently delete &ldquo;{topic.name}&rdquo;. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
+                                <AlertDialogAction variant='destructive' onClick={handleRemove}>
+                                    Remove
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </>
+            }
+        />
     );
-}
+};
