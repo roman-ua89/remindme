@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Read: which files.
   Don't touch: which files.
   Done when: a command that can be run, and what it must show.
-- Every task starts with the `create-branch` skill, before the first brief, whether it comes from chat or from the backlog. All work for the task happens on that branch, so don't switch branches during a task.
+- Every task starts with the `create-branch` skill, whether it comes from chat or from the backlog. It pulls `dev` before it cuts the branch, so let it finish before you read any project file (the start-of-session files included) or write a brief. All work for the task happens on that branch, so don't switch branches during a task. The task ends with the push; if I ask for more changes to it before its PR is merged, `git switch` to its branch instead of creating a new one.
 - Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
 - Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
   If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
   Never take or execute a task whose title starts with `Done`; treat it as finished.
 - End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
-- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, or asks in a "Commit" / "Not yet" dialog when that button is unavailable, and commits only when I click the button or "Commit". Then run the `push-commit` skill: it offers, in a dialog, to push the task branch to origin. It never pushes `dev` and never merges; the pull request into `dev` is opened on GitHub, and I merge it once its checks are green.
+- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, or asks in a "Commit" / "Not yet" dialog when that button is unavailable, and commits only when I click the button or "Commit". Then run the `push-commit` skill: it offers, in a dialog, to push the task branch to origin, and once it is pushed switches back to `dev`. It never pushes `dev` and never merges; the pull request into `dev` is opened on GitHub, and I merge it once its checks are green.
 
 ## Project
 
