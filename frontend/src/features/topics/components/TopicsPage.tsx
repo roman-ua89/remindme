@@ -64,7 +64,7 @@ export function TopicsPage() {
 
     if (isLoading) {
         return (
-            <div className='min-h-screen bg-background'>
+            <div className='min-h-screen'>
                 <AppHeader />
                 <PageContainer className='flex flex-col gap-4 py-8'>
                     <p className='text-muted-foreground'>Loading topics…</p>
@@ -75,7 +75,7 @@ export function TopicsPage() {
 
     if (isCategoryError || !category) {
         return (
-            <div className='min-h-screen bg-background'>
+            <div className='min-h-screen'>
                 <AppHeader />
                 <PageContainer className='flex flex-col gap-4 py-8'>
                     <div className='flex flex-col gap-1'>
@@ -91,7 +91,7 @@ export function TopicsPage() {
     const hasTopics = totalItems > 0;
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen'>
             <AppHeader />
 
             <PageContainer className='py-8'>

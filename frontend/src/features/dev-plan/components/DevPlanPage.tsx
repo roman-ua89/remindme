@@ -10,7 +10,7 @@ export function DevPlanPage() {
     const completedCount = devPlanTasks.filter((task) => task.done).length;
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen'>
             <AppHeader />
 
             <PageContainer className='py-8'>

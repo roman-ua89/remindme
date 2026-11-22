@@ -101,7 +101,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
 
     if (isLoading) {
         return (
-            <div className='min-h-screen bg-background'>
+            <div className='min-h-screen'>
                 <AppHeader />
                 <PageContainer className='flex flex-col gap-4 py-8'>
                     <p className='text-muted-foreground'>Loading entity constructor…</p>
@@ -112,7 +112,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
 
     if (isCategoryError || isTopicError || !category || !topic || (isEditMode && (isEntityError || !entity))) {
         return (
-            <div className='min-h-screen bg-background'>
+            <div className='min-h-screen'>
                 <AppHeader />
                 <PageContainer className='flex flex-col gap-4 py-8'>
                     <h1 className='font-heading text-2xl font-semibold tracking-tight'>Entity not found</h1>
@@ -183,7 +183,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
     };
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen'>
             <AppHeader />
 
             {isPreviewMode ? (
