@@ -187,9 +187,9 @@ Boards: "Player · List", "Player · Text + Code + Code (hidden)", "Player · Te
 - Card (`PlayerPreview`): 24px radius, soft shadow; muted "Category › Topic" line (`PlayerEntityBreadcrumb`) and marker pills (Needs edit / To remove) on top; title Fraunces 40px.
 - Block previews:
   - **Text** (`TextBlockPreview`): 18px / 1.65 body; inline highlights such as formulas use a soft paper chip.
-  - **Code** (`CodeBlockPreview`): lavender panel with a header bar (file label left, language right), monospace 15px, syntax colours (keyword `#6C55A3`, string `#4C8A35`, number `#C0563F`, function `#3F72A6`, comment `#9A8FB5`). When `blurredByDefault`: blur the code, header hint "Hidden until you reveal it", centred white pill "Show code" (lavender text) over it; click reveals.
+  - **Code** (`CodeBlockPreview`): lavender panel with a header bar (file label left, language right), monospace 15px, syntax colours (keyword `#6C55A3`, string `#3D7A2B`, number `#B04A34`, function `#3F72A6`, comment `#716895`; string, number and comment darkened for AA). When `blurredByDefault`: blur the code, header hint "Hidden until you reveal it", centred white pill "Show code" (lavender text) over it; click reveals.
   - **List** (`ListBlockPreview`): two-column table, header cells blue (`#3F72A6` on `#EEF5FB`), borders `#DCE8F4`.
-  - **Link** (`LinkBlockPreview`): blue card — icon tile, title, URL (`#4F7DA8`), arrow icon.
+  - **Link** (`LinkBlockPreview`): blue card — icon tile, title, URL (`#2F5F8F`, darkened for AA), arrow icon.
   - **Image**: unchanged.
 - Actions (`PlayerActions`): "Skip" (`secondary`, 52px, min 160px) and "Done" (`positive`, 52px, min 200px); shortcuts hint with `kbd` chips.
 - Restyle `PlayerBatchCompleteDialog` and `PlayerDepleted` with the same tokens.

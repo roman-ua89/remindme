@@ -9,18 +9,21 @@ type PlayerPreviewProps = {
     onMarkerChange: (marker: EntityMarker | null) => Promise<unknown>;
 };
 
-export function PlayerPreview({ entity, onMarkerChange }: PlayerPreviewProps) {
+export const PlayerPreview = ({ entity, onMarkerChange }: PlayerPreviewProps) => {
     const { title, blocks } = toEntityFormValues(entity);
 
     return (
-        <div className='rounded-lg border border-border bg-card p-6'>
-            <EntityReadOnlyContent
-                header={<PlayerEntityBreadcrumb categoryName={entity.categoryName} topicName={entity.topicName} />}
-                title={title}
-                blocks={blocks}
-                marker={entity.marker}
-                onMarkerChange={onMarkerChange}
-            />
+        <div className='mx-auto w-full max-w-[808px] rounded-2xl border border-border bg-card p-6 shadow-tile-hover'>
+            <div className='mx-auto max-w-[760px]'>
+                <EntityReadOnlyContent
+                    header={<PlayerEntityBreadcrumb categoryName={entity.categoryName} topicName={entity.topicName} />}
+                    title={title}
+                    titleClassName='text-[40px] leading-tight font-medium'
+                    blocks={blocks}
+                    marker={entity.marker}
+                    onMarkerChange={onMarkerChange}
+                />
+            </div>
         </div>
     );
-}
+};

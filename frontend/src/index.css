@@ -81,6 +81,18 @@
     --block-link-soft: #e3eef8;
     --block-link-surface: #f4f8fc;
     --block-link-border: #c9ddf0;
+    --block-link-url: #2f5f8f;
+    --block-text-chip: #f8f4ed;
+    --block-text-chip-border: #e9e1d4;
+    --block-table-border: #dce8f4;
+
+    /* code */
+    --code-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --syntax-keyword: #6c55a3;
+    --syntax-string: #3d7a2b;
+    --syntax-number: #b04a34;
+    --syntax-function: #3f72a6;
+    --syntax-comment: #716895;
 
     /* constructor */
     --insert-placeholder-border: #d8c6b4;
@@ -147,6 +159,7 @@
     /* player */
     --timer-ring: #6fa8d6;
     --timer-track: #e3eef8;
+    --player-progress-current: #e3b7a5;
 }
 
 body {
@@ -223,6 +236,18 @@ body {
     --color-block-link-soft: var(--block-link-soft);
     --color-block-link-surface: var(--block-link-surface);
     --color-block-link-border: var(--block-link-border);
+    --color-block-link-url: var(--block-link-url);
+    --color-block-text-chip: var(--block-text-chip);
+    --color-block-text-chip-border: var(--block-text-chip-border);
+    --color-block-table-border: var(--block-table-border);
+
+    /* code */
+    --font-code: var(--code-font);
+    --color-syntax-keyword: var(--syntax-keyword);
+    --color-syntax-string: var(--syntax-string);
+    --color-syntax-number: var(--syntax-number);
+    --color-syntax-function: var(--syntax-function);
+    --color-syntax-comment: var(--syntax-comment);
 
     /* constructor */
     --color-insert-placeholder-border: var(--insert-placeholder-border);
@@ -289,6 +314,7 @@ body {
     /* player */
     --color-timer-ring: var(--timer-ring);
     --color-timer-track: var(--timer-track);
+    --color-player-progress-current: var(--player-progress-current);
 
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.75);

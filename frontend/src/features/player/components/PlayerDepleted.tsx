@@ -7,23 +7,23 @@ type PlayerDepletedProps = {
     onHome: () => void;
 };
 
-export function PlayerDepleted({ onHome }: PlayerDepletedProps) {
+export const PlayerDepleted = ({ onHome }: PlayerDepletedProps) => {
     return (
-        <Empty className='border'>
+        <Empty className='rounded-2xl border bg-card py-16'>
             <EmptyHeader>
-                <EmptyMedia variant='icon'>
+                <EmptyMedia variant='icon' className='size-12 rounded-[10px] bg-primary-soft text-primary'>
                     <InboxIcon />
                 </EmptyMedia>
-                <EmptyTitle>Nothing to revise</EmptyTitle>
+                <EmptyTitle className='text-2xl'>Nothing to revise</EmptyTitle>
                 <EmptyDescription>
                     This scope has no eligible entities. Add content or include entities in the Player, then try again.
                 </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-                <Button type='button' onClick={onHome}>
+                <Button type='button' size='lg' onClick={onHome}>
                     Go to Home
                 </Button>
             </EmptyContent>
         </Empty>
     );
-}
+};
