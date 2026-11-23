@@ -27,7 +27,7 @@ export const LoginForm = () => {
     };
 
     return (
-        <form className='grid gap-4' onSubmit={handleSubmit(onSubmit)}>
+        <form className='grid gap-4' noValidate onSubmit={handleSubmit(onSubmit)}>
             <Controller
                 control={control}
                 name='email'

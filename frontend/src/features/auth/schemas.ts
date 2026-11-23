@@ -1,8 +1,6 @@
-import { z } from 'zod';
+import { loginSchema } from '@remindme/contracts/auth';
+import type { LoginInput } from '@remindme/contracts/auth';
 
-export const loginFormSchema = z.object({
-    email: z.email('Enter a valid email'),
-    password: z.string().min(1, 'Password is required'),
-});
+export const loginFormSchema = loginSchema;
 
-export type LoginFormValues = z.infer<typeof loginFormSchema>;
+export type LoginFormValues = LoginInput;
