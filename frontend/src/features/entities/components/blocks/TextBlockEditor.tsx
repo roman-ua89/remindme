@@ -5,6 +5,7 @@ import type { Control, FieldPath } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import Highlight from '@tiptap/extension-highlight';
 import TextAlign from '@tiptap/extension-text-align';
+import { AlignCenter, AlignLeft, Bold, Heading1, Heading2, Heading3, Highlighter, Italic, Pilcrow, Strikethrough } from 'lucide-react';
 
 import type { EntityConstructorFormValues } from '@/features/entities/types';
 import { tiptapExtensions } from '@/lib/tiptap/extensions';
@@ -54,82 +55,112 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             <Button
                 type='button'
                 variant={editorState?.isBold ? 'selectedEditorBtn' : 'defaultEditorBtn'}
-                size='sm'
+                size='icon-sm'
+                aria-label='Bold'
+                title='Bold'
+                aria-pressed={editorState?.isBold}
                 onClick={() => editor.chain().focus().toggleBold().run()}
             >
-                Bold
+                <Bold className='size-4' />
             </Button>
             <Button
                 type='button'
                 variant={editorState?.isItalic ? 'selectedEditorBtn' : 'defaultEditorBtn'}
-                size='sm'
+                size='icon-sm'
+                aria-label='Italic'
+                title='Italic'
+                aria-pressed={editorState?.isItalic}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
             >
-                Italic
+                <Italic className='size-4' />
             </Button>
             <Button
                 type='button'
                 variant={editorState?.isStrike ? 'selectedEditorBtn' : 'defaultEditorBtn'}
-                size='sm'
+                size='icon-sm'
+                aria-label='Strikethrough'
+                title='Strikethrough'
+                aria-pressed={editorState?.isStrike}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             >
-                Strike
+                <Strikethrough className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isHighlight ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Highlight'
+                title='Highlight'
+                aria-pressed={editorState?.isHighlight}
                 onClick={() => editor.chain().focus().toggleHighlight().run()}
             >
-                Highlight
+                <Highlighter className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isAlignLeft ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Align left'
+                title='Align left'
+                aria-pressed={editorState?.isAlignLeft}
                 onClick={() => editor.chain().focus().setTextAlign('left').run()}
             >
-                Left
+                <AlignLeft className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isAlignCenter ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Align center'
+                title='Align center'
+                aria-pressed={editorState?.isAlignCenter}
                 onClick={() => editor.chain().focus().setTextAlign('center').run()}
             >
-                Center
+                <AlignCenter className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isHeading1 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Heading 1'
+                title='Heading 1'
+                aria-pressed={editorState?.isHeading1}
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             >
-                H1
+                <Heading1 className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isHeading2 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Heading 2'
+                title='Heading 2'
+                aria-pressed={editorState?.isHeading2}
                 onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
             >
-                H2
+                <Heading2 className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isHeading3 ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Heading 3'
+                title='Heading 3'
+                aria-pressed={editorState?.isHeading3}
                 onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
             >
-                H3
+                <Heading3 className='size-4' />
             </Button>
             <Button
                 variant={editorState?.isParagraph ? 'selectedEditorBtn' : 'defaultEditorBtn'}
                 type='button'
-                size='sm'
+                size='icon-sm'
+                aria-label='Paragraph'
+                title='Paragraph'
+                aria-pressed={editorState?.isParagraph}
                 onClick={() => editor.chain().focus().setParagraph().run()}
             >
-                Paragraph
+                <Pilcrow className='size-4' />
             </Button>
         </div>
     );
