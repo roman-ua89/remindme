@@ -12,6 +12,13 @@ export const listRowActionClassName = {
     remove: 'bg-action-remove group-hover/list-row:bg-action-remove-row-hover hover:bg-action-remove-hover',
 } as const;
 
+/**
+ * Raises the controls inside `details` and `actions` above the title link's `::after`, which is stretched over the row. Plain text and
+ * gaps stay below it, so clicks there reach the link. Covers buttons (the visibility Switch included), tooltip triggers and marker dots.
+ */
+const rowControlClassName =
+    '[&_button]:relative [&_button]:z-10 [&_[data-slot=tooltip-trigger]]:relative [&_[data-slot=tooltip-trigger]]:z-10 [&_[role=img]]:relative [&_[role=img]]:z-10';
+
 type ListRowProps = {
     /** Title, normally a router `Link`; the row styles the link */
     title: ReactNode;
@@ -28,18 +35,23 @@ export const ListRow = ({ title, meta, hidden = false, details, actions }: ListR
     return (
         <div
             className={cn(
-                'group/list-row flex items-center gap-4 rounded-lg border border-border bg-card px-5 py-4',
-                hidden && 'border-dashed bg-background',
+                'group/list-row relative flex cursor-pointer items-center gap-4 rounded-lg border border-border bg-card py-3 pr-3 pl-5 transition-[border-color,background-color,box-shadow] duration-150 hover:shadow-list-row-hover has-[a:focus-visible]:ring-3 has-[a:focus-visible]:ring-ring/50',
+                hidden ? 'border-dashed bg-background' : 'hover:border-list-row-hover-border hover:bg-list-row-hover-bg',
             )}
         >
             <div className='flex min-w-0 flex-1 flex-col gap-1'>
-                <div className={cn('truncate text-base font-semibold [&_a:hover]:text-primary-hover', hidden && 'text-muted-foreground')}>
+                <div
+                    className={cn(
+                        'truncate text-base font-semibold transition-colors duration-150 group-hover/list-row:text-primary [&_a]:after:absolute [&_a]:after:inset-0 [&_a]:after:content-[""] [&_a]:after:rounded-lg [&_a:focus-visible]:outline-none',
+                        hidden && 'text-muted-foreground group-hover/list-row:text-primary-hover',
+                    )}
+                >
                     {title}
                 </div>
                 {meta ? <div className='text-[13px] text-muted-foreground'>{meta}</div> : null}
             </div>
-            {details ? <div className='flex shrink-0 items-center gap-3'>{details}</div> : null}
-            {actions ? <div className='flex shrink-0 items-center gap-2'>{actions}</div> : null}
+            {details ? <div className={cn('flex shrink-0 items-center gap-3', rowControlClassName)}>{details}</div> : null}
+            {actions ? <div className={cn('flex shrink-0 items-center gap-1', rowControlClassName)}>{actions}</div> : null}
         </div>
     );
 };
