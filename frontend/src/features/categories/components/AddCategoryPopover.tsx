@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { FieldError } from '@/components/shared/FieldError';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ export const AddCategoryPopover = () => {
     });
 
     const { control, handleSubmit, reset } = form;
+    const name = useWatch({ control, name: 'name' });
 
     const onSubmit = (values: CreateCategoryFormValues) => {
         createCategory(values, {
@@ -57,7 +58,7 @@ export const AddCategoryPopover = () => {
                             </div>
                         )}
                     />
-                    <Button type='submit' className='w-full' disabled={isPending}>
+                    <Button type='submit' variant='positive' className='w-full' disabled={isPending || !name.trim()}>
                         {isPending ? 'Saving…' : 'Save'}
                     </Button>
                 </form>
