@@ -73,3 +73,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-23 `ListRow` padding now matches the board (12px, 20px on the left; was 16px/20px) and the Play/Edit/Remove buttons are 4px apart (was 8px). `npm run ci` passes; measured in the browser.
 2026-11-23 Sign in and the Add category/Add topic Save buttons are green (`positive`), the Cancel buttons in the Constructor delete dialog and the "Remove entity?" dialog are blue `secondary`, and a base rule in `index.css` gives every enabled button a pointer cursor. `npm run ci` passes.
 2026-11-23 The Add category and Add topic Save buttons stay disabled until the name field has non-blank text. `npm run ci` passes.
+2026-11-23 The Edit category and Edit topic Save buttons are green (`positive`) too, matching the Add popovers. `npm run ci` passes.
