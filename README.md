@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <img src="docs/images/tree-growth.png" width="720" alt="Your tree grows from a sprout on day 1 to an apple tree on day 15 as you revise daily" />
+</p>
+
+<p align="center">
   <a href="https://github.com/roman-ua89/remindme/actions/workflows/pipeline.yml"><img src="https://github.com/roman-ua89/remindme/actions/workflows/pipeline.yml/badge.svg?branch=dev" alt="Pipeline" /></a>
   <img src="https://img.shields.io/badge/node-26-339933?logo=nodedotjs&logoColor=white" alt="Node 26" />
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
