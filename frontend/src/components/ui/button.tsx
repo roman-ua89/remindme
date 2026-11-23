@@ -14,7 +14,6 @@ const buttonVariants = cva(
                     'bg-positive text-positive-foreground shadow-positive-glow hover:bg-positive-hover disabled:bg-positive-disabled disabled:text-positive-disabled-foreground disabled:opacity-100 disabled:shadow-none',
                 secondary:
                     'border-info-border bg-info text-info-foreground hover:border-info-border-hover hover:bg-info-hover aria-expanded:border-info-border-hover aria-expanded:bg-info-hover',
-                reveal: 'bg-reveal text-reveal-foreground hover:bg-reveal-hover',
                 stop: 'border-stop-border bg-stop text-stop-foreground hover:border-stop-border-hover hover:bg-stop-hover',
                 outline:
                     'border-border bg-card hover:border-input hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground',
@@ -25,18 +24,14 @@ const buttonVariants = cva(
                     'text-sm bg-blue-300 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
                 selectedEditorBtn:
                     'text-sm bg-blue-500 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
-                link: 'text-primary-hover underline-offset-4 hover:underline',
             },
             size: {
                 default: 'h-11 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
-                xs: "h-6 gap-1 px-2 text-xs has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
                 sm: 'h-8 gap-1 px-2.5 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
                 lg: 'h-13 gap-1.5 px-6 text-base has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
                 xl: 'h-[62px] gap-1.5 px-8 text-lg has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
                 icon: 'size-10',
-                'icon-xs': "size-6 [&_svg:not([class*='size-'])]:size-3",
                 'icon-sm': 'size-8',
-                'icon-lg': 'size-11',
             },
         },
         compoundVariants: [

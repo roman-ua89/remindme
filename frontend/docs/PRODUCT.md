@@ -54,11 +54,11 @@ flowchart TD
 | **Registration** | Create account |
 | **Login** | Sign-in dialog on Home (`/?login=true`), opened from **Log in** or when a guest opens a protected page; not a separate page |
 | **Forgot password** | Password recovery |
-| **Home** | Public landing page: slogan and **Log in** for guests; logged-in users also see **Open my categories**, **Your library** counts and the **Daily activity** chart |
+| **Home** | Public landing page: slogan, **Log in** and **See how it works** for guests; logged-in users also see the tree card, **Open my categories**, **Your library** counts and the **Daily activity** and **Time in Player** charts |
 | **Categories** | List categories; add category via popover |
 | **Category detail** | List topics in a category; **Add topic**; open a topic |
-| **Topic detail** | List entities in a topic; **Add entity** (modal); edit or remove each entity |
-| **Entity** | Constructor — split preview (left) and block editor (right); opened as modal from Topic detail; required Title + up to 20 constructor blocks (see §3.4) |
+| **Topic detail** | List entities in a topic; **Add entity** (full page); edit or remove each entity |
+| **Entity** | Constructor — split preview (left) and block editor (right); opened as a full page from Topic detail; required Title + 1–20 constructor blocks (see §3.4) |
 | **Player** | Revise entities one at a time; **Done** / **Skip** update counters (see §3.5) |
 
 ### 3.2 Navigation map
@@ -89,9 +89,13 @@ flowchart LR
 
 **Home** (`/`)
 
-- Public landing page: slogan plus **Log in** for guests.
-- Logged in: also **Open my categories** (→ `/categories`) and the **Your library** counts (categories, topics, entities; placeholder values until wired to the API).
-- Logged in: **Daily activity** — full-width stacked bar chart, one bar per day of the selected month: **Skipped** (red) at the bottom, **Revised** (green) on top. Defaults to the current month; **Prev month** / **Next** (top-left) page through months: Next is disabled on the current month, Prev is disabled on the first month that has any activity (or on the current month if there is none yet). Empty months in between (e.g. a long break) stay reachable. Days are the user's local calendar days. Counts come only from Player **Done** / **Skip** clicks from the moment the feature shipped. Data is cached for a day and refreshed after any Done/Skip.
+- Guests: slogan, **Log in** (opens the login dialog) and **See how it works** (also opens the login dialog; there is no tour yet). Below them, **Grow your tree** shows three stage cards: Sprout on Day 1, Leaves on Days 6–8, Apples on Days 12–15.
+- Logged in: **Your tree** card — the tree at its placeholder stage (any of the six: Sprout, Seedling, Sapling, Leaves, Blossom or Apples), the drops count and the hint "Come back tomorrow to earn up to 3 more drops." **Open my categories** (→ `/categories`) sits on the card.
+- Logged in: **Your library** — counts of categories, topics and entities.
+- Logged in: **Daily activity** — stacked bar chart, one bar per day of the selected month: **Skipped** (gold) at the bottom, **Revised** (terracotta) on top. Defaults to the current month; **Prev month** / **Next** (top right, on the chart title row) page through months: Next is disabled on the current month, Prev is disabled on the first month that has any activity (or on the current month if there is none yet). Empty months in between (e.g. a long break) stay reachable. Days are the user's local calendar days. Counts come only from Player **Done** / **Skip** clicks from the moment the feature shipped. Data is cached for a day and refreshed after any Done/Skip. From 768px wide it sits beside **Time in Player**; below that the two stack.
+- Logged in: **Time in Player** — area chart of Player minutes per day for the selected month, with a dashed line at the 30-minute daily goal, plus the month's total and the average per active day.
+
+**Placeholder score:** The tree card's stage and drops are placeholders. The browser draws a random score (0–15 drops, 0–3 of them earned today) once when the app loads and keeps it in memory until a reload; it is not saved, not tied to real activity and not from the API. Stage thresholds count drops (Sprout 0–1, Leaves 6–8, Apples 12–15), while the guest labels show the same numbers as days; the unit is still open.
 
 **Categories** (`/categories`)
 
@@ -106,19 +110,19 @@ flowchart LR
 
 - **Add topic** button at the top; list of existing topics below.
 - Tap a topic → Topic detail.
-- After creating a new topic, user is redirected to that topic's **Topic detail** page.
+- Creating a topic does not redirect: the new topic appears in the list on this page.
 - Icon-only **Rename** and **Delete** buttons on the category title row (`aria-label` carries the action name). Delete only when the category has no topics (with confirmation).
 - Each topic row has icon-only **Rename**, **Delete**, and **Play** buttons. Delete only when the topic has no entities. **Play** opens the **Player** for all entities in that topic (see §3.5); disabled when the topic has no eligible entities.
 
 **Topic detail**
 
 - **Add entity** button; list of existing entities below.
-- **Add entity** opens a **modal** containing the Entity constructor.
-- Each entity row shows the entity's **`revised_count`** as gray text (`{count} revised`) before icon-only **Edit**, **Remove**, and **Play** buttons (`aria-label` carries the action name) — **Edit** opens the Entity constructor; **Remove** asks for confirmation; **Play** opens the **Player** for that entity only (see §3.5).
+- **Add entity** opens the Entity constructor as a full page (`…/entities/new`).
+- Each entity row shows the entity's **`revised_count`** as gray text (`{count} revised`) before icon-only **Play**, **Edit** and **Remove** buttons (`aria-label` carries the action name) — **Edit** opens the Entity constructor as a full page (`…/entities/$entityId`); **Remove** asks for confirmation; **Play** opens the **Player** for that entity only (see §3.5).
 
 **Entity (constructor)**
 
-- Shown in a **modal** when creating from Topic detail (**Add entity**); may also open as a full page or modal when editing (see Open decisions).
+- Opens as a full page: **Add entity** at `…/entities/new`, **Edit** at `…/entities/$entityId`.
 - Full layout, block types, and limits: see **§3.4 Entity constructor**.
 
 ### 3.4 Entity constructor
@@ -185,7 +189,7 @@ Additional block types may be added in future versions; v1 supports the five typ
 **Limits**
 
 - Maximum **20 constructor blocks** per entity (Title excluded).
-- An entity may have zero blocks if Title is set.
+- An entity needs at least one block; Save is disabled with none.
 
 ### 3.5 Player
 
@@ -193,19 +197,20 @@ The **Player** (`/player`) is where the user revises information. It shows one e
 
 **Layout**
 
-- **Top — Stop:** Button near the top of the page; exits the Player immediately and returns to **Home** (`/`). Does not change counters for the current entity.
-- **Progress:** A pack progress bar under the title row (`completed of total` plus how many are left in this pack).
-- **Center — entity preview:** Read-only render of the current entity (Title + blocks in sequence).
-- **Bottom — actions:** **Done** and **Skip** buttons below the preview.
+- **Top bar:** the **Player** heading, a timer ring (time in Player today against the 30-minute goal) and **Stop**. Stop exits the Player immediately and returns to the page it was opened from (an internal `returnTo` path), or to **Categories** when there is none. Does not change counters for the current entity.
+- **Progress:** A segmented bar under the top bar (`completed of total` plus how many are left in this pack).
+- **Center — entity preview:** Read-only render of the current entity (Title + blocks in sequence), in a card.
+- **Bottom — actions:** **Skip** (secondary, left) and **Done** (positive, right) below the preview, with one hint line under them: "Press **D** for Done or **S** for Skip".
 
 **Behavior**
 
-- The Player deals **packs of up to 10** eligible entities (fewer if the min pool is smaller). The next card is already in the client queue.
+- The Player deals **packs of up to 3** eligible entities (fewer if the min pool is smaller). The next card is already in the client queue.
 - **Done** — increments `revised_count` for the current entity; advances to the next item in the current pack.
 - **Skip** — increments `skipped_count` only (does not increment `revised_count`); advances to the next item in the current pack. Skip and Done differ only by which counter they update.
 - **Pack complete** — when the current pack is exhausted, a modal offers **Get next 3** or **Go to Home**. The user stays on `/player` (no summary screen, no auto-redirect).
 - **Round reset** — if the next pack is empty because every eligible entity was already shown this round, shown ids are cleared and a new pack is dealt. Play continues.
 - **Empty scope** — if there are no eligible entities in scope, **Play** is disabled on the list row when possible; navigating to `/player` with an empty scope shows a depleted state (Home only).
+- **Keyboard** — **D** marks Done and **S** marks Skip while an entity from the pack is showing. Ignored when Ctrl, Cmd, Alt or Shift is held, on key repeat, while typing in a field, while a Done or Skip request is pending, and between packs.
 
 **Entry points**
 
@@ -249,13 +254,13 @@ Notes:
 ### 4.3 Add topic (from Category detail)
 
 1. Category detail → **Add topic**
-2. Create topic (input UI TBD — modal, popover, or inline)
-3. After save → user is redirected to the new **Topic detail** page
+2. **Add topic** popover: enter the topic name, then **Save**
+3. After save, the topic appears in the list on Category detail (no redirect)
 
 ### 4.4 Topic detail (entities)
 
 1. Topic detail → **Add entity** button at the top; list of previously created entities below
-2. **Add entity** opens a **modal** with the Entity constructor
+2. **Add entity** opens the Entity constructor as a full page (`…/entities/new`)
 3. On each existing entity: **Edit** (Entity constructor) or **Remove** (with confirmation)
 
 ### 4.5 Revision flow (Player)
@@ -263,7 +268,7 @@ Notes:
 **Start from a category (Categories)**
 
 1. Categories → **Play** on a category row → **Player** (`/player?categoryId=…`)
-2. First pack: up to 10 random entities at minimum `revised_count` in that category (only `visibility = included`)
+2. First pack: up to 3 random entities at minimum `revised_count` in that category (only `visibility = included`)
 3. User reviews the read-only preview
 4. **Done** or **Skip** → matching counter incremented → next entity in the current pack
 5. When the pack is empty → modal: **Get next 3** or **Go to Home**
@@ -283,7 +288,7 @@ Notes:
 
 **Stop at any time**
 
-1. **Stop** (top of Player) → return to **Home** immediately; current entity counters are unchanged
+1. **Stop** (top of Player) → return to the page the Player was opened from, or **Categories** when there is none, immediately; current entity counters are unchanged
 
 ---
 
@@ -310,11 +315,11 @@ Notes:
 - Created and edited via **Entity constructor** page
 - Removed individually from Topic detail (with confirmation)
 - **Title** is required before save
-- Block sequence: **0–20** constructor blocks per entity; block order is persisted and drives the content preview and Player display
+- Block sequence: **1–20** constructor blocks per entity; block order is persisted and drives the content preview and Player display
 - **Revision (Player):**
   - **Done** increments `revised_count`; **Skip** increments `skipped_count` only
   - Entities with `visibility = excluded` are not eligible for the Player
-  - Packs of up to 10 from the minimum `revised_count` pool; each eligible entity at most once per round (see §3.5 and [PLAYER.md](PLAYER.md))
+  - Packs of up to 3 from the minimum `revised_count` pool; each eligible entity at most once per round (see §3.5 and [PLAYER.md](PLAYER.md))
   - **Play** disabled on list rows when scope has zero eligible entities
 
 ---
@@ -337,10 +342,10 @@ Users have roles (`user`, `admin`; extensible). Regular users see only their own
 
 Items not blocking product structure but needing confirmation before implementation:
 
-1. **Add topic UI** — modal, popover, or inline on Category detail?
+1. **Add topic UI** — decided: a popover on Category detail.
 2. **Topic rename / delete** — rules and empty-topic delete behavior
 3. **Category rename** — inline on Category detail or separate edit screen?
-4. **Entity edit entry point** — same modal as Add entity, or navigate to full Entity page?
+4. **Entity edit entry point** — decided: Edit opens the full Entity page, the same as Add entity.
 
 ---
 
@@ -399,7 +404,7 @@ Changes made when structuring [ABOUT.md](ABOUT.md):
 
 | Topic | Previous | Updated |
 |-------|----------|---------|
-| Queue | Load all eligible client-side; once per session | Packs of ≤10 full entities; next card already in the client queue |
+| Queue | Load all eligible client-side; once per session | Packs of ≤3 full entities; next card already in the client queue |
 | Session end | Completion message after every eligible entity once | Continue modal each pack; **round reset** when the scope is fully shown |
 | Skip scheduling | Random from all remaining in scope | Next in current pack (counter only differs) |
 | Progress | None | Pack-only progress bar (`completed of total`) |

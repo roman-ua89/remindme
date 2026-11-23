@@ -269,7 +269,7 @@ queryKeys.player.batch(scopeKey)
 
 ### Player batch session
 
-The **Player** ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)) shows one entity at a time from an in-memory pack of up to 10 full entities:
+The **Player** ([PRODUCT.md §3.5](PRODUCT.md), [PLAYER.md](PLAYER.md)) shows one entity at a time from an in-memory pack of up to 3 full entities:
 
 - **`use-player-batch.ts`** — mutation that fetches a pack (`POST /player/batch`) and applies the round-reset rule when `items` is empty
 - **`use-mark-done.ts`** / **`use-mark-skip.ts`** — mutations; invalidate scoped entity/topic/category list keys on success
@@ -505,7 +505,7 @@ const form = useForm<CreateCategoryInput>({
 ### Scope
 
 - **shadcn/ui:** app chrome and shared patterns — nav, buttons, inputs, dialogs, sheets, toasts, dropdowns, forms
-- **List row actions** (Home categories, Category detail topics, Topic detail entities): icon-only inline buttons — pencil for rename/edit, trash for delete/remove; put the action name in `aria-label`; do **not** use `DropdownMenu` on these pages; reserve dropdowns for app chrome (e.g. user menu in `AppHeader`)
+- **List row actions** (Categories, Category detail topics, Topic detail entities): rendered by the shared `ListRow` (`components/shared/ListRow.tsx`) with icon-only round buttons — play, pencil for rename/edit, trash for delete/remove; put the action name in `aria-label`; do **not** use `DropdownMenu` on these pages; reserve dropdowns for app chrome (e.g. user menu in `AppHeader`)
 - **Lucide:** nav items, toolbar actions, form affordances, empty states, block editor controls — including **TipTap** formatting toolbar buttons
 - **Tailwind:** all styling, including the **entity constructor** preview panel and block editors in `features/entities/` — compose shadcn building blocks where they fit; use utility classes for block-specific layouts; TipTap preview uses `@tailwindcss/typography` `prose`; CodeMirror theme via Tailwind on the editor wrapper
 
@@ -514,10 +514,46 @@ const form = useForm<CreateCategoryInput>({
 - Install components **incrementally** via the shadcn CLI (`npx shadcn@latest add button`) — add only what a feature needs
 - Generated components live in **`src/components/ui/`**; treat them as owned source — customize in place when product requires it
 - Use **`cn()`** from `src/lib/utils.ts` (`clsx` + `tailwind-merge`) for conditional classes
-- Theme via **CSS variables** in `src/index.css` (shadcn default light/dark tokens); wire dark mode to `useUiStore` if product adds theme toggle
+- Theme via **CSS variables** in `src/index.css` (`:root` tokens only, see Colour tokens below); wire dark mode to `useUiStore` if product adds theme toggle
 - Do **not** introduce a second component library (MUI, Chakra, etc.)
 - Prefer shadcn primitives over one-off styled elements when a match exists (e.g. `Button`, `Dialog`, `Input`)
 - Block editors and preview panel are **feature components** in `features/entities/` — Tailwind + shadcn atoms (Card, Badge, etc.) as needed
+
+### Colour tokens (`src/index.css`)
+
+- Palette values are CSS variables in the `:root` block: paper background, terracotta primary, green **positive** actions, blue **info** and red-tinted **stop** and **destructive** states, block-type colours, tree illustration, sun glow, chart and Player colours.
+- The `@theme inline` block maps each variable to a Tailwind colour utility, so components use names such as `bg-card`, `text-primary-hover` or `bg-positive`. Do not hard-code hex values in components.
+- Corner radius comes from one `--radius` (16px); `rounded-sm` through `rounded-2xl` are multiples of it.
+- Shadows: `shadow-positive-glow` (positive buttons) and `shadow-tile-hover` (hovered tiles and the Player card's resting shadow).
+- There is no dark token set yet; the `dark` custom variant is declared for when one is added.
+
+### Fonts
+
+- **Figtree Variable** is the UI font (`--font-sans`, applied to `html`). **Fraunces Variable** is the heading font (`--font-heading`, the `font-heading` class), used for headings such as the Home hero, the tree card title and the library counts, and for the logo wordmark.
+- Both load through `@fontsource-variable` packages imported at the top of `src/index.css`.
+- Figtree and Fraunces have no Cyrillic glyphs, so Cyrillic text falls back to system fonts. Which fallback to accept is still open.
+
+### Buttons
+
+Button variants are CVA variants in `components/ui/button.tsx`:
+
+| Variant | Use |
+|---------|-----|
+| `default` | Accent (terracotta) primary actions |
+| `positive` | Green confirm actions, e.g. Done in the Player |
+| `secondary` | Light blue alternative actions, e.g. Skip in the Player |
+| `stop` | Red-tinted stop action (Player Stop) |
+| `outline` | Secondary actions on a card background, e.g. Back in the Constructor |
+| `ghost` | Low-emphasis actions |
+| `destructive` | Destructive actions; confirm them with an AlertDialog |
+| `defaultEditorBtn`, `selectedEditorBtn` | TipTap toolbar buttons; they use Tailwind's blue palette, not the tokens |
+
+Sizes: `sm` (32px), default (44px), `lg` (52px) and `xl` (62px). Icon buttons: `icon` (40px) and `icon-sm` (32px). Buttons are pills (`rounded-full`) except the two editor variants, which use a small radius.
+
+### Brand components and list rows
+
+- `components/brand/` holds the logo (`SproutLogo`), the sun glow (`SunGlow`, rendered once in `routes/__root.tsx`), the tree illustration (`TreeIllustration`, stages 1 to 6 under `brand/tree/`), and the drop and watering-can icons (`DropIcon`, `WateringCan`).
+- `components/shared/ListRow.tsx` is the row card for the Categories, Topics and Entities lists. It takes a title, a meta line, details and actions. The `hidden` variant (dashed border, paper background) marks hidden rows. `listRowActionClassName` gives the play, edit and remove buttons their colours.
 
 ### Icons (Lucide)
 
@@ -849,7 +885,8 @@ src/
   routes/              # TanStack Router — thin route modules (see §4)
   features/            # Domain modules — auth, categories, topics, entities, media (see ARCHITECTURE.md §5)
   components/ui/       # shadcn/ui
-  components/layout/   # AppShell, AuthLayout, nav (Lucide in nav/actions)
+  components/layout/   # AppHeader, AuthLayout, PageContainer (Lucide in nav/actions)
+  components/brand/    # logo, sun glow, tree and drop illustrations
   components/shared/   # cross-feature UI (promoted when reused)
   lib/                 # api-client, query-client, query-keys, utils
   stores/              # Zustand — UI preferences (v1)
@@ -1092,6 +1129,7 @@ These are **not** part of the chosen stack. Decide when implementing the relevan
 
 | Date | Change |
 |------|--------|
+| 2026-11-23 | Redesign: Figtree and Fraunces fonts replace the previous sans font; colour tokens in `index.css`; button variants and sizes; `components/brand/`; shared `ListRow` |
 | 2026-08-31 | Adopt date-fns for date formatting and parsing in the frontend |
 | 2026-08-18 | Player batched session: pack mutation instead of per-entity prefetch; Progress bar |
 | 2026-06-29 | Initial tech stack document |
