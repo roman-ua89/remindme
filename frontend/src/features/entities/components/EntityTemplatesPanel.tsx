@@ -1,4 +1,5 @@
-import { Layers2, Plus } from 'lucide-react';
+import { Eye, Plus } from 'lucide-react';
+import { useId } from 'react';
 
 import { VisibilitySwitch } from '@/components/shared/VisibilitySwitch';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ type EntityTemplatesPanelProps = {
     onVisibilityChange: (visibility: EntityVisibility) => Promise<unknown>;
 };
 
-export function EntityTemplatesPanel({
+export const EntityTemplatesPanel = ({
     blockCount,
     onHoverTemplate,
     onInsertTemplate,
@@ -30,15 +31,19 @@ export function EntityTemplatesPanel({
     togglePreviewMode,
     visibility,
     onVisibilityChange,
-}: EntityTemplatesPanelProps) {
+}: EntityTemplatesPanelProps) => {
+    const headingId = useId();
     const isAtLimit = blockCount >= MAX_ENTITY_BLOCKS;
 
     return (
-        <div className='flex flex-col gap-4 flex-grow-0 shrink-0 basis-2xs sticky top-4 self-start max-h-[calc(100vh-2rem)] overflow-x-hidden overflow-y-auto'>
+        <aside
+            aria-labelledby={headingId}
+            className='flex flex-col gap-4 flex-grow-0 shrink-0 basis-[300px] sticky top-4 self-start max-h-[calc(100vh-2rem)] overflow-x-hidden overflow-y-auto p-[18px] border border-border rounded-[20px] bg-card'
+        >
             {entityId && visibility ? (
                 <>
                     <div className='flex items-center justify-between gap-2'>
-                        <span className='text-sm font-medium'>Shown in the Player</span>
+                        <span className='text-sm font-semibold'>Shown in the Player</span>
                         <VisibilitySwitch
                             included={visibility === 'included'}
                             onChange={(included) => onVisibilityChange(included ? 'included' : 'excluded')}
@@ -51,26 +56,23 @@ export function EntityTemplatesPanel({
                 </>
             ) : null}
 
-            <div className='flex flex-col gap-1'>
-                <h2 className='text-sm font-semibold'>Add a block</h2>
-                <p className='text-sm text-muted-foreground'>Click a block to add it at the end.</p>
+            <div className='flex flex-col gap-0.5'>
+                <h2 id={headingId} className='font-heading text-xl font-medium'>
+                    Add a block
+                </h2>
+                <p className='text-[13px] text-muted-foreground'>Hover to preview, click to add.</p>
             </div>
 
             <div className='flex flex-col gap-2'>
                 {templateTypes.map((type) => {
-                    const { label, icon: Icon, tileClassName } = BLOCK_TYPE_VISUALS[type];
-                    // Image keeps its plain template button; the other types get the coloured icon tile.
-                    const hasTile = type !== 'image';
+                    const { label, description, icon: Icon, tileClassName } = BLOCK_TYPE_VISUALS[type];
 
                     return (
                         <Button
                             key={type}
                             type='button'
                             variant='outline'
-                            className={cn(
-                                'group relative w-full justify-start',
-                                hasTile && 'h-auto gap-3 rounded-2xl px-3 py-2.5 hover:border-input hover:shadow-tile-hover',
-                            )}
+                            className='group relative h-auto w-full justify-start gap-3 rounded-[14px] px-3 py-2.5 text-left hover:border-insert-placeholder-border hover:bg-white hover:shadow-tile-hover focus-visible:border-insert-placeholder-border focus-visible:bg-white focus-visible:shadow-tile-hover'
                             disabled={isAtLimit}
                             onMouseEnter={() => onHoverTemplate(type)}
                             onMouseLeave={() => onHoverTemplate(null)}
@@ -78,15 +80,14 @@ export function EntityTemplatesPanel({
                             onBlur={() => onHoverTemplate(null)}
                             onClick={() => onInsertTemplate(type)}
                         >
-                            {hasTile ? (
-                                <span className={cn('flex size-7 shrink-0 items-center justify-center rounded-sm', tileClassName)}>
-                                    <Icon className='size-4' />
-                                </span>
-                            ) : (
-                                <Icon />
-                            )}
-                            {label}
-                            <Plus className='absolute right-[10px] opacity-0 transition-opacity group-hover:opacity-100' />
+                            <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-[10px]', tileClassName)}>
+                                <Icon className='size-[18px]' />
+                            </span>
+                            <span className='flex flex-1 flex-col'>
+                                <span className='text-[15px] font-semibold text-foreground'>{label}</span>
+                                <span className='text-[13px] font-normal text-muted-foreground'>{description}</span>
+                            </span>
+                            <Plus className='absolute right-3 size-[18px] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100' />
                         </Button>
                     );
                 })}
@@ -94,10 +95,12 @@ export function EntityTemplatesPanel({
 
             {isAtLimit ? <p className='text-sm text-muted-foreground'>Maximum {MAX_ENTITY_BLOCKS} blocks reached</p> : null}
 
+            <div className='h-px bg-border' />
+
             <div className='flex flex-col gap-2'>
                 <div className='flex items-center justify-between gap-2 text-sm'>
-                    <span className='font-medium'>Blocks</span>
-                    <span className='tabular-nums text-muted-foreground'>
+                    <span className='text-muted-foreground'>Blocks</span>
+                    <span className='font-semibold tabular-nums text-foreground'>
                         {blocks.length} / {MAX_ENTITY_BLOCKS}
                     </span>
                 </div>
@@ -110,10 +113,10 @@ export function EntityTemplatesPanel({
             </div>
 
             {entityId && (
-                <Button variant='secondary' onClick={togglePreviewMode}>
-                    <Layers2 /> Preview
+                <Button variant='secondary' className='w-full gap-2 text-[15px]' onClick={togglePreviewMode}>
+                    <Eye className='size-[17px]' /> Preview
                 </Button>
             )}
-        </div>
+        </aside>
     );
-}
+};
