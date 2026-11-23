@@ -92,7 +92,7 @@ export const EditCategoryPopover = ({ category, triggerClassName }: EditCategory
                         <Button type='button' variant='outline' className='flex-1' onClick={handleCancel}>
                             Cancel
                         </Button>
-                        <Button type='submit' className='flex-1' disabled={isPending}>
+                        <Button type='submit' variant='positive' className='flex-1' disabled={isPending}>
                             {isPending ? 'Saving…' : 'Save'}
                         </Button>
                     </div>
