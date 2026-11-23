@@ -30,7 +30,15 @@ function isInternalPath(path: string | undefined): path is string {
     return !!path && path.startsWith('/') && !path.startsWith('//') && !path.startsWith('/player');
 }
 
-export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
+/** Typing targets: the Done/Skip shortcuts must not fire while the user writes text. */
+function isEditableTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+    return target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+}
+
+export const PlayerPage = ({ scope, returnTo }: PlayerPageProps) => {
     const navigate = useNavigate();
     const [session, setSession] = useState(createEmptySession);
     const fetchBatch = usePlayerBatch();
@@ -122,13 +130,36 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
         );
     }
 
+    useEffect(() => {
+        function handleShortcut(event: KeyboardEvent) {
+            if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || event.repeat) {
+                return;
+            }
+            if (session.status !== 'playing' || isMutating || isEditableTarget(event.target)) {
+                return;
+            }
+
+            const key = event.key.toLowerCase();
+            if (key === 'd') {
+                event.preventDefault();
+                handleDone();
+            } else if (key === 's') {
+                event.preventDefault();
+                handleSkip();
+            }
+        }
+
+        window.addEventListener('keydown', handleShortcut);
+        return () => window.removeEventListener('keydown', handleShortcut);
+    });
+
     return (
         <PageContainer className='py-8'>
             <div className='mb-6 flex items-center justify-between gap-4'>
-                <h1 className='text-2xl font-semibold tracking-tight'>Player</h1>
-                <div className='flex items-center gap-4'>
+                <h1 className='font-heading text-2xl font-medium tracking-tight'>Player</h1>
+                <div className='flex items-center gap-3'>
                     <PlayerTimer goalMinutes={PLAYER_DAILY_GOAL_MINUTES} />
-                    <Button type='button' variant='outline' onClick={goHome}>
+                    <Button type='button' variant='stop' onClick={goHome}>
                         Stop
                     </Button>
                 </div>
@@ -173,4 +204,4 @@ export function PlayerPage({ scope, returnTo }: PlayerPageProps) {
             />
         </PageContainer>
     );
-}
+};

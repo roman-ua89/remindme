@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 
 import type { CodeContentJson } from '@/features/entities/types';
 import { getLanguageExtension } from '@/lib/codemirror/languages';
+import { codePreviewExtensions } from '@/lib/codemirror/preview-theme';
 
 const languageLabels: Record<CodeContentJson['language'], string> = {
     javascript: 'JavaScript',
@@ -13,49 +14,41 @@ type CodeBlockPreviewProps = {
     contentJson: CodeContentJson;
 };
 
-export function CodeBlockPreview({ contentJson }: CodeBlockPreviewProps) {
+export const CodeBlockPreview = ({ contentJson }: CodeBlockPreviewProps) => {
     const [revealed, setRevealed] = useState(false);
-    const blurredByDefault = contentJson.blurredByDefault;
+    const { blurredByDefault, language, value } = contentJson;
     const isBlurred = blurredByDefault && !revealed;
 
-    const toggleRevealed = () => {
-        if (blurredByDefault) {
-            setRevealed((current) => !current);
-        }
-    };
-
     return (
-        <div className='flex flex-col gap-2'>
-            <p className='text-sm text-muted-foreground'>{languageLabels[contentJson.language]}</p>
-            <div
-                className={
-                    isBlurred
-                        ? 'cursor-pointer select-none overflow-hidden rounded-md border border-input blur-sm'
-                        : 'overflow-hidden rounded-md border border-input'
-                }
-                onClick={toggleRevealed}
-                onKeyDown={(event) => {
-                    if (!blurredByDefault) {
-                        return;
-                    }
+        <div className='overflow-hidden rounded-xl border border-block-code-border bg-block-code-surface'>
+            <div className='flex items-center justify-between gap-4 border-b border-block-code-border bg-block-code-soft px-4 py-2.5'>
+                <span className='text-sm font-semibold text-block-code'>{languageLabels[language]}</span>
+                {isBlurred ? <span className='text-sm text-muted-foreground'>Hidden until you reveal it</span> : null}
+            </div>
 
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        setRevealed((current) => !current);
-                    }
-                }}
-                role={blurredByDefault ? 'button' : undefined}
-                tabIndex={blurredByDefault ? 0 : undefined}
-            >
-                <div className={isBlurred ? 'pointer-events-none' : undefined}>
+            <div className='relative'>
+                <div className={isBlurred ? 'pointer-events-none select-none blur-sm' : undefined}>
                     <CodeMirror
-                        value={contentJson.value}
+                        value={value}
                         editable={false}
-                        extensions={[getLanguageExtension(contentJson.language)]}
-                        basicSetup={{ lineNumbers: true }}
+                        theme='none'
+                        extensions={[getLanguageExtension(language), codePreviewExtensions]}
+                        basicSetup={{ lineNumbers: true, foldGutter: false, highlightActiveLine: false, highlightActiveLineGutter: false }}
                     />
                 </div>
+
+                {isBlurred ? (
+                    <div className='absolute inset-0 flex items-center justify-center'>
+                        <button
+                            type='button'
+                            onClick={() => setRevealed(true)}
+                            className='rounded-full border border-block-code-border bg-card px-5 py-2.5 text-sm font-semibold text-block-code transition-colors outline-none hover:bg-block-code-soft focus-visible:ring-3 focus-visible:ring-ring/50'
+                        >
+                            Show code
+                        </button>
+                    </div>
+                ) : null}
             </div>
         </div>
     );
-}
+};
