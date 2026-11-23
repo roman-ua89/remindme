@@ -33,19 +33,22 @@ export const EntityMarkerToggle = ({ value, onChange, disabled, className }: Ent
         <ToggleGroup
             variant='outline'
             size='sm'
-            spacing={0}
+            spacing={2}
             aria-label='Entity marker'
             disabled={disabled}
             value={optimisticValue === null ? [] : [String(optimisticValue)]}
             onValueChange={handleValueChange}
-            className={className}
+            className={cn('shrink-0', className)}
         >
             {ENTITY_MARKER_OPTIONS.map((option) => (
                 <ToggleGroupItem
                     key={option.value}
                     value={String(option.value)}
                     aria-label={option.label}
-                    className={cn('px-2.5', option.pressedClassName)}
+                    className={cn(
+                        'rounded-full border-border bg-card px-3 text-muted-foreground shadow-none hover:bg-muted hover:text-foreground',
+                        option.pressedClassName,
+                    )}
                 >
                     <span className={cn('size-2 rounded-full', option.dotClassName)} aria-hidden />
                     {option.label}

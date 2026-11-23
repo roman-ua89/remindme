@@ -11,7 +11,7 @@ const buttonVariants = cva(
             variant: {
                 default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
                 positive:
-                    'bg-positive text-positive-foreground shadow-positive-glow hover:bg-positive-hover disabled:bg-positive-disabled disabled:opacity-100 disabled:shadow-none',
+                    'bg-positive text-positive-foreground shadow-positive-glow hover:bg-positive-hover disabled:bg-positive-disabled disabled:text-positive-disabled-foreground disabled:opacity-100 disabled:shadow-none',
                 secondary:
                     'border-info-border bg-info text-info-foreground hover:border-info-border-hover hover:bg-info-hover aria-expanded:border-info-border-hover aria-expanded:bg-info-hover',
                 reveal: 'bg-reveal text-reveal-foreground hover:bg-reveal-hover',
