@@ -1,23 +1,30 @@
 import { z } from 'zod'
 
+export const emailSchema = z
+  .string()
+  .trim()
+  .min(1, 'Email is required')
+  .max(100, 'Email must be 100 characters or less')
+  .email('Enter a valid email')
+
 export const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).max(128),
+  email: emailSchema,
+  password: z.string().min(8).max(64, 'Password must be 64 characters or less'),
   displayName: z.string().min(1).max(100).optional(),
 })
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  email: emailSchema,
+  password: z.string().min(1, 'Password is required').max(64, 'Password must be 64 characters or less'),
 })
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: emailSchema,
 })
 
 export const resetPasswordSchema = z.object({
   token: z.string().min(1),
-  password: z.string().min(8).max(128),
+  password: z.string().min(8).max(64, 'Password must be 64 characters or less'),
 })
 
 export const userSchema = z.object({
