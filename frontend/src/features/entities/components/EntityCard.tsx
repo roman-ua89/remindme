@@ -102,7 +102,7 @@ export const EntityCard = ({ entity, onEdit, onRemove }: EntityCardProps) => {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel variant='default'>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel variant='secondary'>Cancel</AlertDialogCancel>
                                 <AlertDialogAction variant='destructive' onClick={handleRemove}>
                                     Remove
                                 </AlertDialogAction>

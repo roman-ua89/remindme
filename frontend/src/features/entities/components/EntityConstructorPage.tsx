@@ -275,7 +275,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button type='button' variant='outline' onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+                        <Button type='button' variant='secondary' onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
                             Cancel
                         </Button>
                         <Button

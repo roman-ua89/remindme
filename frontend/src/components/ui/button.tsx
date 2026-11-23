@@ -21,9 +21,9 @@ const buttonVariants = cva(
                 destructive:
                     'bg-destructive-soft text-destructive hover:bg-destructive-soft-hover focus-visible:border-destructive/40 focus-visible:ring-destructive/20',
                 defaultEditorBtn:
-                    'text-sm bg-blue-300 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
+                    'text-sm bg-blue-300 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400',
                 selectedEditorBtn:
-                    'text-sm bg-blue-500 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400 cursor-pointer',
+                    'text-sm bg-blue-500 text-white font-semibold py-0 px-2 rounded-sm transition-all duration-200 ease-in-out hover:bg-blue-400',
             },
             size: {
                 default: 'h-11 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',

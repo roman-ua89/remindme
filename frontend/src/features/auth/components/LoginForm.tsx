@@ -52,7 +52,7 @@ export const LoginForm = () => {
                 )}
             />
 
-            <Button type='submit' size='lg' className='mt-1 w-full' disabled={isPending}>
+            <Button type='submit' variant='positive' size='lg' className='mt-1 w-full' disabled={isPending}>
                 {isPending ? 'Signing in…' : 'Sign in'}
             </Button>
         </form>
