@@ -193,7 +193,7 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
             <PageContainer className={`py-8 ${isPreviewMode ? 'hidden' : ''}`}>
                 <form className='flex flex-col gap-6 mb-6' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex items-start justify-between gap-4'>
-                        <div className='flex flex-col gap-1 mb-2'>
+                        <div className='flex min-w-0 flex-col gap-1 mb-2'>
                             <AppBreadcrumbs
                                 category={{ id: categoryId, name: category.name }}
                                 topic={{ id: topicId, name: topic.name }}
@@ -201,11 +201,11 @@ export function EntityConstructorPage({ categoryId, topicId, entityId }: EntityC
                             />
                         </div>
 
-                        <div className='flex items-center gap-2'>
+                        <div className='flex shrink-0 items-center gap-2'>
                             <Button onClick={returnBack} variant={'outline'}>
                                 <ChevronLeft /> Back
                             </Button>
-                            <Button type='submit' disabled={isSaving || !isFormDirty || !fields.length}>
+                            <Button type='submit' variant='positive' disabled={isSaving || !isFormDirty || !fields.length}>
                                 <Save /> {isSaving ? 'Saving…' : 'Save'}
                             </Button>
                         </div>

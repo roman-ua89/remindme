@@ -52,6 +52,7 @@
     --positive-foreground: #ffffff;
     --positive-hover: #41752d;
     --positive-disabled: #c3dbb6;
+    --positive-disabled-foreground: #3d5c31;
     --positive-checked: #6fae52;
     --info: #eef5fb;
     --info-foreground: #2f5f8f;
@@ -80,6 +81,12 @@
     --block-link-soft: #e3eef8;
     --block-link-surface: #f4f8fc;
     --block-link-border: #c9ddf0;
+
+    /* constructor */
+    --insert-placeholder-border: #d8c6b4;
+    --insert-placeholder-surface: #fcf9f3;
+    --blocks-meter-from: var(--drop);
+    --blocks-meter-to: var(--tree-leaf);
 
     /* entity list */
     --action-play: #f8ede7;
@@ -187,6 +194,7 @@ body {
     --color-positive-foreground: var(--positive-foreground);
     --color-positive-hover: var(--positive-hover);
     --color-positive-disabled: var(--positive-disabled);
+    --color-positive-disabled-foreground: var(--positive-disabled-foreground);
     --color-positive-checked: var(--positive-checked);
     --color-info: var(--info);
     --color-info-foreground: var(--info-foreground);
@@ -215,6 +223,12 @@ body {
     --color-block-link-soft: var(--block-link-soft);
     --color-block-link-surface: var(--block-link-surface);
     --color-block-link-border: var(--block-link-border);
+
+    /* constructor */
+    --color-insert-placeholder-border: var(--insert-placeholder-border);
+    --color-insert-placeholder-surface: var(--insert-placeholder-surface);
+    --color-blocks-meter-from: var(--blocks-meter-from);
+    --color-blocks-meter-to: var(--blocks-meter-to);
 
     /* entity list */
     --color-action-play: var(--action-play);
@@ -285,6 +299,7 @@ body {
     --radius-4xl: calc(var(--radius) * 2);
 
     --shadow-positive-glow: 0 6px 16px rgb(94 154 71 / 0.25);
+    --shadow-tile-hover: 0 6px 16px rgb(46 38 32 / 0.08);
 }
 
 .dark {

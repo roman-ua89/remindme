@@ -20,7 +20,7 @@ export const LinkBlockEditor = ({ control, name }: LinkBlockEditorProps) => {
         <div className='flex flex-col gap-3'>
             <div className='grid gap-2'>
                 <Label htmlFor={titleId}>
-                    Title <span className='text-stone-400'>(max {constants.maxTitleSymbols} symbols)</span>
+                    Title <span className='text-muted-foreground'>(max {constants.maxTitleSymbols} symbols)</span>
                 </Label>
                 <Controller
                     control={control}

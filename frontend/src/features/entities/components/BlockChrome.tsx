@@ -3,15 +3,8 @@ import { GripVerticalIcon, XIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { BLOCK_TYPE_VISUALS } from '@/features/entities/block-type-visuals';
 import type { BlockType } from '@/features/entities/types';
-
-const blockTypeLabels: Record<BlockType, string> = {
-    text: 'Text',
-    code: 'Code',
-    image: 'Image',
-    list: 'List',
-    link: 'Link',
-};
 
 type BlockChromeProps = {
     blockType: BlockType;
@@ -22,10 +15,17 @@ type BlockChromeProps = {
 };
 
 export function BlockChrome({ blockType, dragHandleProps, onRemove, children, className }: BlockChromeProps) {
+    const { label, icon: Icon, tileClassName } = BLOCK_TYPE_VISUALS[blockType];
+
     return (
-        <div className={cn('rounded-lg border border-border bg-card', className)}>
+        <div className={cn('rounded-xl border border-border bg-card', className)}>
             <div className='flex items-center justify-between gap-2 border-b border-border px-3 py-2'>
-                <span className='text-sm font-medium'>{blockTypeLabels[blockType]}</span>
+                <div className='flex min-w-0 items-center gap-2'>
+                    <span className={cn('flex size-7 shrink-0 items-center justify-center rounded-sm', tileClassName)}>
+                        <Icon className='size-4' />
+                    </span>
+                    <span className='truncate text-sm font-semibold'>{label}</span>
+                </div>
                 <div className='flex items-center gap-1'>
                     <Button
                         type='button'

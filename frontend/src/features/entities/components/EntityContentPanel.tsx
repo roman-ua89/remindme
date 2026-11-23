@@ -8,6 +8,7 @@ import { Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BlockEditorRouter } from '@/features/entities/components/BlockEditorRouter';
+import { BlockInsertPlaceholder } from '@/features/entities/components/BlockInsertPlaceholder';
 import { EntityMarkerToggle } from '@/features/entities/components/EntityMarkerToggle';
 import type { BlockType, EntityBlockForm, EntityConstructorFormValues, EntityMarker } from '@/features/entities/types';
 import { cn } from '@/lib/utils';
@@ -76,10 +77,10 @@ export function EntityContentPanel({
     }
 
     return (
-        <div className='flex flex-col gap-4 flex-grow-1 '>
+        <div className='flex min-w-0 flex-col gap-4 flex-grow-1 '>
             <div className='grid gap-2'>
                 <Label htmlFor='entity-title'>
-                    Title <span className='text-stone-400'>(max {constants.maxTitleSymbols} symbols)</span> *
+                    Title <span className='text-muted-foreground'>(max {constants.maxTitleSymbols} symbols)</span> *
                 </Label>
                 <Controller
                     control={control}
@@ -119,11 +120,13 @@ export function EntityContentPanel({
                 </SortableContext>
             </DndContext>
 
-            {hoveredTemplate ? (
+            {hoveredTemplate === 'image' ? (
                 <div className='flex min-h-24 items-center justify-center rounded-lg border border-dashed border-muted-foreground/40 bg-muted/40 px-4 py-8 text-sm text-muted-foreground'>
-                    {hoveredTemplate.charAt(0).toUpperCase() + hoveredTemplate.slice(1)} block will be inserted here
+                    Image block will be inserted here
                 </div>
             ) : null}
+
+            {hoveredTemplate && hoveredTemplate !== 'image' ? <BlockInsertPlaceholder blockType={hoveredTemplate} /> : null}
 
             {blocks.length === 0 && !hoveredTemplate ? <p className='text-sm text-muted-foreground'>No blocks yet</p> : null}
         </div>
