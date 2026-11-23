@@ -71,6 +71,8 @@
     --block-link-surface: #f4f8fc;
     --block-link-border: #c9ddf0;
     --block-link-url: #2f5f8f;
+    --block-image: #a27a12;
+    --block-image-soft: #fbf0cf;
     --block-text-chip: #f8f4ed;
     --block-text-chip-border: #e9e1d4;
     --block-table-border: #dce8f4;
@@ -210,6 +212,8 @@ body {
     --color-block-link-surface: var(--block-link-surface);
     --color-block-link-border: var(--block-link-border);
     --color-block-link-url: var(--block-link-url);
+    --color-block-image: var(--block-image);
+    --color-block-image-soft: var(--block-image-soft);
     --color-block-text-chip: var(--block-text-chip);
     --color-block-text-chip-border: var(--block-text-chip-border);
     --color-block-table-border: var(--block-table-border);

@@ -572,8 +572,8 @@ Uses the app header and `PageContainer`.
 │ │  [ Present Simple ]                    │  │ [ on ]             │ │
 │ │                                        │  │                    │ │
 │ │  Text block                            │  │ Add a block        │ │
-│ │  (TipTap rich text)                    │  │ Click a block to   │ │
-│ │                                        │  │ add it at the end. │ │
+│ │  (TipTap rich text)                    │  │ Hover to preview,  │ │
+│ │                                        │  │ click to add.      │ │
 │ │  Code block                            │  │                    │ │
 │ │  (CodeMirror, JavaScript / TypeScript) │  │ [ Text ]           │ │
 │ │                                        │  │ [ Code ]           │ │
@@ -594,9 +594,9 @@ Uses the app header and `PageContainer`.
 | Panel | Contents |
 |-------|----------|
 | **Left — Content** | Title field (required, up to 75 symbols); in edit mode the marker toggle (Needs edit / To remove) sits beside it. Block cards follow in order |
-| **Right — Templates** | In edit mode: **Shown in the Player** switch and a divider. Then **Add a block** with the hint "Click a block to add it at the end.", the five templates, the **N / 20** block counter with a thin bar, and in edit mode a **Preview** button (light blue) |
+| **Right — Templates** | In edit mode: **Shown in the Player** switch and a divider. Then **Add a block** with the hint "Hover to preview, click to add.", the five templates, a divider, the **N / 20** block counter with a thin bar, and in edit mode a **Preview** button (light blue) |
 
-Text, Code, List and Link templates have coloured icon tiles (grey, lavender, green and blue); Image keeps its plain button. A hovered template gets a stronger border, a shadow and a + icon.
+The panel is a card. Each template is a card with a coloured icon tile (Text grey, Code lavender, Image amber, List green, Link blue), its name and a one-line description. A hovered or focused template gets a stronger border, a white background, a shadow and a + icon.
 
 | Template | Block editor (left column, after insert) |
 |----------|------------------------------------------|
