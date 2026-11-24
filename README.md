@@ -23,6 +23,49 @@
 
 <!-- TODO: hero screenshot (Player or logged-in Home at 1280px), e.g. docs/images/player.png -->
 
+## Agentic workflow
+
+How a task moves through the orchestrator (main Claude session), the `builder` and `reviewer` agents, and the skills `create-branch`, `commit-message`, `push-commit` and `reflect`.
+Rules live in [CLAUDE.md](CLAUDE.md); agents in `.claude/agents/`; skills in `.claude/skills/`.
+
+### Process
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 30, 'padding': 6}}}%%
+flowchart TD
+    BL[/"Backlog task, only when named"/] -.-> BR
+    BR["create-branch skill"] --> P["Read progress, known-issues; plan briefs"]
+    P --> B["builder: code + npm run ci, parallel if no overlap"]
+    B --> V["Done when passes?"]
+    V -->|"fail, return with errors"| B
+    V -->|"after 3 returns"| X(["Stop and ask human"])
+    V -->|"ok, log progress.md"| J["All briefs accepted?"]
+    J -->|"no, next brief"| P
+    J -->|"yes"| RV["Reviewer accepts?"]
+    RV -->|"no, fix"| P
+    RV -->|"yes"| REC["Record decisions, known-issues; backlog Done"]
+    REC --> CM["commit-message skill: show draft"]
+    CM --> CB["Commit approved?"]
+    CB -->|"draft edited"| CM
+    CB -->|"Not yet or dismissed"| U(["Stop, work stays uncommitted"])
+    CB -->|"Commit, on task branch"| PC["push-commit: push branch?"]
+    PC -->|"Not yet"| LP(["Stop, stays on task branch"])
+    PC -->|"Push, switch to dev"| PR["Human opens PR, merges when checks green"]
+    PR -.-> RF[/"reflect skill, on request"/]
+```
+
+### Roles
+
+| Who | Does | Never does |
+|-----|------|------------|
+| Orchestrator | Plans, runs `create-branch` at task start (it pulls `dev` first), writes briefs, runs "Done when", accepts work, runs `commit-message` and `push-commit` (commits and pushes only after a click; push-commit then switches back to `dev`), updates `docs/` | Writes code (except 1-2 line fixes), opens PRs, merges, pushes `dev` |
+| `builder` | Implements one brief, runs "Done when" and `npm run ci` unless only safe `.md` files changed (the check in `builder.md` step 3), reports | Touches "Don't touch" files |
+| `reviewer` | Compares `git diff` with briefs and `docs/agile/decisions.md` | Changes anything |
+| `reflect` | Lists what went wrong, proposes minimal edits | Changes anything before approval |
+| Human | Clicks Commit or Push, opens PRs, merges them once checks are green, names backlog tasks, approves `reflect` edits, answers after 3 failed returns | |
+
+Source: [docs/orchestrator.md](docs/orchestrator.md).
+
 ## Features
 
 - **Your own hierarchy.** Organise knowledge as **Category → Topic → Entity**, with search and pagination on every list.
@@ -37,41 +80,11 @@
 
 ### Frontend
 
-- <img src="https://cdn.simpleicons.org/react" width="16" height="16" alt="" /> **React 19**: UI library
-- <img src="https://cdn.simpleicons.org/typescript" width="16" height="16" alt="" /> **TypeScript**: type safety across the whole monorepo
-- <img src="https://cdn.simpleicons.org/vite" width="16" height="16" alt="" /> **Vite**: dev server and build
-- <img src="https://cdn.simpleicons.org/tanstack/000000/ffffff" width="16" height="16" alt="" /> **TanStack Router**: file-based, type-safe routing
-- <img src="https://cdn.simpleicons.org/reactquery" width="16" height="16" alt="" /> **TanStack Query**: server state, caching and invalidation
-- <img src="https://cdn.simpleicons.org/tailwindcss" width="16" height="16" alt="" /> **Tailwind CSS v4**: styling with design tokens
-- <img src="https://cdn.simpleicons.org/shadcnui/000000/ffffff" width="16" height="16" alt="" /> **shadcn/ui**: component source, built on Base UI
-- <img src="https://github.com/mui.png" width="16" height="16" alt="" /> **Base UI**: accessible headless primitives
-- <img src="https://cdn.simpleicons.org/reacthookform" width="16" height="16" alt="" /> **React Hook Form**: forms, including the entity constructor
-- <img src="https://cdn.simpleicons.org/zod" width="16" height="16" alt="" /> **Zod**: form and API schema validation
-- <img src="https://cdn.simpleicons.org/axios" width="16" height="16" alt="" /> **Axios**: HTTP client with cookie auth
-- <img src="https://github.com/ueberdosis.png" width="16" height="16" alt="" /> **TipTap**: rich-text block editor
-- <img src="https://cdn.simpleicons.org/codemirror" width="16" height="16" alt="" /> **CodeMirror**: code block editor with syntax highlighting
-- <img src="https://github.com/dnd-kit.png" width="16" height="16" alt="" /> **dnd kit**: drag-and-drop block reordering
-- <img src="https://github.com/recharts.png" width="16" height="16" alt="" /> **Recharts**: activity charts
-- <img src="https://cdn.simpleicons.org/datefns" width="16" height="16" alt="" /> **date-fns**: date formatting
-- <img src="https://cdn.simpleicons.org/lucide" width="16" height="16" alt="" /> **Lucide**: icons
-- <img src="https://cdn.simpleicons.org/vitest" width="16" height="16" alt="" /> **Vitest** + <img src="https://cdn.simpleicons.org/testinglibrary" width="16" height="16" alt="" /> **Testing Library**: unit tests
-- <img src="https://cdn.simpleicons.org/eslint" width="16" height="16" alt="" /> **ESLint** + <img src="https://cdn.simpleicons.org/prettier" width="16" height="16" alt="" /> **Prettier**: linting and formatting
+<img src="https://cdn.simpleicons.org/react" width="20" height="20" align="absmiddle" alt="" />&nbsp;React 19&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/typescript" width="20" height="20" align="absmiddle" alt="" />&nbsp;TypeScript&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/vite" width="20" height="20" align="absmiddle" alt="" />&nbsp;Vite&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/tanstack/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;TanStack Router&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/reactquery" width="20" height="20" align="absmiddle" alt="" />&nbsp;TanStack Query&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/tailwindcss" width="20" height="20" align="absmiddle" alt="" />&nbsp;Tailwind CSS v4&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/shadcnui/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;shadcn/ui&nbsp;&nbsp;·&nbsp; <img src="https://github.com/mui.png" width="20" height="20" align="absmiddle" alt="" />&nbsp;Base UI&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/reacthookform" width="20" height="20" align="absmiddle" alt="" />&nbsp;React Hook Form&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/zod" width="20" height="20" align="absmiddle" alt="" />&nbsp;Zod&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/axios" width="20" height="20" align="absmiddle" alt="" />&nbsp;Axios&nbsp;&nbsp;·&nbsp; <img src="https://github.com/ueberdosis.png" width="20" height="20" align="absmiddle" alt="" />&nbsp;TipTap&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/codemirror" width="20" height="20" align="absmiddle" alt="" />&nbsp;CodeMirror&nbsp;&nbsp;·&nbsp; <img src="https://github.com/dnd-kit.png" width="20" height="20" align="absmiddle" alt="" />&nbsp;dnd kit&nbsp;&nbsp;·&nbsp; <img src="https://github.com/recharts.png" width="20" height="20" align="absmiddle" alt="" />&nbsp;Recharts&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/datefns" width="20" height="20" align="absmiddle" alt="" />&nbsp;date-fns&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/lucide" width="20" height="20" align="absmiddle" alt="" />&nbsp;Lucide&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/vitest" width="20" height="20" align="absmiddle" alt="" />&nbsp;Vitest&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/testinglibrary" width="20" height="20" align="absmiddle" alt="" />&nbsp;Testing Library&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/eslint" width="20" height="20" align="absmiddle" alt="" />&nbsp;ESLint&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/prettier" width="20" height="20" align="absmiddle" alt="" />&nbsp;Prettier
 
 ### Backend
 
-- <img src="https://cdn.simpleicons.org/nodedotjs" width="16" height="16" alt="" /> **Node.js 26**: runtime
-- <img src="https://cdn.simpleicons.org/typescript" width="16" height="16" alt="" /> **TypeScript**: type safety, run in dev with tsx
-- <img src="https://cdn.simpleicons.org/express/000000/ffffff" width="16" height="16" alt="" /> **Express 5**: REST API as a modular monolith
-- <img src="https://cdn.simpleicons.org/prisma/000000/ffffff" width="16" height="16" alt="" /> **Prisma 6**: ORM and migrations
-- <img src="https://cdn.simpleicons.org/postgresql" width="16" height="16" alt="" /> **PostgreSQL**: database
-- <img src="https://cdn.simpleicons.org/zod" width="16" height="16" alt="" /> **Zod**: request validation, with schemas shared with the frontend
-- <img src="https://cdn.simpleicons.org/jsonwebtokens/000000/ffffff" width="16" height="16" alt="" /> **JWT** + bcrypt: auth in an httpOnly cookie, roles and permissions
-- <img src="https://github.com/expressjs.png" width="16" height="16" alt="" /> **Multer**: media uploads
-- <img src="https://cdn.simpleicons.org/vercel/000000/ffffff" width="16" height="16" alt="" /> **Vercel Blob**: cloud media storage (local disk in development)
-- <img src="https://cdn.simpleicons.org/pino" width="16" height="16" alt="" /> **Pino**: structured logging
-- <img src="https://cdn.simpleicons.org/swagger" width="16" height="16" alt="" /> **Swagger UI**: API docs in development
-- <img src="https://cdn.simpleicons.org/vitest" width="16" height="16" alt="" /> **Vitest**: unit tests
-- <img src="https://cdn.simpleicons.org/docker" width="16" height="16" alt="" /> **Docker Compose**: local PostgreSQL
+<img src="https://cdn.simpleicons.org/nodedotjs" width="20" height="20" align="absmiddle" alt="" />&nbsp;Node.js 26&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/typescript" width="20" height="20" align="absmiddle" alt="" />&nbsp;TypeScript&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/express/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;Express 5&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/prisma/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;Prisma 6&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/postgresql" width="20" height="20" align="absmiddle" alt="" />&nbsp;PostgreSQL&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/zod" width="20" height="20" align="absmiddle" alt="" />&nbsp;Zod&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/jsonwebtokens/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;JWT&nbsp;&nbsp;·&nbsp; <img src="https://github.com/expressjs.png" width="20" height="20" align="absmiddle" alt="" />&nbsp;Multer&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/vercel/000000/ffffff" width="20" height="20" align="absmiddle" alt="" />&nbsp;Vercel Blob&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/pino" width="20" height="20" align="absmiddle" alt="" />&nbsp;Pino&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/swagger" width="20" height="20" align="absmiddle" alt="" />&nbsp;Swagger UI&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/vitest" width="20" height="20" align="absmiddle" alt="" />&nbsp;Vitest&nbsp;&nbsp;·&nbsp; <img src="https://cdn.simpleicons.org/docker" width="20" height="20" align="absmiddle" alt="" />&nbsp;Docker Compose
 
 ## Architecture
 
@@ -92,15 +105,6 @@ flowchart LR
 
 More detail: [backend architecture](backend/docs/ARCHITECTURE.md), [frontend architecture](frontend/docs/ARCHITECTURE.md).
 
-## Engineering highlights
-
-- **Revision scheduling.** The Player picks the entities with the lowest `scheduleCount` in a scope. That count is the revision count plus a creation offset, so a new entity joins the current tier instead of taking over the queue.
-- **Atomic entity save.** An entity, its blocks, its list rows and its media references are saved in one Prisma transaction, so nothing is saved half-way.
-- **Three-layer authorization.** A JWT cookie identifies the user, a permission check guards the route (`content:manage_own`, `users:manage`…), and an ownership check confirms the row belongs to that user.
-- **Timezone-aware activity.** Done and Skip upsert a per-user, per-day counter, where the day is the user's local day from the `X-Timezone` header.
-- **Pluggable media storage.** Uploads go through a storage driver: local disk in development, Vercel Blob in the cloud, chosen by one environment variable.
-- **Design system redesign.** The whole UI was redesigned in 10 incremental steps: colour tokens with AA contrast, pill buttons, brand SVG components, and restyled lists, Constructor and Player.
-
 ## AI-assisted development
 
 **Agents propose, pipelines verify, humans decide.** The project is built with Claude Code, set up as a small team:
@@ -115,11 +119,20 @@ Details: [orchestrator workflow](docs/orchestrator.md), [agentic CI/CD plan](doc
 
 ## Quality and CI/CD
 
-- **Flow:** feature branch → pull request into `dev` → required checks → squash merge. A ruleset blocks merging while checks are red.
-- **`quality` check:** typecheck, lint, format check, tests and build for every workspace (`npm run ci`).
-- **`migrations` check:** applies all migrations to an empty PostgreSQL 16, fails on schema drift, and runs the seed twice to prove it's idempotent.
-- **Tests:** 56 Vitest tests (39 frontend, 17 backend) covering entity form and save-payload conversion, Player session logic, contract schemas, pagination, daily-activity day logic and the storage driver.
-- **Deployment:** prepared for Vercel Services (frontend and backend from one repo), with a `/api/v1/health` endpoint that reports the deployed commit. Automated production deploys are in progress.
+Vitest covers auth and entity forms, the Player, score, contracts, pagination, daily activity and the storage driver (64 frontend, 17 backend tests).
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 30, 'padding': 6}}}%%
+flowchart TD
+    FB["Feature branch"] --> PR["PR into dev"]
+    PR --> Q["quality: typecheck, lint, format, 81 tests, build"]
+    PR --> M["migrations: fresh Postgres, drift, seed x2"]
+    Q --> G["Both checks green?"]
+    M --> G
+    G -->|"yes"| SM["Squash merge"]
+    G -->|"no"| BLK(["Merge blocked by ruleset"])
+    SM -.->|"in progress"| VD["Vercel deploy, /api/v1/health"]
+```
 
 ## Getting started
 
