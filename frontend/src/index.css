@@ -132,10 +132,19 @@
     --watering-can: #a9a39b;
     --watering-can-opening: #857e75;
     --logo-stem: #5a3022;
+    --sun-r220: rgb(248 227 168 / 0.07);
+    --sun-r150: rgb(248 227 168 / 0.12);
+    --sun-r95: rgb(246 217 138 / 0.22);
+    --sun-r50: rgb(244 207 114 / 0.5);
     --sun-r300: rgb(246 217 138 / 0.1);
     --sun-r210: rgb(246 217 138 / 0.16);
     --sun-r130: rgb(244 207 114 / 0.28);
     --sun-r70: rgb(242 201 92 / 0.65);
+    --sun-r380: rgb(246 217 138 / 0.13);
+    --sun-r280: rgb(246 217 138 / 0.2);
+    --sun-r180: rgb(244 207 114 / 0.34);
+    --sun-r110: rgb(242 201 92 / 0.55);
+    --sun-r84: rgb(240 191 69 / 0.9);
 
     /* charts */
     --chart-revised: #a65d45;
@@ -275,10 +284,19 @@ body {
     --color-watering-can: var(--watering-can);
     --color-watering-can-opening: var(--watering-can-opening);
     --color-logo-stem: var(--logo-stem);
+    --color-sun-r220: var(--sun-r220);
+    --color-sun-r150: var(--sun-r150);
+    --color-sun-r95: var(--sun-r95);
+    --color-sun-r50: var(--sun-r50);
     --color-sun-r300: var(--sun-r300);
     --color-sun-r210: var(--sun-r210);
     --color-sun-r130: var(--sun-r130);
     --color-sun-r70: var(--sun-r70);
+    --color-sun-r380: var(--sun-r380);
+    --color-sun-r280: var(--sun-r280);
+    --color-sun-r180: var(--sun-r180);
+    --color-sun-r110: var(--sun-r110);
+    --color-sun-r84: var(--sun-r84);
 
     /* charts */
     --color-chart-revised: var(--chart-revised);
