@@ -97,3 +97,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-25 `docs/score-progression.md`: added §5 Technical choices (endpoint in `activity`, launch-date constant, `levelLost` rule, contracts subpath) and expanded the task split into six tasks with goal, files and a runnable "Done when" each.
 2026-11-25 `docs/score-progression.md`: §5 technical choices approved and recorded in decisions.md.
 2026-11-25 `docs/score-progression.md`: recorded the tree and sun exports in `frontend/src/assets/` as source artwork (trees already match `TreeStage1–6`); task 5 now ports sun levels 1 and 3 from them into `SunGlow` with tokens.
+2026-11-25 Score task 1: added `@remindme/contracts/score` (constants and `scoreResponseSchema`) and a pure, tested `computeScore` in `backend/src/lib/score.ts` with `SCORE_LAUNCH_DATE` 2026-11-25.
