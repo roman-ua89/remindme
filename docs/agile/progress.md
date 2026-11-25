@@ -80,3 +80,20 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-24 README.md has a new "Agentic workflow" section before Features, copied from `docs/orchestrator.md` (intro, Process diagram, Roles table) with root-relative links.
 2026-11-24 README.md Tech stack: the Frontend and Backend lists are now one line each, with a 20px icon and the plain (not bold) name per item, separated by widely spaced middle dots.
 2026-11-24 README.md Quality and CI/CD: the five bullets are now one sentence and a small top-down mermaid flowchart (branch, PR, `quality` and `migrations` checks, merge or block, deploy in progress).
+2026-11-25 Added `docs/score-progression.md`: the drop/level/decay rules as proposed, a validation of them against the existing Player-time data and UI, a recommended rule set with a derived-score implementation sketch, and 11 open questions to answer before implementation.
+2026-11-25 `docs/score-progression.md`: Q2 is decided, with at most 3 drops per day (1 per full 10 minutes in the Player).
+2026-11-25 `docs/score-progression.md`: Q1 is decided, with everyone starting at level 1 (levels at 0/3/6/9/12/15 drops); the formulas, worked example and drop cap now use 15 as the max.
+2026-11-25 `docs/score-progression.md`: Q3 is decided, with only visible Player-tab time counting toward drops.
+2026-11-25 `docs/score-progression.md`: Q4 is decided, with no upper limit on the drop total (level still stops at 6); the rules table, contracts sketch and tests now drop the cap of 15.
+2026-11-25 `docs/score-progression.md`: Q5 is decided, with a day counting as active (no decay) only when it earns at least 1 drop.
+2026-11-25 `docs/score-progression.md`: Q6 is decided, with leftover minutes under 10 lost at midnight instead of carried over.
+2026-11-25 `docs/score-progression.md`: Q7 is decided, with everyone starting at 0 drops on launch day and older Player history ignored.
+2026-11-25 `docs/score-progression.md`: Q8 is decided, with the sun on every page following the logged-in user's level and guests fixed at gradation 2.
+2026-11-25 `docs/score-progression.md`: Q9 is decided, with the guest Home tree cards showing levels instead of day ranges.
+2026-11-25 `docs/score-progression.md`: Q10 is decided, with a one-line hint on Home when decay lowers the level.
+2026-11-25 `docs/score-progression.md`: Q11 is decided ("next drop in N min" in the Player top bar, later task); all questions are answered and the file is now the implementation plan.
+2026-11-25 `docs/score-progression.md`: "Problems found" items 2 (daily cap, Q2) and 10 (today never decays) are now marked solved, like the others.
+2026-11-25 `docs/score-progression.md`: removed the resolved "Problems found" and "Open questions" sections; their reasoning now sits in a "Why" column of the Rules table, and decisions.md no longer points at Q numbers.
+2026-11-25 `docs/score-progression.md`: added §5 Technical choices (endpoint in `activity`, launch-date constant, `levelLost` rule, contracts subpath) and expanded the task split into six tasks with goal, files and a runnable "Done when" each.
+2026-11-25 `docs/score-progression.md`: §5 technical choices approved and recorded in decisions.md.
+2026-11-25 `docs/score-progression.md`: recorded the tree and sun exports in `frontend/src/assets/` as source artwork (trees already match `TreeStage1–6`); task 5 now ports sun levels 1 and 3 from them into `SunGlow` with tokens.
