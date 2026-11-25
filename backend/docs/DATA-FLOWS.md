@@ -50,7 +50,7 @@ All database writes go through **Prisma ORM** — there is no raw SQL in applica
 | Topics | createTopic, updateTopic, deleteTopic, setTopicVisibility | listTopics, getTopic |
 | Entities | createEntity, updateEntity, deleteEntity, reviseEntity, skipEntity, setEntityMarker, setEntityVisibility | listEntities, getEntity |
 | Player | — | getPlayerBatch |
-| Activity | recordPlayerTime (+ written by reviseEntity / skipEntity) | getDailyActivity, getTodayActivity |
+| Activity | recordPlayerTime (+ written by reviseEntity / skipEntity) | getDailyActivity, getTodayActivity, getScore |
 | Media | uploadMedia | getMediaFile |
 | Seed | permissions, roles, role_permissions, admin user | — |
 
@@ -477,6 +477,24 @@ WHERE user_id = '<user_id>' ORDER BY activity_date LIMIT 1;  -- firstActivityDat
 | Table | Operation | Notes |
 |-------|-----------|-------|
 | `user_daily_activity` | READ | PK lookup (`user_id`, local `activity_date`) |
+
+#### Get score (Home tree and sun)
+
+- **Service:** `getScore()` — [activity.service.ts](../src/modules/activity/activity.service.ts) → `computeScore()` in [lib/score.ts](../src/lib/score.ts)
+- **Route:** `GET /api/v1/activity/score`
+- **Header:** `X-Timezone` (sets today's local day: it gives `earnedToday`, never decays, and ends the walk of past days; missing/invalid → UTC)
+- **Transaction:** no
+- **Behavior:** read-only. Loads the user's `player_seconds` rows from `SCORE_LAUNCH_DATE` on (earlier rows are ignored), ordered by day, and derives the drops, level and decay on every request. Decay starts at the first of those days with `player_seconds > 0`, so a user who never opened the Player has nothing to decay. Nothing is stored or cached, so there is no total to keep in sync.
+
+| Table | Operation | Notes |
+|-------|-----------|-------|
+| `user_daily_activity` | READ | `activity_date`, `player_seconds` only; `activity_date >= SCORE_LAUNCH_DATE`, ascending |
+
+```sql
+SELECT activity_date, player_seconds FROM user_daily_activity
+WHERE user_id = '<user_id>' AND activity_date >= '2026-11-25'
+ORDER BY activity_date;
+```
 
 #### Record Player time
 

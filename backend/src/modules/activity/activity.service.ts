@@ -1,8 +1,10 @@
 import type { DailyActivityDay, DailyActivityResponse, TodayActivityResponse } from '@remindme/contracts/activity';
+import type { ScoreResponse } from '@remindme/contracts/score';
 
 import type { AuthUser } from '../../middleware/auth.js';
 import { recordPlayerSeconds, resolveActivityDate } from '../../lib/daily-activity.js';
 import { prisma } from '../../lib/prisma.js';
+import { computeScore, SCORE_LAUNCH_DATE } from '../../lib/score.js';
 
 const dailyActivitySelect = {
     activityDate: true,
@@ -59,6 +61,16 @@ export async function getTodayActivity(user: AuthUser, timeZone: string | undefi
     });
 
     return toDailyActivityDayDto(row ?? { activityDate, revisedCount: 0, skippedCount: 0, playerSeconds: 0 });
+}
+
+export async function getScore(user: AuthUser, timeZone: string | undefined): Promise<ScoreResponse> {
+    const rows = await prisma.userDailyActivity.findMany({
+        where: { userId: user.id, activityDate: { gte: new Date(`${SCORE_LAUNCH_DATE}T00:00:00.000Z`) } },
+        orderBy: { activityDate: 'asc' },
+        select: { activityDate: true, playerSeconds: true },
+    });
+
+    return computeScore(rows, resolveActivityDate(timeZone));
 }
 
 export async function recordPlayerTime(
