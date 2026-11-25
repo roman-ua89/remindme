@@ -7,6 +7,8 @@ import type { QueryClient } from '@tanstack/react-query';
 import { SunGlow } from '@/components/brand/SunGlow';
 import { Toaster } from '@/components/ui/sonner';
 import { currentUserQueryOptions } from '@/features/auth/queries/current-user-query';
+import { useCurrentUser } from '@/features/auth/queries/use-current-user';
+import { useScore } from '@/features/score/queries/use-score';
 import { getAuthRedirect, isUnauthorizedError } from '@/lib/auth';
 import { queryClient } from '@/lib/query-client';
 
@@ -34,11 +36,22 @@ export const Route = createRootRouteWithContext<{
     component: RootComponent,
 });
 
+/** Sun gradation of the logged-in user's level; guests and users whose score has not loaded yet get 2. */
+const SunForUser = () => {
+    const { data: user } = useCurrentUser();
+    const isLoggedIn = typeof user?.id === 'string';
+    const { data: score } = useScore({ enabled: isLoggedIn });
+
+    const gradation = isLoggedIn ? score?.sunGradation : undefined;
+
+    return <SunGlow gradation={gradation === 1 || gradation === 3 ? gradation : 2} />;
+};
+
 function RootComponent() {
     return (
         <QueryClientProvider client={queryClient}>
             <div className='relative isolate flow-root'>
-                <SunGlow />
+                <SunForUser />
                 <Outlet />
             </div>
             <Toaster />

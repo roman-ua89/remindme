@@ -21,7 +21,7 @@ How to move the app to the new "warm paper" design. Each step below is sized to 
 ### Limitations (agreed)
 
 - **Score logic is not implemented.** Drops per day, total drops and the tree stage are **placeholder values** (a random number). No API, no persistence.
-- **Sun:** always render **gradation 2** ("Sun · 3 gradations", middle card). Gradations 1 and 3 come later, together with score logic.
+- **Sun:** always render **gradation 2** ("Sun · 3 gradations", middle card). Gradations 1 and 3 came with score logic (score task 5): logged-in users now see the gradation of their level.
 - **No night design** ("Main page night" is out of scope).
 - **Other pages are skipped:** About, Feedback, Changelog, Email template, Auth pages, Player recall mode (proposal). The footer with their links is skipped too.
 - **Image block is skipped** on Constructor and Player: keep the current Image editor/preview and template button exactly as they are today (they only pick up new global tokens automatically).
@@ -111,7 +111,7 @@ Markers: Needs edit `#8FB0D6`, To remove `#E39A8E`, Hidden from Player `#C9BDAE`
 Create `src/components/brand/` (used by several features):
 
 - `SproutLogo` — the 26px logo mark + "RemindMe" wordmark (Fraunces 22px).
-- `SunGlow` — absolutely positioned SVG, `gradation?: 1 | 2 | 3` prop; **only `2` is implemented**, default `2`.
+- `SunGlow` — absolutely positioned SVG, `gradation?: 1 | 2 | 3` prop; draws gradations 1–3, default `2` (score task 5).
 - `TreeIllustration` — `stage: 1..6` (Sprout, Seedling, Sapling, Leaves, Blossom, Apples) from "Tree · 6 growth stages". SVGs inlined as React components.
 - `DropIcon`, `WateringCan` (grey can from "main page, logged in").
 
