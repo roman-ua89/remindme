@@ -103,6 +103,19 @@ export const openApiSpec = {
                     "Today's counters (revisedCount, skippedCount, playerSeconds) for the X-Timezone local day; zeros if none",
             },
         },
+        '/activity/score': {
+            get: {
+                tags: ['activity'],
+                summary:
+                    'Score for the current user (drops, level, tree stage, sun gradation, drops earned today, level-down hint), derived from Player time since the launch date; X-Timezone sets today',
+                responses: {
+                    '200': {
+                        description: 'Score',
+                        content: { 'application/json': { schema: { $ref: '#/components/schemas/Score' } } },
+                    },
+                },
+            },
+        },
         '/activity/player-time': {
             post: {
                 tags: ['activity'],
@@ -141,6 +154,35 @@ export const openApiSpec = {
         '/users/{id}': {
             get: { tags: ['users'], summary: 'Get user (admin)' },
             patch: { tags: ['users'], summary: 'Update user (admin)' },
+        },
+    },
+    components: {
+        schemas: {
+            Score: {
+                type: 'object',
+                required: ['totalDrops', 'level', 'treeStage', 'sunGradation', 'earnedToday', 'maxPerDay', 'levelLost'],
+                properties: {
+                    totalDrops: {
+                        type: 'integer',
+                        minimum: 0,
+                        description: 'Drops with no upper limit; each idle past day takes one away, floor 0',
+                    },
+                    level: { type: 'integer', minimum: 1, maximum: 6 },
+                    treeStage: { type: 'integer', minimum: 1, maximum: 6, description: 'Equal to level' },
+                    sunGradation: { type: 'integer', minimum: 1, maximum: 3, description: 'ceil(level / 2)' },
+                    earnedToday: {
+                        type: 'integer',
+                        minimum: 0,
+                        maximum: 3,
+                        description: "Drops earned on today's local day",
+                    },
+                    maxPerDay: { type: 'integer', minimum: 1, description: 'Daily cap on earned drops' },
+                    levelLost: {
+                        type: 'boolean',
+                        description: 'True when decay lowered the level and today has not earned a drop yet',
+                    },
+                },
+            },
         },
     },
 };

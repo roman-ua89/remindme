@@ -36,6 +36,15 @@ router.get('/today', async (req, res, next) => {
     }
 });
 
+router.get('/score', async (req, res, next) => {
+    try {
+        const score = await activityService.getScore(req.user!, req.get(TIMEZONE_HEADER));
+        res.json(score);
+    } catch (error) {
+        next(error);
+    }
+});
+
 router.post('/player-time', validate({ body: recordPlayerTimeBodySchema }), async (req, res, next) => {
     try {
         const { seconds } = req.body as RecordPlayerTimeBody;
