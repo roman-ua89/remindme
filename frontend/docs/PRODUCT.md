@@ -197,7 +197,7 @@ The **Player** (`/player`) is where the user revises information. It shows one e
 
 **Layout**
 
-- **Top bar:** the **Player** heading, a timer ring (time in Player today against the 30-minute goal) and **Stop**. Stop exits the Player immediately and returns to the page it was opened from (an internal `returnTo` path), or to **Categories** when there is none. Does not change counters for the current entity.
+- **Top bar:** the **Player** heading, a timer ring (time in Player today against the 30-minute goal), a next-drop chip ("Next drop in N min", or "3/3 today" once the daily cap is reached) and **Stop**. Stop exits the Player immediately and returns to the page it was opened from (an internal `returnTo` path), or to **Categories** when there is none. Does not change counters for the current entity.
 - **Progress:** A segmented bar under the top bar (`completed of total` plus how many are left in this pack).
 - **Center — entity preview:** Read-only render of the current entity (Title + blocks in sequence), in a card.
 - **Bottom — actions:** **Skip** (secondary, left) and **Done** (positive, right) below the preview, with one hint line under them: "Press **D** for Done or **S** for Skip".

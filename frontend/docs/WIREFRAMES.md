@@ -55,7 +55,7 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 |--------|---------|-------|
 | **Auth layout** | Register, Forgot password (login is a dialog on Home) | No app nav; centered card inside viewport |
 | **App layout** | Home, Categories, Category detail, Topic detail, Entity constructor (full page) | Header + `PageContainer` + page body |
-| **Player** | Player (`/player`) | Own top bar (Player heading, timer, Stop); no app header |
+| **Player** | Player (`/player`) | Own top bar (Player heading, timer, next-drop chip, Stop); no app header |
 
 ```mermaid
 flowchart TB
@@ -756,7 +756,7 @@ Title is optional (hidden when empty). The whole card is a link: it opens the UR
 
 ## 8. Player — `/player`
 
-Revision page. Shows one entity at a time as a read-only preview. The Player has its own top bar (Player heading, daily timer and Stop) and no app header; the entity card shows a muted Category › Topic line above the title. It is an immersive revision mode.
+Revision page. Shows one entity at a time as a read-only preview. The Player has its own top bar (Player heading, daily timer, next-drop chip and Stop) and no app header; the entity card shows a muted Category › Topic line above the title. It is an immersive revision mode.
 
 ### 8.1 Active session
 
@@ -788,6 +788,7 @@ Revision page. Shows one entity at a time as a read-only preview. The Player has
 | Element | Behavior |
 |---------|----------|
 | **Timer** | Pill with a blue progress ring: Player time today against the 30-minute daily goal. Shows `--:--` until today's total has loaded |
+| **Next-drop chip** | Pill beside the timer with a droplet icon: "Next drop in N min" (minutes to the next full 10 minutes of Player time today), or "{maxPerDay}/{maxPerDay} today" once the daily cap is reached. Hidden until today's total and the score have loaded |
 | **Stop** | Top bar, soft coral (`stop`) button. Leaves the Player for the page it was opened from, or Categories when there is none; does not change the counters for the current entity |
 | **Progress** | Under the top bar, while a pack plays: `{completed} of {total}` and `{left} left in this pack`. One segment per entity: done (accent), current (soft coral), upcoming (grey) |
 | **Entity card** | 24px radius, soft shadow. Muted `Category › Topic` line above the title, title in Fraunces 40px, marker toggle (Needs edit / To remove) under the title, then the blocks. A marker change does not advance |

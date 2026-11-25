@@ -186,6 +186,7 @@ The header shows today's time in the Player (`MM:SS`, `H:MM:SS` from 1 h) agains
 - **Counting:** wall-clock time while `/player` is mounted and the tab is visible (`document.visibilityState`); hidden time earns no drops (`utils/visible-time.ts`). Uses `Date.now()` deltas. Gaps over 2 min between ticks are treated as sleep / bfcache and not counted. A report that crosses a 10-minute mark invalidates the score query.
 - **Saving:** elapsed seconds are **added** server-side via `POST /activity/player-time` (`{ seconds: 1..300 }`) every 30 s, on unmount (Stop / navigation), and on `pagehide` (reload, tab close) using `fetch` keepalive. Worst-case loss is one interval (e.g. a browser crash). Several tabs add up instead of overwriting.
 - **Midnight:** when the local day changes the timer restarts from 0; up to one interval of pre-midnight time lands on the new day.
+- **Next-drop chip:** beside the timer, `NextDropChip` shows "Next drop in N min" to the next full 10 minutes, or "3/3 today" at the daily cap (`utils/next-drop.ts`, from the live timer and the score's `maxPerDay`). Rendered inside `PlayerTimer`, hidden until the timer and the score have loaded.
 - The app header (`AppHeader` → `TodayPlayerTime`) shows today's saved total with the same look (static; refetched on each page mount, invalidated when leaving the Player). Markup is shared via `PlayerTimeDisplay`.
 - Home shows the history as the **Time in Player** area chart (`features/activity/components/PlayerTimeChart.tsx`).
 
@@ -204,6 +205,7 @@ features/player/
   queries/use-mark-skip.ts          # skipped_count + 1
   hooks/use-player-timer.ts         # daily Player time: counts, reports to POST /activity/player-time
   utils/format-duration.ts          # MM:SS / H:MM:SS
+  utils/next-drop.ts                # minutes to the next drop, or the daily cap
   components/
     PlayerPage.tsx                  # session orchestration
     PlayerProgress.tsx              # pack Progress bar
@@ -213,6 +215,7 @@ features/player/
     PlayerDepleted.tsx              # empty scope
     PlayButton.tsx                  # list-row entry
     PlayerTimer.tsx                 # Player header timer (owns the ticking state)
+    NextDropChip.tsx                # "Next drop in N min" / "3/3 today" beside the timer
     PlayerTimeDisplay.tsx           # shared timer markup: icon, time, goal, green when reached
     TodayPlayerTime.tsx             # static today's total for AppHeader
 ```

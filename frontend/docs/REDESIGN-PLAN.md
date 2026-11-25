@@ -228,6 +228,6 @@ Steps 5, 7, 8 and 9 touch different features and can run in parallel after Step 
 
 1. **Footer links** — skipped. No footer is rendered until Feedback, About and Changelog pages are implemented.
 2. **"See how it works" (guest Home)** — opens the login dialog until a tour exists.
-3. **Streak chip in Player** — hidden. It returns together with score logic.
+3. **Streak chip in Player** — replaced by the next-drop chip (`NextDropChip`) beside the timer: "Next drop in N min", or "3/3 today" at the daily cap. It comes with score logic.
 4. **Yellow example note** under the table in "Player · List" — dropped for now.
 5. **Recall mode** ("Player · recall mode (proposal)") — skipped for now; the "Shown in the Player" switch stays the only entity-level toggle in the Constructor panel.
