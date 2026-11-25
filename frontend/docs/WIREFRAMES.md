@@ -262,7 +262,7 @@ Public landing page. Guests see the hero and the tree explainer. Logged-in users
 │ │      (tree)      │   │      (tree)      │   │      (tree)      │ │
 │ │                  │   │                  │   │                  │ │
 │ │      Sprout      │   │      Leaves      │   │      Apples      │ │
-│ │      Day 1       │   │     Days 6–8     │   │    Days 12–15    │ │
+│ │     Level 1      │   │     Level 4      │   │     Level 6      │ │
 │ │                  │   │                  │   │                  │ │
 │ └──────────────────┘   └──────────────────┘   └──────────────────┘ │
 │                                                                    │
@@ -273,7 +273,7 @@ Public landing page. Guests see the hero and the tree explainer. Logged-in users
 |---------|----------|
 | **Hero** | Centred: accent eyebrow, H1 in Fraunces, muted subtitle |
 | **See how it works** | Extra-large accent button. Opens the sign-in dialog (§3.1); there is no tour yet |
-| **Grow your tree** | Three cards with the tree at the Sprout, Leaves and Apples stages. The day labels are the placeholder ranges (see [PRODUCT.md §3.3](PRODUCT.md)) |
+| **Grow your tree** | Three cards with the tree at the Sprout, Leaves and Apples stages, labelled Level 1, Level 4 and Level 6 (see [PRODUCT.md §3.3](PRODUCT.md)) |
 | **Log in** | Header button (§2) |
 
 **Logged in** — the header shows the user menu. The page shows the tree card, the library counts and two charts side by side.
@@ -284,9 +284,10 @@ Public landing page. Guests see the hero and the tree explainer. Logged-in users
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │ ┌──────────────────────────────────────────────────────────────┐   │
-│ │ (tree) (can)    Your tree · Leaves    [ Open my categories ] │   │
-│ │              (drop) 7 drops                                  │   │
-│ │              Come back tomorrow to earn up to 3 more drops.  │   │
+│ │ (tree) (can)    Your tree · Sapling   [ Open my categories ] │   │
+│ │              (drop) 7 drops · Level 3                        │   │
+│ │              1 / 3 today                                     │   │
+│ │              Spend up to 20 minutes to earn the rest today.  │   │
 │ │              4 categories · 12 topics · 87 entities          │   │
 │ └──────────────────────────────────────────────────────────────┘   │
 │                                                                    │
@@ -304,7 +305,7 @@ Public landing page. Guests see the hero and the tree explainer. Logged-in users
 
 | Element | Behavior |
 |---------|----------|
-| **Tree card** | Tree at the placeholder stage (any of the six), a grey watering can with a drop, the title "Your tree · {stage}", the drops count and the hint "Come back tomorrow to earn up to 3 more drops." Values are placeholders (see [PRODUCT.md §3.3](PRODUCT.md)) |
+| **Tree card** | Tree at the stage of the user's level (any of the six), a grey watering can with a drop, the title "Your tree · {stage}", the drops and level ("{drops} drops · Level {level}"), today's earned drops ("{earned} / 3 today") and a line under them: the minutes left to earn today's drops, or "Come back tomorrow to earn up to 3 more drops." once the daily cap is reached. The "Your tree lost a level" line shows when decay has lowered the level. Until the score loads: an empty tree slot and dashes (see [PRODUCT.md §3.3](PRODUCT.md)) |
 | **Library counts** | Categories, topics and entities from the API, inline with thin dividers; an em dash while loading |
 | **Open my categories** | Large accent button → `/categories`. Below 1024px it moves under the text column |
 | **Daily activity** | Left chart card. Headline: revised and skipped totals for the month on screen. Stacked bars per day: skipped at the bottom, revised on top; x-axis labels 1, 5, 10 … 30. **Prev** / **Next** buttons on the title row (right side) page through months; Next is disabled on the current month |

@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 type GrowthStage = {
     stage: TreeStage;
     name: string;
-    days: string;
+    level: string;
 };
 
 const GROWTH_STAGES: GrowthStage[] = [
-    { stage: 1, name: 'Sprout', days: 'Day 1' },
-    { stage: 4, name: 'Leaves', days: 'Days 6–8' },
-    { stage: 6, name: 'Apples', days: 'Days 12–15' },
+    { stage: 1, name: 'Sprout', level: 'Level 1' },
+    { stage: 4, name: 'Leaves', level: 'Level 4' },
+    { stage: 6, name: 'Apples', level: 'Level 6' },
 ];
 
 /** Home page for guests: hero with a login-dialog CTA and the "Grow your tree" explainer. */
@@ -55,7 +55,7 @@ export const GuestHome = () => {
                             <TreeIllustration stage={growth.stage} className='size-60' />
                             <div className='flex flex-col items-center gap-0.5'>
                                 <span className='text-base font-semibold text-foreground'>{growth.name}</span>
-                                <span className='text-sm text-muted-foreground'>{growth.days}</span>
+                                <span className='text-sm text-muted-foreground'>{growth.level}</span>
                             </div>
                         </li>
                     ))}

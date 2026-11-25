@@ -99,3 +99,4 @@ Each line: date (YYYY-mm-dd), what had been done.
 2026-11-25 `docs/score-progression.md`: recorded the tree and sun exports in `frontend/src/assets/` as source artwork (trees already match `TreeStage1–6`); task 5 now ports sun levels 1 and 3 from them into `SunGlow` with tokens.
 2026-11-25 Score task 1: added `@remindme/contracts/score` (constants and `scoreResponseSchema`) and a pure, tested `computeScore` in `backend/src/lib/score.ts` with `SCORE_LAUNCH_DATE` 2026-11-25.
 2026-11-25 Score task 2: added `GET /activity/score` in the `activity` module, which derives the score from the user's Player time with `computeScore`, plus its OpenAPI schema and a DATA-FLOWS entry.
+2026-11-25 Score task 3: Home's tree card now shows the real score from `GET /activity/score` (drops, level, earned today, level-down hint) and the guest cards say Level 1/4/6; the placeholder score is gone and the product, wireframe and metrics docs describe drops and levels.
