@@ -6,12 +6,11 @@ import { PLAYER_TIME_MAX_SECONDS_PER_REPORT } from '@remindme/contracts/activity
 
 import { recordPlayerTime, recordPlayerTimeKeepalive } from '@/features/activity/api';
 import { useTodayActivity } from '@/features/activity/queries/use-today-activity';
+import { countGapMs, crossesDropMark } from '@/features/player/utils/visible-time';
 import { queryKeys } from '@/lib/query-keys';
 
 const TICK_MS = 1000;
 const FLUSH_INTERVAL_MS = 30_000;
-/** A longer gap between ticks means the machine slept (or the page sat in bfcache); that time isn't counted. */
-const SLEEP_GAP_MS = 2 * 60_000;
 
 function toLocalDay(date: Date): string {
     return format(date, 'yyyy-MM-dd');
@@ -28,8 +27,9 @@ function splitIntoReports(seconds: number): Array<number> {
 
 /**
  * Today's Player time in seconds (saved total + time counted on this page), or `null` until the saved total loads.
- * Counts wall-clock time while mounted, also in a background tab. Elapsed time is reported to the API every
- * `FLUSH_INTERVAL_MS`, on unmount and on `pagehide` (reload / tab close, via fetch keepalive).
+ * Counts only time while the tab is visible: time in a hidden tab (background tab, minimized window) is skipped.
+ * Elapsed time is reported to the API every `FLUSH_INTERVAL_MS`, on unmount and on `pagehide` (reload / tab close,
+ * via fetch keepalive). A report that takes today's total across a whole drop (`SECONDS_PER_DROP`) invalidates the score.
  */
 export function usePlayerTimer(): number | null {
     const queryClient = useQueryClient();
@@ -55,13 +55,11 @@ export function usePlayerTimer(): number | null {
     }, [isTodaySettled, today.data]);
 
     useEffect(() => {
-        function collectElapsed() {
+        /** Moves the clock to now and counts the gap since the last call, if the tab was visible during it. */
+        function collectElapsed(isVisible = document.visibilityState === 'visible') {
             const now = Date.now();
-            const gap = now - lastTickRef.current;
+            pendingMsRef.current += countGapMs(now - lastTickRef.current, isVisible);
             lastTickRef.current = now;
-            if (gap > 0 && gap < SLEEP_GAP_MS) {
-                pendingMsRef.current += gap;
-            }
         }
 
         function takePendingSeconds(maxSeconds: number): number {
@@ -78,6 +76,7 @@ export function usePlayerTimer(): number | null {
             if (isFlushingRef.current || savedSecondsRef.current === null) {
                 return;
             }
+            const savedBeforeReport = savedSecondsRef.current;
             const seconds = takePendingSeconds(PLAYER_TIME_MAX_SECONDS_PER_REPORT);
             if (seconds < 1) {
                 return;
@@ -90,6 +89,9 @@ export function usePlayerTimer(): number | null {
                 // Server total also includes time from other tabs.
                 if (result.date === dayRef.current) {
                     savedSecondsRef.current = result.playerSeconds;
+                    if (crossesDropMark(savedBeforeReport, result.playerSeconds)) {
+                        void queryClient.invalidateQueries({ queryKey: queryKeys.activity.score });
+                    }
                 }
             } catch {
                 pendingMsRef.current += seconds * 1000;
@@ -134,17 +136,29 @@ export function usePlayerTimer(): number | null {
             }
         }
 
+        function handleVisibilityChange() {
+            if (document.visibilityState === 'hidden') {
+                // The gap since the last tick was spent visible: count it before the hidden stretch starts.
+                collectElapsed(true);
+            } else {
+                // Shown again: the hidden stretch was not counted, so the clock restarts now.
+                lastTickRef.current = Date.now();
+            }
+        }
+
         lastTickRef.current = Date.now();
         const tickId = window.setInterval(tick, TICK_MS);
         const flushId = window.setInterval(() => void flush(), FLUSH_INTERVAL_MS);
         window.addEventListener('pagehide', handlePageHide);
         window.addEventListener('pageshow', handlePageShow);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
             window.clearInterval(tickId);
             window.clearInterval(flushId);
             window.removeEventListener('pagehide', handlePageHide);
             window.removeEventListener('pageshow', handlePageShow);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
             void flushOnLeave().then(() => queryClient.invalidateQueries({ queryKey: queryKeys.activity.all }));
         };
     }, [queryClient]);
