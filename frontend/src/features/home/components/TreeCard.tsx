@@ -26,29 +26,29 @@ type ScoreNotesProps = {
     score: ScoreResponse;
 };
 
-/** Today's earned drops, the next step for the rest of today, and the level-down hint when decay lowered the level. */
+/** Today's earned drops, the next step for the rest of today, and the shrink hint when decay lowered the tree by a stage. */
 const ScoreNotes = ({ score }: ScoreNotesProps) => {
-    const remainingDrops = score.maxPerDay - score.earnedToday;
-
     return (
         <>
             <p className='text-[15px] text-muted-foreground'>
                 {score.earnedToday} / {score.maxPerDay} today
             </p>
             <p className='text-[15px] text-muted-foreground'>
-                {remainingDrops > 0
-                    ? `Spend up to ${remainingDrops * MINUTES_PER_DROP} more minutes in the Player to earn the rest today.`
-                    : `Come back tomorrow to earn up to ${score.maxPerDay} more drops.`}
+                {score.earnedToday < score.maxPerDay
+                    ? `Every ${MINUTES_PER_DROP} minutes in the Player earns 1 drop, up to ${score.maxPerDay} a day.`
+                    : `You've reached today's limit of ${score.maxPerDay} drops. Come back tomorrow for more.`}
             </p>
             {score.levelLost && (
-                <p className='text-[15px] text-primary-hover'>Your tree lost a level — {MINUTES_PER_DROP} minutes in the Player brings it back</p>
+                <p className='text-[15px] text-primary-hover'>
+                    Your tree shrank by a stage — {MINUTES_PER_DROP} minutes in the Player grows it back.
+                </p>
             )}
         </>
     );
 };
 
 /**
- * Logged-in Home: the tree for the user's score, its drops and level, today's earned drops, the library stats and the way to the categories.
+ * Logged-in Home: the tree for the user's score, its drops, today's earned drops, the library stats and the way to the categories.
  * Until the score loads, the tree slot stays empty and the numbers show a dash, so no random or stale values flash in.
  * Below `lg` the CTA moves under the text column, so the text keeps its width at 768px.
  */
@@ -74,7 +74,7 @@ export const TreeCard = () => {
                     </h2>
                     <p className='flex items-center gap-2 text-[17px] font-semibold text-foreground'>
                         <DropIcon />
-                        {score ? `${score.totalDrops} ${score.totalDrops === 1 ? 'drop' : 'drops'} · Level ${score.level}` : '—'}
+                        {score ? `${score.totalDrops} ${score.totalDrops === 1 ? 'drop' : 'drops'}` : '—'}
                     </p>
                     {score && <ScoreNotes score={score} />}
                 </div>
