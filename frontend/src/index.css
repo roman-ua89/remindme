@@ -157,6 +157,24 @@
     --timer-ring: #6fa8d6;
     --timer-track: #e3eef8;
     --player-progress-current: #e3b7a5;
+
+    /* toast */
+    --toast-success: #3f6a2e;
+    --toast-success-soft: #e6f0dd;
+    --toast-success-border: #c9ddb8;
+    --toast-error: #a33f33;
+    --toast-error-soft: #f7e3df;
+    --toast-error-border: #e9c3bc;
+    --toast-warning: #8a6416;
+    --toast-warning-soft: #f8edcf;
+    --toast-warning-border: #ebd9a6;
+    --toast-info: #2e2620;
+    --toast-info-muted: #6e6257;
+    --toast-info-soft: #f1eadf;
+    --toast-info-border: #e9e1d4;
+    --toast-default: #2e2620;
+    --toast-default-foreground: #fffdf8;
+    --toast-default-action: #f2c9b6;
 }
 
 body {
@@ -310,6 +328,24 @@ body {
     --color-timer-track: var(--timer-track);
     --color-player-progress-current: var(--player-progress-current);
 
+    /* toast */
+    --color-toast-success: var(--toast-success);
+    --color-toast-success-soft: var(--toast-success-soft);
+    --color-toast-success-border: var(--toast-success-border);
+    --color-toast-error: var(--toast-error);
+    --color-toast-error-soft: var(--toast-error-soft);
+    --color-toast-error-border: var(--toast-error-border);
+    --color-toast-warning: var(--toast-warning);
+    --color-toast-warning-soft: var(--toast-warning-soft);
+    --color-toast-warning-border: var(--toast-warning-border);
+    --color-toast-info: var(--toast-info);
+    --color-toast-info-muted: var(--toast-info-muted);
+    --color-toast-info-soft: var(--toast-info-soft);
+    --color-toast-info-border: var(--toast-info-border);
+    --color-toast-default: var(--toast-default);
+    --color-toast-default-foreground: var(--toast-default-foreground);
+    --color-toast-default-action: var(--toast-default-action);
+
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.75);
     --radius-lg: var(--radius);
@@ -319,6 +355,7 @@ body {
     --shadow-positive-glow: 0 6px 16px rgb(94 154 71 / 0.25);
     --shadow-tile-hover: 0 6px 16px rgb(46 38 32 / 0.08);
     --shadow-list-row-hover: 0 6px 18px rgb(46 38 32 / 0.07);
+    --shadow-toast: 0 12px 28px rgb(46 38 32 / 0.18);
 }
 
 @layer base {
