@@ -4,26 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## How you work
 
-- You are the orchestrator. You plan, write task briefs, and accept work.
-  You don't write code yourself: delegate it to the `builder` agent. Exception: a change of one or two lines.
-- A brief for `builder` is at most 10 lines, using this template:
-  Goal: what to do, in one sentence.
-  Read: which files.
-  Don't touch: which files.
-  Done when: a command that can be run, and what it must show.
-- Every task starts with the `create-branch` skill, whether it comes from chat or from the backlog. It pulls `dev` before it cuts the branch, so let it finish before you read any project file (the start-of-session files included) or write a brief. All work for the task happens on that branch, so don't switch branches during a task. The task ends with the push; if I ask for more changes to it before its PR is merged, `git switch` to its branch instead of creating a new one.
-- Independent tasks that don't touch the same files can be given to several `builder` agents at the same time.
-- Before accepting work, run the command from "Done when" yourself. Don't take the builder's report on trust.
-  If it fails: return the task to `builder` with the error output. After three returns, stop and ask me.
-- Every `builder` must leave `npm run ci` green before reporting done, unless the check in `.claude/agents/builder.md` step 3 prints `skip-ci`: every file changed on the branch is an `.md` in the repo root, `docs/`, `.claude/`, `.cursor/` or `backend/docs/`. Any other `.md` can fail CI (Prettier, Tailwind), so it still runs. Run that check yourself before accepting: on `run-ci`, CI must have passed; on `skip-ci`, don't run CI yourself either, and for such docs-only tasks "Done when" is a cheaper check of the edit, such as a `grep`.
-- When the whole task is accepted, call `reviewer`: pass it the briefs and ask it to check the changes against them.
-- Start of session: read `docs/agile/progress.md` and `docs/agile/known-issues.md`.
-- Progress log: after each change you implement, append one line to `docs/agile/progress.md`: the date (YYYY-mm-dd), then at most 2 sentences on what was done.
-- Backlog: `docs/agile/backlog.md` is where I collect desired tasks. Don't read it or pick up tasks from it on your own. Only when I ask for it and name a task from it. A backlog task starts with `create-branch` like any other task, and its backlog number is the branch number.
+The orchestrator flow (branch, `builder` briefs, `reviewer`, commit, push) runs only when I invoke `/task`; its rules live in `.claude/skills/task/SKILL.md`. Without `/task`, work directly on the current branch, `dev` included: edit code yourself, and don't create branches, commit or push unless I ask.
+
+- Backlog: `docs/agile/backlog.md` is where I collect desired tasks. Don't read it or pick up tasks from it on your own. Only when I ask for it and name a task from it. A backlog task runs through `/task`, and its backlog number is the branch number.
   Once a task from the backlog is done, mark its title with a `Done` prefix (e.g. `## Task 1. Title` → `## Done Task 1. Title`).
   Never take or execute a task whose title starts with `Done`; treat it as finished.
-- End of task: record any new decision in `docs/agile/decisions.md`, and any new pitfall in `docs/agile/known-issues.md`.
-- After `reviewer` accepts the work, run the `commit-message` skill: it shows the draft with a commit button, or asks in a "Commit" / "Not yet" dialog when that button is unavailable, and commits only when I click the button or "Commit". Then run the `push-commit` skill: it offers, in a dialog, to push the task branch to origin, and once it is pushed switches back to `dev`. It never pushes `dev` and never merges; the pull request into `dev` is opened on GitHub, and I merge it once its checks are green.
 
 ## Project
 

@@ -1,6 +1,6 @@
 ---
 name: create-branch
-description: Switches to dev and runs `git pull --ff-only` before cutting the feature branch for a task the orchestrator is about to start, named <type>/<number>_<short_task_name> and cut from the latest dev. Use at the start of a task, before the first builder brief. Creates the branch only; never commits, pushes or deletes.
+description: Switches to dev and runs `git pull --ff-only` before cutting the feature branch for a task the orchestrator is about to start, named <type>/<number>_<short_task_name> and cut from the latest dev. Use at the start of a task, before the first builder brief. Creates the branch only; never commits, pushes or deletes. Only as a step of a /task run, or when the user names this skill.
 ---
 
 ## Name

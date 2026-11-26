@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only when the user approves it on a task branch (a click on the commit button, or on "Commit" in a dialog).
+description: Drafts a git commit message for a task the orchestrator has accepted after reviewer, writes it to a file for editing, and commits only when the user approves it on a task branch (a click on the commit button, or on "Commit" in a dialog). Only as a step of a /task run, or when the user names this skill.
 ---
 
 ## Format

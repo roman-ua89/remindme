@@ -1,6 +1,6 @@
 ---
 name: push-commit
-description: Offers, in a dialog, to push the committed task branch to origin, then switches back to dev. Runs only when the user picks it, as a plain push of the task branch and nothing else. "Not yet", a rejected push or any other stop leaves the task branch checked out. Never pushes dev, never merges, never force-pushes.
+description: Offers, in a dialog, to push the committed task branch to origin, then switches back to dev. Runs only when the user picks it, as a plain push of the task branch and nothing else. "Not yet", a rejected push or any other stop leaves the task branch checked out. Never pushes dev, never merges, never force-pushes. Only as a step of a /task run, or when the user names this skill.
 ---
 
 ## When
