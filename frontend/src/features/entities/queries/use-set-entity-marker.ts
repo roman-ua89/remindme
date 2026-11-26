@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { setEntityMarker } from '@/features/entities/api';
+import { ENTITY_MARKER_OPTIONS } from '@/features/entities/markers';
 import type { Entity, EntityMarker } from '@remindme/contracts/entities';
 import { getApiErrorMessage } from '@/lib/auth';
 import { queryKeys } from '@/lib/query-keys';
@@ -12,6 +13,12 @@ type SetEntityMarkerVariables = {
     entityId: string;
     marker: EntityMarker | null;
 };
+
+function getMarkerToastMessage(marker: EntityMarker | null): string {
+    if (marker === null) return 'Marker cleared';
+    const option = ENTITY_MARKER_OPTIONS.find((item) => item.value === marker);
+    return option ? `Marked as ${option.label}` : 'Marker updated';
+}
 
 export function useSetEntityMarker() {
     const queryClient = useQueryClient();
@@ -32,6 +39,7 @@ export function useSetEntityMarker() {
             queryClient.invalidateQueries({
                 queryKey: [...queryKeys.categories.all, 'list'],
             });
+            toast.success(getMarkerToastMessage(updated.marker));
         },
         onError: (error) => {
             toast.error(getApiErrorMessage(error));
