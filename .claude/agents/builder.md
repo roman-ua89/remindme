@@ -1,6 +1,6 @@
 ---
 name: builder
-description: Writes code from a ready brief given by the orchestrator and runs the check from "Done when". Use for any implementation and code changes.
+description: Writes code from a ready brief given by the orchestrator and runs the check from "Done when". Use only inside a /task run; outside it the main session edits code itself.
 model: haiku
 tools: Read, Edit, Write, Bash, Grep, Glob
 ---

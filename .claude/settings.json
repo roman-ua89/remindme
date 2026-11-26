@@ -14,7 +14,6 @@
   },
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
-    "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "1",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "30"
   },
   "enableAllProjectMcpServers": true,
